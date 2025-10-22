@@ -94,12 +94,12 @@ export default function BookViewer() {
                 '═══════════════════════════════════════════'
     },
     {
-      title: 'CASE FILE #002',
-      caseNumber: 'RK-2025-002',
+      title: 'CASE FILE #001',
+      caseNumber: 'RK-2025-001',
       leftPage: '═══════════════════════════════════════════\n' +
                'PLEADING MEMORANDUM - LEFT PAGE\n' +
                '═══════════════════════════════════════════\n\n' +
-               'Reference: Case #RK-2025-002\n' +
+               'Reference: Case #RK-2025-001\n' +
                'Prepared by: ' + advocateName + '\n' +
                'Date: October 16, 2025\n\n' +
                'FACTS OF THE CASE:\n\n' +
@@ -142,13 +142,13 @@ export default function BookViewer() {
                 '═══════════════════════════════════════════'
     },
     {
-      title: 'CASE FILE #003',
-      caseNumber: 'RK-2025-003',
+      title: 'CASE FILE #001',
+      caseNumber: 'RK-2025-001',
       leftPage: '═══════════════════════════════════════════\n' +
                'AFFIDAVIT - LEFT PAGE\n' +
                '═══════════════════════════════════════════\n\n' +
                'IN THE MAGISTRATE COURT\n\n' +
-               'In the matter of: Case #RK-2025-003\n' +
+               'In the matter of: Case #RK-2025-001\n' +
                'Deponent: Rajesh Kumar\n' +
                'Date: October 15, 2025\n\n' +
                'I, Rajesh Kumar, son of Ramesh Kumar, \n' +
@@ -192,7 +192,7 @@ export default function BookViewer() {
                 '═══════════════════════════════════════════'
     },
     {
-      title: 'COURT ORDER',
+      title: 'CASE FILE #001',
       caseNumber: 'RK-2025-001',
       leftPage: '═══════════════════════════════════════════\n' +
                'COURT ORDER - LEFT PAGE\n' +
@@ -237,7 +237,7 @@ export default function BookViewer() {
                 '═══════════════════════════════════════════'
     },
     {
-      title: 'EVIDENCE SUMMARY',
+      title: 'CASE FILE #001',
       caseNumber: 'RK-2025-001',
       leftPage: '═══════════════════════════════════════════\n' +
                'EVIDENCE SUMMARY - LEFT PAGE\n' +
@@ -287,7 +287,7 @@ export default function BookViewer() {
                 '═══════════════════════════════════════════'
     },
     {
-      title: 'CASE ANALYSIS',
+      title: 'CASE FILE #001',
       caseNumber: 'RK-2025-001',
       leftPage: '═══════════════════════════════════════════\n' +
                'LEGAL ANALYSIS - LEFT PAGE\n' +
@@ -341,7 +341,7 @@ export default function BookViewer() {
                 '═══════════════════════════════════════════'
     },
     {
-      title: 'PREPARED BY',
+      title: 'CASE FILE #001',
       caseNumber: 'RK-2025-001',
       leftPage: '═══════════════════════════════════════════\n' +
                'ATTORNEY PROFILE - LEFT PAGE\n' +
@@ -399,12 +399,12 @@ export default function BookViewer() {
     },
     // Additional pages to increase suspense and detail
     {
-      title: 'CONFIDENTIAL INVESTIGATION REPORT',
-      caseNumber: 'RK-2025-004',
+      title: 'CASE FILE #001',
+      caseNumber: 'RK-2025-001',
       leftPage: '═══════════════════════════════════════════\n' +
                'CONFIDENTIAL INVESTIGATION REPORT - LEFT PAGE\n' +
                '═══════════════════════════════════════════\n\n' +
-               'FILE: CONFIDENTIAL - RK-2025-004\n' +
+               'FILE: CONFIDENTIAL - RK-2025-001\n' +
                'DATE: October 18, 2025\n' +
                'PREPARED BY: ' + advocateName + '\n' +
                'SECURITY LEVEL: HIGHLY CONFIDENTIAL\n\n' +
@@ -456,8 +456,8 @@ export default function BookViewer() {
                 '═══════════════════════════════════════════'
     },
     {
-      title: 'WITNESS STATEMENT',
-      caseNumber: 'RK-2025-005',
+      title: 'CASE FILE #001',
+      caseNumber: 'RK-2025-001',
       leftPage: '═══════════════════════════════════════════\n' +
                'WITNESS STATEMENT - LEFT PAGE\n' +
                '═══════════════════════════════════════════\n\n' +
@@ -508,8 +508,8 @@ export default function BookViewer() {
                 '═══════════════════════════════════════════'
     },
     {
-      title: 'SURVEILLANCE ANALYSIS',
-      caseNumber: 'RK-2025-006',
+      title: 'CASE FILE #001',
+      caseNumber: 'RK-2025-001',
       leftPage: '═══════════════════════════════════════════\n' +
                'SURVEILLANCE ANALYSIS - LEFT PAGE\n' +
                '═══════════════════════════════════════════\n\n' +
@@ -563,8 +563,8 @@ export default function BookViewer() {
                 '═══════════════════════════════════════════'
     },
     {
-      title: 'FINANCIAL INVESTIGATION',
-      caseNumber: 'RK-2025-007',
+      title: 'CASE FILE #001',
+      caseNumber: 'RK-2025-001',
       leftPage: '═══════════════════════════════════════════\n' +
                'FINANCIAL INVESTIGATION - LEFT PAGE\n' +
                '═══════════════════════════════════════════\n\n' +
@@ -618,8 +618,8 @@ export default function BookViewer() {
                 '═══════════════════════════════════════════'
     },
     {
-      title: 'FORENSIC EVIDENCE',
-      caseNumber: 'RK-2025-008',
+      title: 'CASE FILE #001',
+      caseNumber: 'RK-2025-001',
       leftPage: '═══════════════════════════════════════════\n' +
                'FORENSIC EVIDENCE REPORT - LEFT PAGE\n' +
                '═══════════════════════════════════════════\n\n' +
@@ -670,8 +670,8 @@ export default function BookViewer() {
                 '═══════════════════════════════════════════'
     },
     {
-      title: 'CASE STRATEGY',
-      caseNumber: 'RK-2025-009',
+      title: 'CASE FILE #001',
+      caseNumber: 'RK-2025-001',
       leftPage: '═══════════════════════════════════════════\n' +
                'CASE STRATEGY DOCUMENT - LEFT PAGE\n' +
                '═══════════════════════════════════════════\n\n' +
@@ -727,8 +727,8 @@ export default function BookViewer() {
                 '═══════════════════════════════════════════'
     },
     {
-      title: 'PROSECUTOR BRIEF',
-      caseNumber: 'RK-2025-010',
+      title: 'CASE FILE #001',
+      caseNumber: 'RK-2025-001',
       leftPage: '═══════════════════════════════════════════\n' +
                'PROSECUTOR BRIEF - LEFT PAGE\n' +
                '═══════════════════════════════════════════\n\n' +
@@ -785,8 +785,8 @@ export default function BookViewer() {
                 '═══════════════════════════════════════════'
     },
     {
-      title: 'MEDIA STRATEGY',
-      caseNumber: 'RK-2025-011',
+      title: 'CASE FILE #001',
+      caseNumber: 'RK-2025-001',
       leftPage: '═══════════════════════════════════════════\n' +
                'MEDIA STRATEGY DOCUMENT - LEFT PAGE\n' +
                '═══════════════════════════════════════════\n\n' +
@@ -843,8 +843,8 @@ export default function BookViewer() {
                 '═══════════════════════════════════════════'
     },
     {
-      title: 'COURT HEARING NOTES',
-      caseNumber: 'RK-2025-012',
+      title: 'CASE FILE #001',
+      caseNumber: 'RK-2025-001',
       leftPage: '═══════════════════════════════════════════\n' +
                'COURT HEARING NOTES - LEFT PAGE\n' +
                '═══════════════════════════════════════════\n\n' +
@@ -1008,8 +1008,8 @@ RECOMMENDATIONS:
 ═══════════════════════════════════════════`
     },
     {
-      title: 'CASE RESOLUTION',
-      caseNumber: 'RK-2025-014',
+      title: 'CASE FILE #001',
+      caseNumber: 'RK-2025-001',
       leftPage: `═══════════════════════════════════════════
 CASE RESOLUTION DOCUMENT - LEFT PAGE
 ═══════════════════════════════════════════
@@ -1095,13 +1095,13 @@ END OF CASE FILE
     // Add more suspenseful pages with variations
     const index = expandedCaseData.length - caseData.length + 1;
     expandedCaseData.push({
-      title: `INVESTIGATION NOTES #${index.toString().padStart(2, '0')}`,
-      caseNumber: `RK-2025-${(index + 14).toString().padStart(3, '0')}`,
+      title: `CASE FILE #001`,
+      caseNumber: `RK-2025-001`,
       leftPage: `═══════════════════════════════════════════
 INVESTIGATION NOTES - LEFT PAGE
 ═══════════════════════════════════════════
 
-FILE: RK-2025-${(index + 14).toString().padStart(3, '0')}
+FILE: RK-2025-001
 DATE: October 20, 2025
 INVESTIGATOR: Detective Unit ${index}
 REFERENCE: Ongoing Case Analysis
@@ -1460,66 +1460,66 @@ Badge Number: DI-${(1000 + index * 23).toString()}
   }
 
   return (
-    <div className="w-full h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex flex-col p-4">
+    <div className="w-full h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex flex-col p-2">
       {/* Header */}
-      <div className="bg-gradient-to-r from-amber-700 to-amber-600 text-white p-6 rounded-t-xl flex items-center justify-between mb-0">
+      <div className="bg-gradient-to-r from-amber-700 to-amber-600 text-white p-3 rounded-t-lg flex items-center justify-between mb-0">
         <div className="flex-1">
-          <h1 className="text-3xl font-bold">{expandedCaseData[currentPage].title}</h1>
-          <p className="text-amber-100 text-sm">Case #{expandedCaseData[currentPage].caseNumber}</p>
+          <h1 className="text-xl font-bold">{expandedCaseData[currentPage].title}</h1>
+          <p className="text-amber-100 text-xs">Case #{expandedCaseData[currentPage].caseNumber}</p>
         </div>
         <button
           onClick={() => setOpened(false)}
-          className="p-3 hover:bg-amber-700 rounded-lg transition transform hover:scale-110"
+          className="p-2 hover:bg-amber-700 rounded-lg transition transform hover:scale-105"
         >
-          <X size={32} />
+          <X size={24} />
         </button>
       </div>
 
       {/* Book Container */}
-      <div className="flex-1 bg-gradient-to-b from-gray-800 to-gray-900 flex items-center justify-center px-8 py-6 gap-6 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 200px)' }}>
+      <div className="flex-1 bg-gradient-to-b from-gray-800 to-gray-900 flex items-center justify-center px-4 py-3 gap-4 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 120px)' }}>
         {/* Left Page */}
-        <div className={`w-1/2 bg-yellow-50 rounded-lg shadow-2xl p-10 overflow-y-auto transition-all duration-500 transform ${isFlipping ? 'opacity-50 -translate-x-12 rotate-y-45' : 'opacity-100 translate-x-0'} hover:shadow-amber-500/50 relative`} style={{ maxHeight: '70vh' }}>
-          <div className="text-gray-800 text-xs leading-relaxed font-mono whitespace-pre-wrap select-text">
+        <div className={`w-1/2 bg-yellow-50 rounded-lg shadow-xl p-6 overflow-y-auto transition-all duration-500 transform ${isFlipping ? 'opacity-50 -translate-x-8 rotate-y-30' : 'opacity-100 translate-x-0'} hover:shadow-amber-500/30 relative`} style={{ maxHeight: '75vh' }}>
+          <div className="text-gray-800 text-sm leading-relaxed font-mono whitespace-pre-wrap select-text">
             {expandedCaseData[currentPage].leftPage}
           </div>
-          <div className="mt-8 pt-4 border-t-2 border-gray-400 text-center">
+          <div className="mt-4 pt-2 border-t border-gray-300 text-center">
             <span className="text-xs text-gray-500 font-mono">Page {currentPage * 2 + 1}</span>
           </div>
           
           {/* Voice Control for Left Page */}
           {isSpeechSupported && (
-            <div className="absolute top-4 right-4">
+            <div className="absolute top-2 right-2">
               <button
                 onClick={() => speakText(expandedCaseData[currentPage].leftPage, 'left')}
                 disabled={isSpeaking && currentSpeech !== 'left'}
-                className={`p-2 rounded-full ${isSpeaking && currentSpeech === 'left' ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-800'} hover:bg-gray-300 transition`}
+                className={`p-1 rounded-full ${isSpeaking && currentSpeech === 'left' ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-800'} hover:bg-gray-300 transition`}
                 title={isSpeaking && currentSpeech === 'left' ? "Stop speaking" : "Read aloud"}
               >
-                {isSpeaking && currentSpeech === 'left' ? <VolumeX size={20} /> : <Volume2 size={20} />}
+                {isSpeaking && currentSpeech === 'left' ? <VolumeX size={16} /> : <Volume2 size={16} />}
               </button>
             </div>
           )}
         </div>
 
         {/* Right Page */}
-        <div className={`w-1/2 bg-yellow-50 rounded-lg shadow-2xl p-10 overflow-y-auto transition-all duration-500 transform ${isFlipping ? 'opacity-50 translate-x-12 -rotate-y-45' : 'opacity-100 translate-x-0'} hover:shadow-amber-500/50 relative`} style={{ maxHeight: '70vh' }}>
-          <div className="text-gray-800 text-xs leading-relaxed font-mono whitespace-pre-wrap select-text">
+        <div className={`w-1/2 bg-yellow-50 rounded-lg shadow-xl p-6 overflow-y-auto transition-all duration-500 transform ${isFlipping ? 'opacity-50 translate-x-8 -rotate-y-30' : 'opacity-100 translate-x-0'} hover:shadow-amber-500/30 relative`} style={{ maxHeight: '75vh' }}>
+          <div className="text-gray-800 text-sm leading-relaxed font-mono whitespace-pre-wrap select-text">
             {expandedCaseData[currentPage].rightPage}
           </div>
-          <div className="mt-8 pt-4 border-t-2 border-gray-400 text-center">
+          <div className="mt-4 pt-2 border-t border-gray-300 text-center">
             <span className="text-xs text-gray-500 font-mono">Page {currentPage * 2 + 2}</span>
           </div>
           
           {/* Voice Control for Right Page */}
           {isSpeechSupported && (
-            <div className="absolute top-4 right-4">
+            <div className="absolute top-2 right-2">
               <button
                 onClick={() => speakText(expandedCaseData[currentPage].rightPage, 'right')}
                 disabled={isSpeaking && currentSpeech !== 'right'}
-                className={`p-2 rounded-full ${isSpeaking && currentSpeech === 'right' ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-800'} hover:bg-gray-300 transition`}
+                className={`p-1 rounded-full ${isSpeaking && currentSpeech === 'right' ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-800'} hover:bg-gray-300 transition`}
                 title={isSpeaking && currentSpeech === 'right' ? "Stop speaking" : "Read aloud"}
               >
-                {isSpeaking && currentSpeech === 'right' ? <VolumeX size={20} /> : <Volume2 size={20} />}
+                {isSpeaking && currentSpeech === 'right' ? <VolumeX size={16} /> : <Volume2 size={16} />}
               </button>
             </div>
           )}
@@ -1527,28 +1527,28 @@ Badge Number: DI-${(1000 + index * 23).toString()}
       </div>
 
       {/* Navigation Footer */}
-      <div className="bg-gradient-to-r from-gray-800 to-gray-700 p-6 rounded-b-xl flex items-center justify-between border-t-4 border-amber-600">
+      <div className="bg-gradient-to-r from-gray-800 to-gray-700 p-3 rounded-b-lg flex items-center justify-between border-t-2 border-amber-600">
         <button
           onClick={() => flipPage('prev')}
           disabled={currentPage === 0 || isFlipping}
-          className="flex items-center gap-2 px-8 py-3 bg-amber-500 hover:bg-amber-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition font-bold transform hover:scale-105"
+          className="flex items-center gap-1 px-4 py-2 bg-amber-500 hover:bg-amber-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-md transition font-medium transform hover:scale-105 text-sm"
         >
-          <ChevronLeft size={24} />
+          <ChevronLeft size={16} />
           Previous
         </button>
 
         <div className="text-center text-white">
-          <p className="text-xl font-bold">File {currentPage + 1} of {expandedCaseData.length}</p>
-          <p className="text-sm text-gray-400">Double Page Spread • Pages {currentPage * 2 + 1}-{currentPage * 2 + 2}</p>
+          <p className="font-bold text-sm">File {currentPage + 1} of {expandedCaseData.length}</p>
+          <p className="text-xs text-gray-400">Pages {currentPage * 2 + 1}-{currentPage * 2 + 2}</p>
         </div>
 
         <button
           onClick={() => flipPage('next')}
           disabled={currentPage === expandedCaseData.length - 1 || isFlipping}
-          className="flex items-center gap-2 px-8 py-3 bg-amber-500 hover:bg-amber-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition font-bold transform hover:scale-105"
+          className="flex items-center gap-1 px-4 py-2 bg-amber-500 hover:bg-amber-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-md transition font-medium transform hover:scale-105 text-sm"
         >
           Next
-          <ChevronRight size={24} />
+          <ChevronRight size={16} />
         </button>
       </div>
     </div>
