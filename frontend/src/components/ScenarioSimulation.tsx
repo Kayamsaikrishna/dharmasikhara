@@ -1510,11 +1510,11 @@ export default function BookViewer() {
             </div>
             <h1 className="text-6xl font-bold text-white mb-4 tracking-wider">धर्मशिखर</h1>
             <p className="text-3xl text-amber-200 font-semibold mb-8">DHARMASIKHARA</p>
-            <div className="border-t border-b border-amber-300 py-4 mb-6 inline-block px-10">
+            <div className="border-t border-b border-amber-300 py-4 mb-5">
               <p className="text-amber-100 text-xl font-medium">{advocateName}</p>
               <p className="text-amber-200 text-lg">B.A. LL.B (Hons.)</p>
             </div>
-            <p className="text-2xl text-amber-100 mt-6">Initializing Legal Scenario...</p>
+            <p className="text-amber-200 text-base">2025-2026</p>
           </div>
         )}
         
@@ -1562,45 +1562,49 @@ export default function BookViewer() {
         {/* Main Book Cover */}
         <div className="relative z-10">
           <div 
-            className="relative w-80 h-[500px] bg-gradient-to-br from-amber-800 via-amber-700 to-amber-900 rounded-lg shadow-2xl p-8 flex flex-col items-center justify-center border-4 border-amber-600 cursor-pointer transform transition-all duration-300 hover:scale-105"
+            className="relative w-96 h-[580px] bg-gradient-to-br from-amber-800 via-amber-700 to-amber-900 rounded-xl shadow-2xl p-10 flex flex-col items-center justify-center border-4 border-amber-600 cursor-pointer transform transition-all duration-300 hover:scale-105"
             onClick={() => setOpened(true)}
             style={{
-              transform: `perspective(1000px) rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
-              transition: 'transform 0.1s ease-out'
+              transform: `perspective(1200px) rotateX(${rotation.x}deg) rotateY(${rotation.y}deg) translateZ(20px)`,
+              transition: 'transform 0.1s ease-out',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 30px rgba(251, 191, 36, 0.3)'
             }}
           >
             {/* Law Scales Icon */}
-            <div className="mb-6 text-amber-100">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="mb-8 text-amber-100 transform transition-transform duration-300 hover:scale-110">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-20 w-20 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
               </svg>
             </div>
             
             {/* DharmaSikhara Title */}
-            <div className="text-center mb-8">
-              <h1 className="text-4xl font-bold text-amber-100 mb-2 tracking-wider">DHARMASIKHARA</h1>
-              <div className="w-24 h-0.5 bg-amber-200 mx-auto mb-3"></div>
-              <h2 className="text-xl font-semibold text-amber-200 tracking-widest">LEGAL SIMULATION</h2>
+            <div className="text-center mb-10">
+              <h1 className="text-5xl font-bold text-amber-100 mb-3 tracking-wider">DHARMASIKHARA</h1>
+              <div className="w-32 h-1 bg-amber-200 mx-auto mb-4 rounded-full"></div>
+              <h2 className="text-2xl font-semibold text-amber-200 tracking-widest">LEGAL SIMULATION</h2>
             </div>
             
             {/* Book Details */}
-            <div className="text-center mb-8">
-              <div className="border-t border-b border-amber-300 py-3 mb-4">
-                <p className="text-amber-100 text-lg font-medium">{advocateName}</p>
-                <p className="text-amber-200 text-sm">B.A. LL.B (Hons.)</p>
+            <div className="text-center mb-10">
+              <div className="border-t border-b border-amber-300 py-4 mb-5">
+                <p className="text-amber-100 text-xl font-medium">{advocateName}</p>
+                <p className="text-amber-200 text-lg">B.A. LL.B (Hons.)</p>
               </div>
-              <p className="text-amber-200 text-sm">2025-2026</p>
+              <p className="text-amber-200 text-base">2025-2026</p>
             </div>
             
             {/* Decorative Elements */}
-            <div className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-amber-300"></div>
-            <div className="absolute top-4 right-4 w-8 h-8 border-t-2 border-r-2 border-amber-300"></div>
-            <div className="absolute bottom-4 left-4 w-8 h-8 border-b-2 border-l-2 border-amber-300"></div>
-            <div className="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-amber-300"></div>
+            <div className="absolute top-6 left-6 w-10 h-10 border-t-2 border-l-2 border-amber-300 rounded-tl-lg"></div>
+            <div className="absolute top-6 right-6 w-10 h-10 border-t-2 border-r-2 border-amber-300 rounded-tr-lg"></div>
+            <div className="absolute bottom-6 left-6 w-10 h-10 border-b-2 border-l-2 border-amber-300 rounded-bl-lg"></div>
+            <div className="absolute bottom-6 right-6 w-10 h-10 border-b-2 border-r-2 border-amber-300 rounded-br-lg"></div>
             
             {/* Click Indicator */}
-            <div className="absolute bottom-6 text-center w-full">
-              <p className="text-amber-200 font-semibold text-sm animate-pulse">CLICK TO OPEN CASE FILES</p>
+            <div className="absolute bottom-8 text-center w-full">
+              <p className="text-amber-200 font-bold text-xl animate-pulse transform transition-all duration-300 hover:scale-110 hover:text-amber-100">
+                CLICK TO OPEN CASE FILES
+              </p>
+              <div className="mt-3 w-10 h-1.5 bg-amber-400 mx-auto rounded-full animate-pulse"></div>
             </div>
           </div>
         </div>
@@ -1703,5 +1707,4 @@ export default function BookViewer() {
     </div>
   );
 }
-
 
