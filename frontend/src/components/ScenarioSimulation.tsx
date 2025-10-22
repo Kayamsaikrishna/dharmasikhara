@@ -1579,7 +1579,7 @@ export default function BookViewer() {
             
             {/* DharmaSikhara Title */}
             <div className="text-center mb-10">
-              <h1 className="text-5xl font-bold text-amber-100 mb-3 tracking-wider">DHARMASIKHARA</h1>
+              <h1 className="text-4xl font-bold text-amber-100 mb-3 tracking-wider">DHARMASIKHARA</h1>
               <div className="w-32 h-1 bg-amber-200 mx-auto mb-4 rounded-full"></div>
               <h2 className="text-2xl font-semibold text-amber-200 tracking-widest">LEGAL SIMULATION</h2>
             </div>

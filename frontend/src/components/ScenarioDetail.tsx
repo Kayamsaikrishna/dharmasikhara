@@ -740,32 +740,82 @@ const EnhancedScenarioDetail = () => {
 
               {expandedSections.timeline && (
                 <div className="relative">
-                  {/* Timeline line */}
-                  <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-indigo-200"></div>
-
-                  {scenario.timeline.map((event, idx) => (
-                    <div key={idx} className="relative flex items-start gap-4 mb-6 last:mb-0">
-                      <div className={`relative z-10 w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 ${
-                        event.suspicious 
-                          ? 'bg-red-100 border-4 border-red-500' 
-                          : 'bg-indigo-100 border-4 border-indigo-500'
-                      }`}>
-                        <span className="font-bold text-sm text-gray-900">{event.time}</span>
-                      </div>
-                      <div className={`flex-1 rounded-lg p-4 ${
-                        event.suspicious ? 'bg-red-50 border border-red-200' : 'bg-gray-50 border border-gray-200'
-                      }`}>
-                        <div className="flex items-start justify-between">
-                          <p className="text-gray-900 font-medium">{event.event}</p>
+                  {/* Enhanced Timeline */}
+                  <div className="space-y-8">
+                    {scenario.timeline.map((event, idx) => (
+                      <div key={idx} className="relative flex items-start gap-6">
+                        {/* Timeline connector line */}
+                        {idx !== scenario.timeline.length - 1 && (
+                          <div className="absolute left-5 top-12 bottom-0 w-0.5 bg-gradient-to-b from-indigo-400 to-indigo-200"></div>
+                        )}
+                        
+                        {/* Time marker */}
+                        <div className={`relative z-10 flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
+                          event.suspicious 
+                            ? 'bg-red-500 text-white shadow-lg shadow-red-200' 
+                            : 'bg-indigo-500 text-white shadow-lg shadow-indigo-200'
+                        }`}>
+                          <span className="font-bold text-xs">{idx + 1}</span>
+                        </div>
+                        
+                        {/* Event content card */}
+                        <div className={`flex-1 rounded-xl p-5 transition-all duration-300 hover:shadow-md ${
+                          event.suspicious 
+                            ? 'bg-red-50 border-l-4 border-red-500 hover:bg-red-100' 
+                            : 'bg-white border-l-4 border-indigo-500 hover:bg-indigo-50'
+                        }`}>
+                          <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
+                            <div className="flex items-center">
+                              <span className="font-bold text-gray-900 bg-gray-100 px-3 py-1 rounded-full text-sm">
+                                {event.time}
+                              </span>
+                              {event.suspicious && (
+                                <span className="ml-3 bg-red-500 text-white text-xs px-2 py-1 rounded-full flex items-center">
+                                  <AlertTriangle className="w-3 h-3 mr-1" />
+                                  SUSPICIOUS
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          
+                          <p className="text-gray-800 font-medium">{event.event}</p>
+                          
                           {event.suspicious && (
-                            <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full ml-2 flex-shrink-0">
-                              SUSPICIOUS
-                            </span>
+                            <div className="mt-3 pt-3 border-t border-red-100">
+                              <p className="text-red-700 text-sm flex items-start">
+                                <AlertTriangle className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" />
+                                <span>This event raises questions about the sequence of events and requires further investigation</span>
+                              </p>
+                            </div>
                           )}
                         </div>
                       </div>
+                    ))}
+                  </div>
+                  
+                  {/* Timeline Summary */}
+                  <div className="mt-8 pt-6 border-t border-gray-200">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="bg-indigo-50 p-4 rounded-lg border border-indigo-200">
+                        <div className="text-indigo-800 font-bold text-xl">
+                          {scenario.timeline.length}
+                        </div>
+                        <div className="text-indigo-600 text-sm">Key Events</div>
+                      </div>
+                      <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+                        <div className="text-red-800 font-bold text-xl">
+                          {scenario.timeline.filter(e => e.suspicious).length}
+                        </div>
+                        <div className="text-red-600 text-sm">Suspicious Points</div>
+                      </div>
+                      <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                        <div className="text-green-800 font-bold text-xl">
+                          {scenario.timeline.filter(e => !e.suspicious).length}
+                        </div>
+                        <div className="text-green-600 text-sm">Confirmed Events</div>
+                      </div>
                     </div>
-                  ))}
+                  </div>
                 </div>
               )}
             </div>
