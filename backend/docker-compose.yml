@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  # Backend service
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=dharmasikhara
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - MONGODB_URI=mongodb://mongodb:27017/dharmasikhara
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - ELASTICSEARCH_NODE=http://elasticsearch:9200
+      - JWT_SECRET=your_jwt_secret_here
+    volumes:
+      - ./src:/app/src
+      - /C/Users/ASUS/.cache/huggingface:/root/.cache/huggingface
+    depends_on:
+      - postgres
+      - mongodb
+      - redis
+      - elasticsearch
+    networks:
+      - dharmasikhara-network
+
+  # PostgreSQL database
+  postgres:
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=dharmasikhara
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - dharmasikhara-network
+
+  # MongoDB database
+  mongodb:
+    image: mongo:5
+    volumes:
+      - mongodb_data:/data/db
+    ports:
+      - "27017:27017"
+    networks:
+      - dharmasikhara-network
+
+  # Redis cache
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    networks:
+      - dharmasikhara-network
+
+  # Elasticsearch
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - dharmasikhara-network
+
+volumes:
+  postgres_data:
+  mongodb_data:
+  elasticsearch_data:
+
+networks:
+  dharmasikhara-network:
+    driver: bridge

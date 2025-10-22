@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test API</title>
+</head>
+<body>
+    <h1>Test Scenarios API</h1>
+    <div id="results"></div>
+
+    <script>
+        async function fetchScenarios() {
+            try {
+                const response = await fetch('http://localhost:5000/api/scenarios');
+                const data = await response.json();
+                document.getElementById('results').innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            } catch (error) {
+                document.getElementById('results').innerHTML = '<p>Error: ' + error.message + '</p>';
+            }
+        }
+
+        fetchScenarios();
+    </script>
+</body>
+</html>
