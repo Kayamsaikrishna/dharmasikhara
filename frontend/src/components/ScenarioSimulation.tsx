@@ -10,6 +10,8 @@ export default function BookViewer() {
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [currentSpeech, setCurrentSpeech] = useState<'left' | 'right' | null>(null);
+  const [showIntro, setShowIntro] = useState(true); // For animation intro
+  const [introStep, setIntroStep] = useState(0); // For step-by-step animation
   const containerRef = useRef<HTMLDivElement>(null);
   const speechSynthesisRef = useRef<SpeechSynthesisUtterance | null>(null);
 
@@ -24,1106 +26,925 @@ export default function BookViewer() {
 
   // Get advocate name from user profile or use default
   const advocateName = user?.firstName && user?.lastName 
-    ? `Adv. ${user.firstName} ${user.lastName}` 
+    ? 'Adv. ' + user.firstName + ' ' + user.lastName 
     : 'Adv. Aditi Rao';
 
   const caseData = [
     {
       title: 'CASE FILE #001',
       caseNumber: 'RK-2025-001',
-      leftPage: `═══════════════════════════════════════════
-CASE FILE #001 - LEFT PAGE
-═══════════════════════════════════════════
-
-Case Number: RK-2025-001
-Date Filed: October 15, 2025
-Status: ACTIVE
-
-BETWEEN:
-    Rajesh Kumar (Petitioner)
-                    vs.
-    State of Karnataka (Respondent)
-
-Prepared by:
-    ${advocateName}
-    B.A. LL.B (Hons.)
-
-Contact Information:
-    Address: Rao & Associates
-             3rd Floor, Justice Complex
-             Brigade Road, Bangalore - 560001
-    
-    Phone: 080-25598745
-    Mobile: 9845012345
-    Email: aditi.rao@raolaw.com
-
-CASE DETAILS:
-This legal proceeding pertains to a criminal 
-matter under the jurisdiction of the Magistrate 
-Court, Bangalore. The petitioner has been 
-wrongfully accused of theft of electronic 
-devices from his workplace.
-
-═══════════════════════════════════════════`,
-      rightPage: `═══════════════════════════════════════════
-CASE FILE #001 - RIGHT PAGE
-═══════════════════════════════════════════
-
-COURT INFORMATION:
-    Court: Magistrate Court
-    Judge: Hon'ble Justice Priya Menon
-    Court Hall: 2B
-    Hearing Date: October 20, 2025
-
-CASE SUMMARY:
-The petitioner, Rajesh Kumar, was arrested on 
-October 14, 2025, for alleged theft of 50 
-smartphones worth ₹2,50,000 from the 
-electronics warehouse where he works as a 
-supervisor. The petitioner maintains his 
-innocence.
-
-PREVIOUS PROCEEDINGS:
-    Date: October 15, 2025
-    • First appearance in court
-    • Bail application filed
-    • Arguments heard
-    • Bail granted with conditions
-    
-    Date: October 18, 2025
-    • Charges framed
-    • Plea recorded
-    • Case listed for trial
-
-NEXT HEARING:
-    Date: October 20, 2025
-    Time: 10:30 AM
-    Location: Court Hall 2B
-
-STATUS: Active Proceedings
-COUNSEL: ${advocateName}
-
-═══════════════════════════════════════════`
+      leftPage: '═══════════════════════════════════════════\n' +
+               'CASE FILE #001 - LEFT PAGE\n' +
+               '═══════════════════════════════════════════\n\n' +
+               'Case Number: RK-2025-001\n' +
+               'Date Filed: October 15, 2025\n' +
+               'Status: ACTIVE\n\n' +
+               'BETWEEN:\n' +
+               '    Rajesh Kumar (Petitioner)\n' +
+               '                    vs.\n' +
+               '    State of Karnataka (Respondent)\n\n' +
+               'Prepared by:\n' +
+               '    ' + advocateName + '\n' +
+               '    B.A. LL.B (Hons.)\n\n' +
+               'Contact Information:\n' +
+               '    Address: Rao & Associates\n' +
+               '             3rd Floor, Justice Complex\n' +
+               '             Brigade Road, Bangalore - 560001\n    \n' +
+               '    Phone: 080-25598745\n' +
+               '    Mobile: 9845012345\n' +
+               '    Email: aditi.rao@raolaw.com\n\n' +
+               'CASE DETAILS:\n' +
+               'This legal proceeding pertains to a criminal \n' +
+               'matter under the jurisdiction of the Magistrate \n' +
+               'Court, Bangalore. The petitioner has been \n' +
+               'wrongfully accused of theft of electronic \n' +
+               'devices from his workplace.\n\n' +
+               '═══════════════════════════════════════════',
+      rightPage: '═══════════════════════════════════════════\n' +
+                'CASE FILE #001 - RIGHT PAGE\n' +
+                '═══════════════════════════════════════════\n\n' +
+                'COURT INFORMATION:\n' +
+                '    Court: Magistrate Court\n' +
+                '    Judge: Hon\'ble Justice Priya Menon\n' +
+                '    Court Hall: 2B\n' +
+                '    Hearing Date: October 20, 2025\n\n' +
+                'CASE SUMMARY:\n' +
+                'The petitioner, Rajesh Kumar, was arrested on \n' +
+                'October 14, 2025, for alleged theft of 50 \n' +
+                'smartphones worth ₹2,50,000 from the \n' +
+                'electronics warehouse where he works as a \n' +
+                'supervisor. The petitioner maintains his \n' +
+                'innocence.\n\n' +
+                'PREVIOUS PROCEEDINGS:\n' +
+                '    Date: October 15, 2025\n' +
+                '    • First appearance in court\n' +
+                '    • Bail application filed\n' +
+                '    • Arguments heard\n' +
+                '    • Bail granted with conditions\n    \n' +
+                '    Date: October 18, 2025\n' +
+                '    • Charges framed\n' +
+                '    • Plea recorded\n' +
+                '    • Case listed for trial\n\n' +
+                'NEXT HEARING:\n' +
+                '    Date: October 20, 2025\n' +
+                '    Time: 10:30 AM\n' +
+                '    Location: Court Hall 2B\n\n' +
+                'STATUS: Active Proceedings\n' +
+                'COUNSEL: ' + advocateName + '\n\n' +
+                '═══════════════════════════════════════════'
     },
     {
       title: 'CASE FILE #002',
       caseNumber: 'RK-2025-002',
-      leftPage: `═══════════════════════════════════════════
-PLEADING MEMORANDUM - LEFT PAGE
-═══════════════════════════════════════════
-
-Reference: Case #RK-2025-002
-Prepared by: ${advocateName}
-Date: October 16, 2025
-
-FACTS OF THE CASE:
-
-1. The petitioner, Rajesh Kumar, is a 32-year-
-   old warehouse supervisor at TechDistributors.
-
-2. On October 13, 2025, he conducted a routine
-   inventory check which revealed 50 missing
-   smartphones valued at ₹2,50,000.
-
-3. Security footage shows him leaving the
-   warehouse at 7:30 PM as per protocol.
-
-4. There is a gap in the security footage
-   from 9:00 PM to 11:00 PM on the same day.
-
-5. Another employee, Ravi, has been acting
-   suspiciously and has significant gambling
-   debts.
-
-6. A second key exists which was held by the
-   manager, Mr. Suresh, who lost it months ago.
-
-═══════════════════════════════════════════`,
-      rightPage: `═══════════════════════════════════════════
-PLEADING MEMORANDUM - RIGHT PAGE
-═══════════════════════════════════════════
-
-RELIEF SOUGHT:
-
-1. Quashment of charges under Section 482 CrPC
-
-2. Declaration of innocence
-
-3. Compensation for wrongful arrest and 
-   detention
-
-4. Directions to the police to conduct a 
-   proper investigation
-
-5. Any other relief deemed fit and proper
-   by the Honourable Court
-
-JURISDICTION:
-This Court has jurisdiction to entertain this 
-petition as per Criminal Procedure Code, 1973.
-
-SUPPORTING DOCUMENTS:
-    • Employment records (Exhibit A)
-    • Security footage (Exhibit B)
-    • Inventory reports (Exhibit C)
-    • Ravi's gambling records (Exhibit D)
-    • Key access logs (Exhibit E)
-
-═══════════════════════════════════════════`
+      leftPage: '═══════════════════════════════════════════\n' +
+               'PLEADING MEMORANDUM - LEFT PAGE\n' +
+               '═══════════════════════════════════════════\n\n' +
+               'Reference: Case #RK-2025-002\n' +
+               'Prepared by: ' + advocateName + '\n' +
+               'Date: October 16, 2025\n\n' +
+               'FACTS OF THE CASE:\n\n' +
+               '1. The petitioner, Rajesh Kumar, is a 32-year-\n' +
+               '   old warehouse supervisor at TechDistributors.\n\n' +
+               '2. On October 13, 2025, he conducted a routine\n' +
+               '   inventory check which revealed 50 missing\n' +
+               '   smartphones valued at ₹2,50,000.\n\n' +
+               '3. Security footage shows him leaving the\n' +
+               '   warehouse at 7:30 PM as per protocol.\n\n' +
+               '4. There is a gap in the security footage\n' +
+               '   from 9:00 PM to 11:00 PM on the same day.\n\n' +
+               '5. Another employee, Ravi, has been acting\n' +
+               '   suspiciously and has significant gambling\n' +
+               '   debts.\n\n' +
+               '6. A second key exists which was held by the\n' +
+               '   manager, Mr. Suresh, who lost it months ago.\n\n' +
+               '═══════════════════════════════════════════',
+      rightPage: '═══════════════════════════════════════════\n' +
+                'PLEADING MEMORANDUM - RIGHT PAGE\n' +
+                '═══════════════════════════════════════════\n\n' +
+                'RELIEF SOUGHT:\n\n' +
+                '1. Quashment of charges under Section 482 CrPC\n\n' +
+                '2. Declaration of innocence\n\n' +
+                '3. Compensation for wrongful arrest and \n' +
+                '   detention\n\n' +
+                '4. Directions to the police to conduct a \n' +
+                '   proper investigation\n\n' +
+                '5. Any other relief deemed fit and proper\n' +
+                '   by the Honourable Court\n\n' +
+                'JURISDICTION:\n' +
+                'This Court has jurisdiction to entertain this \n' +
+                'petition as per Criminal Procedure Code, 1973.\n\n' +
+                'SUPPORTING DOCUMENTS:\n' +
+                '    • Employment records (Exhibit A)\n' +
+                '    • Security footage (Exhibit B)\n' +
+                '    • Inventory reports (Exhibit C)\n' +
+                '    • Ravi\'s gambling records (Exhibit D)\n' +
+                '    • Key access logs (Exhibit E)\n\n' +
+                '═══════════════════════════════════════════'
     },
     {
       title: 'CASE FILE #003',
       caseNumber: 'RK-2025-003',
-      leftPage: `═══════════════════════════════════════════
-AFFIDAVIT - LEFT PAGE
-═══════════════════════════════════════════
-
-IN THE MAGISTRATE COURT
-
-In the matter of: Case #RK-2025-003
-Deponent: Rajesh Kumar
-Date: October 15, 2025
-
-I, Rajesh Kumar, son of Ramesh Kumar, 
-aged 32 years, resident of Flat No. 202, 
-Sai Apartments, Basavanagudi, Bangalore - 
-560004, do hereby solemnly affirm and state 
-as follows:
-
-1. That I am the petitioner in this case and 
-   am competent to make this affidavit.
-
-2. That the facts stated herein are true to my 
-   knowledge and belief and nothing material 
-   has been concealed.
-
-3. That I followed all security protocols at 
-   my workplace and properly locked the 
-   warehouse on October 13, 2025.
-
-4. That I have no motive to steal from my 
-   employer as I have a stable job and family.
-
-═══════════════════════════════════════════`,
-      rightPage: `═══════════════════════════════════════════
-AFFIDAVIT - RIGHT PAGE
-═══════════════════════════════════════════
-
-5. That another employee, Ravi, has been 
-   acting suspiciously and has gambling debts.
-
-6. That my manager, Mr. Suresh, lost a key 
-   months ago but never reported it.
-
-7. That I have been a loyal employee for 5 
-   years with no prior incidents.
-
-DECLARATION:
-I hereby declare that what is stated above is 
-true and correct to the best of my knowledge 
-and belief. I am making this affidavit in 
-support of my petition for justice.
-
-Signed and sworn before me at Bangalore
-this 15th day of October, 2025.
-
-_______________________________
-Signature of Deponent
-(Rajesh Kumar)
-
-_______________________________
-Signature of Notary Public
-Date: October 15, 2025
-
-═══════════════════════════════════════════`
+      leftPage: '═══════════════════════════════════════════\n' +
+               'AFFIDAVIT - LEFT PAGE\n' +
+               '═══════════════════════════════════════════\n\n' +
+               'IN THE MAGISTRATE COURT\n\n' +
+               'In the matter of: Case #RK-2025-003\n' +
+               'Deponent: Rajesh Kumar\n' +
+               'Date: October 15, 2025\n\n' +
+               'I, Rajesh Kumar, son of Ramesh Kumar, \n' +
+               'aged 32 years, resident of Flat No. 202, \n' +
+               'Sai Apartments, Basavanagudi, Bangalore - \n' +
+               '560004, do hereby solemnly affirm and state \n' +
+               'as follows:\n\n' +
+               '1. That I am the petitioner in this case and \n' +
+               '   am competent to make this affidavit.\n\n' +
+               '2. That the facts stated herein are true to my \n' +
+               '   knowledge and belief and nothing material \n' +
+               '   has been concealed.\n\n' +
+               '3. That I followed all security protocols at \n' +
+               '   my workplace and properly locked the \n' +
+               '   warehouse on October 13, 2025.\n\n' +
+               '4. That I have no motive to steal from my \n' +
+               '   employer as I have a stable job and family.\n\n' +
+               '═══════════════════════════════════════════',
+      rightPage: '═══════════════════════════════════════════\n' +
+                'AFFIDAVIT - RIGHT PAGE\n' +
+                '═══════════════════════════════════════════\n\n' +
+                '5. That another employee, Ravi, has been \n' +
+                '   acting suspiciously and has gambling debts.\n\n' +
+                '6. That my manager, Mr. Suresh, lost a key \n' +
+                '   months ago but never reported it.\n\n' +
+                '7. That I have been a loyal employee for 5 \n' +
+                '   years with no prior incidents.\n\n' +
+                'DECLARATION:\n' +
+                'I hereby declare that what is stated above is \n' +
+                'true and correct to the best of my knowledge \n' +
+                'and belief. I am making this affidavit in \n' +
+                'support of my petition for justice.\n\n' +
+                'Signed and sworn before me at Bangalore\n' +
+                'this 15th day of October, 2025.\n\n' +
+                '_______________________________\n' +
+                'Signature of Deponent\n' +
+                '(Rajesh Kumar)\n\n' +
+                '_______________________________\n' +
+                'Signature of Notary Public\n' +
+                'Date: October 15, 2025\n\n' +
+                '═══════════════════════════════════════════'
     },
     {
       title: 'COURT ORDER',
       caseNumber: 'RK-2025-001',
-      leftPage: `═══════════════════════════════════════════
-COURT ORDER - LEFT PAGE
-═══════════════════════════════════════════
-
-IN THE MAGISTRATE COURT
-[Court Address, Bangalore]
-
-Case No.: RK-2025-001
-Date: October 16, 2025
-
-Hon'ble Justice Priya Menon
-Presiding Officer
-
-BETWEEN:
-Rajesh Kumar ........................ Petitioner
-                    and
-State of Karnataka ............. Respondent
-
-ORDER ON BAIL:
-
-Upon hearing both the counsel for petitioner 
-and respondent and perusing the documents on 
-record, the Court hereby passes the following 
-order on the bail application:
-
-1. Bail application is allowed.
-
-2. Petitioner shall execute a personal bond 
-   of ₹50,000/- with one surety.
-
-═══════════════════════════════════════════`,
-      rightPage: `═══════════════════════════════════════════
-COURT ORDER - RIGHT PAGE
-═══════════════════════════════════════════
-
-3. Petitioner shall surrender passport and 
-   report to the nearest police station 
-   weekly.
-
-4. Petitioner shall not leave Bangalore 
-   without prior permission of the Court.
-
-5. Petitioner shall not tamper with evidence 
-   or influence witnesses.
-
-6. Next hearing scheduled for October 20, 
-   2025 at 10:30 AM in Court Hall 2B.
-
-It is so ordered.
-
-                    _______________________________
-                    (Signature)
-                    Hon'ble Justice Priya Menon
-                    
-Date: October 16, 2025
-Seal of Court: _______________
-
-═══════════════════════════════════════════`
+      leftPage: '═══════════════════════════════════════════\n' +
+               'COURT ORDER - LEFT PAGE\n' +
+               '═══════════════════════════════════════════\n\n' +
+               'IN THE MAGISTRATE COURT\n' +
+               '[Court Address, Bangalore]\n\n' +
+               'Case No.: RK-2025-001\n' +
+               'Date: October 16, 2025\n\n' +
+               'Hon\'ble Justice Priya Menon\n' +
+               'Presiding Officer\n\n' +
+               'BETWEEN:\n' +
+               'Rajesh Kumar ........................ Petitioner\n' +
+               '                    and\n' +
+               'State of Karnataka ............. Respondent\n\n' +
+               'ORDER ON BAIL:\n\n' +
+               'Upon hearing both the counsel for petitioner \n' +
+               'and respondent and perusing the documents on \n' +
+               'record, the Court hereby passes the following \n' +
+               'order on the bail application:\n\n' +
+               '1. Bail application is allowed.\n\n' +
+               '2. Petitioner shall execute a personal bond \n' +
+               '   of ₹50,000/- with one surety.\n\n' +
+               '═══════════════════════════════════════════',
+      rightPage: '═══════════════════════════════════════════\n' +
+                'COURT ORDER - RIGHT PAGE\n' +
+                '═══════════════════════════════════════════\n\n' +
+                '3. Petitioner shall surrender passport and \n' +
+                '   report to the nearest police station \n' +
+                '   weekly.\n\n' +
+                '4. Petitioner shall not leave Bangalore \n' +
+                '   without prior permission of the Court.\n\n' +
+                '5. Petitioner shall not tamper with evidence \n' +
+                '   or influence witnesses.\n\n' +
+                '6. Next hearing scheduled for October 20, \n' +
+                '   2025 at 10:30 AM in Court Hall 2B.\n\n' +
+                'It is so ordered.\n\n' +
+                '                    _______________________________\n' +
+                '                    (Signature)\n' +
+                '                    Hon\'ble Justice Priya Menon\n                    \n' +
+                'Date: October 16, 2025\n' +
+                'Seal of Court: _______________\n\n' +
+                '═══════════════════════════════════════════'
     },
     {
       title: 'EVIDENCE SUMMARY',
       caseNumber: 'RK-2025-001',
-      leftPage: `═══════════════════════════════════════════
-EVIDENCE SUMMARY - LEFT PAGE
-═══════════════════════════════════════════
-
-Case File: RK-2025-001
-Prepared by: ${advocateName}
-Date: October 17, 2025
-
-DOCUMENTARY EVIDENCE:
-
-Exhibit A: Employment Records
-    • Appointment letter (2020)
-    • Salary slips (5 years)
-    • Performance reviews (excellent)
-    • No prior disciplinary actions
-
-Exhibit B: Security Footage
-    • Entry/exit logs
-    • Gap in recording (9-11 PM)
-    • No footage of theft
-
-Exhibit C: Inventory Reports
-    • Monthly inventory sheets
-    • Digital records
-    • Discrepancy report
-
-═══════════════════════════════════════════`,
-      rightPage: `═══════════════════════════════════════════
-EVIDENCE SUMMARY - RIGHT PAGE
-═══════════════════════════════════════════
-
-Exhibit D: Ravi's Records
-    • Casino visit records
-    • Gambling debts documentation
-    • Suspicious behavior reports
-
-Exhibit E: Key Access
-    • Key issuance log
-    • Mr. Suresh's lost key report
-    • Security protocols
-
-ORAL EVIDENCE:
-
-Witness Statements:
-    • Mr. Suresh (Manager)
-    • Ravi (Assistant)
-    • Security Guard
-    
-Expert Testimony:
-    • Forensic expert on entry signs
-    • IT expert on security systems
-
-CHAIN OF CUSTODY:
-All exhibits properly maintained and catalogued.
-
-Verified by: ${advocateName}
-Court Seal: _______________
-Date: October 17, 2025
-
-═══════════════════════════════════════════`
+      leftPage: '═══════════════════════════════════════════\n' +
+               'EVIDENCE SUMMARY - LEFT PAGE\n' +
+               '═══════════════════════════════════════════\n\n' +
+               'Case File: RK-2025-001\n' +
+               'Prepared by: ' + advocateName + '\n' +
+               'Date: October 17, 2025\n\n' +
+               'DOCUMENTARY EVIDENCE:\n\n' +
+               'Exhibit A: Employment Records\n' +
+               '    • Appointment letter (2020)\n' +
+               '    • Salary slips (5 years)\n' +
+               '    • Performance reviews (excellent)\n' +
+               '    • No prior disciplinary actions\n\n' +
+               'Exhibit B: Security Footage\n' +
+               '    • Entry/exit logs\n' +
+               '    • Gap in recording (9-11 PM)\n' +
+               '    • No footage of theft\n\n' +
+               'Exhibit C: Inventory Reports\n' +
+               '    • Monthly inventory sheets\n' +
+               '    • Digital records\n' +
+               '    • Discrepancy report\n\n' +
+               '═══════════════════════════════════════════',
+      rightPage: '═══════════════════════════════════════════\n' +
+                'EVIDENCE SUMMARY - RIGHT PAGE\n' +
+                '═══════════════════════════════════════════\n\n' +
+                'Exhibit D: Ravi\'s Records\n' +
+                '    • Casino visit records\n' +
+                '    • Gambling debts documentation\n' +
+                '    • Suspicious behavior reports\n\n' +
+                'Exhibit E: Key Access\n' +
+                '    • Key issuance log\n' +
+                '    • Mr. Suresh\'s lost key report\n' +
+                '    • Security protocols\n\n' +
+                'ORAL EVIDENCE:\n\n' +
+                'Witness Statements:\n' +
+                '    • Mr. Suresh (Manager)\n' +
+                '    • Ravi (Assistant)\n' +
+                '    • Security Guard\n    \n' +
+                'Expert Testimony:\n' +
+                '    • Forensic expert on entry signs\n' +
+                '    • IT expert on security systems\n\n' +
+                'CHAIN OF CUSTODY:\n' +
+                'All exhibits properly maintained and catalogued.\n\n' +
+                'Verified by: ' + advocateName + '\n' +
+                'Court Seal: _______________\n' +
+                'Date: October 17, 2025\n\n' +
+                '═══════════════════════════════════════════'
     },
     {
       title: 'CASE ANALYSIS',
       caseNumber: 'RK-2025-001',
-      leftPage: `═══════════════════════════════════════════
-LEGAL ANALYSIS - LEFT PAGE
-═══════════════════════════════════════════
-
-CASE ANALYSIS:
-RK-2025-001 - Wrongful Accusation
-
-I. LEGAL ISSUES:
-1. Circumstantial evidence
-2. Burden of proof
-3. Right to reputation
-4. Applicable legal provisions
-
-II. APPLICABLE LAW:
-1. Indian Penal Code, 1860
-   • Sections 26, 35, 39, 40
-2. Criminal Procedure Code, 1973
-   • Sections 438, 482, 437
-3. Indian Evidence Act, 1872
-   • Sections 3, 8, 10, 13
-
-III. PRECEDENTS:
-1. State of U.P. v. Ravindra Prakash, 
-   AIR 1992 SC 722
-   - Circumstantial evidence requirements
-2. Sharad Birdhichand Sarda v. State of 
-   Maharashtra, AIR 1984 SC 1673
-   - Golden thread of circumstantial evidence
-
-═══════════════════════════════════════════`,
-      rightPage: `═══════════════════════════════════════════
-LEGAL ANALYSIS - RIGHT PAGE
-═══════════════════════════════════════════
-
-IV. STRENGTHS OF CASE:
-1. Clean record of petitioner
-2. Security footage gaps
-3. Alternative suspect with motive
-4. Manager's negligence
-5. Proper procedures followed
-
-V. WEAKNESSES OF CASE:
-1. Petitioner was last seen
-2. Missing inventory substantial
-3. Possibility of circumstantial evidence
-4. Need to prove alternative theory
-
-VI. STRATEGY:
-1. Highlight security gaps
-2. Present alternative suspect
-3. Show manager's negligence
-4. Emphasize clean record
-5. File for charge quashing
-
-VII. TIMELINE:
-1. Next hearing: October 20, 2025
-2. Evidence recording: To be scheduled
-3. Final arguments: To be scheduled
-
-═══════════════════════════════════════════`
+      leftPage: '═══════════════════════════════════════════\n' +
+               'LEGAL ANALYSIS - LEFT PAGE\n' +
+               '═══════════════════════════════════════════\n\n' +
+               'CASE ANALYSIS:\n' +
+               'RK-2025-001 - Wrongful Accusation\n\n' +
+               'I. LEGAL ISSUES:\n' +
+               '1. Circumstantial evidence\n' +
+               '2. Burden of proof\n' +
+               '3. Right to reputation\n' +
+               '4. Applicable legal provisions\n\n' +
+               'II. APPLICABLE LAW:\n' +
+               '1. Indian Penal Code, 1860\n' +
+               '   • Sections 26, 35, 39, 40\n' +
+               '2. Criminal Procedure Code, 1973\n' +
+               '   • Sections 438, 482, 437\n' +
+               '3. Indian Evidence Act, 1872\n' +
+               '   • Sections 3, 8, 10, 13\n\n' +
+               'III. PRECEDENTS:\n' +
+               '1. State of U.P. v. Ravindra Prakash, \n' +
+               '   AIR 1992 SC 722\n' +
+               '   - Circumstantial evidence requirements\n' +
+               '2. Sharad Birdhichand Sarda v. State of \n' +
+               '   Maharashtra, AIR 1984 SC 1673\n' +
+               '   - Golden thread of circumstantial evidence\n\n' +
+               '═══════════════════════════════════════════',
+      rightPage: '═══════════════════════════════════════════\n' +
+                'LEGAL ANALYSIS - RIGHT PAGE\n' +
+                '═══════════════════════════════════════════\n\n' +
+                'IV. STRENGTHS OF CASE:\n' +
+                '1. Clean record of petitioner\n' +
+                '2. Security footage gaps\n' +
+                '3. Alternative suspect with motive\n' +
+                '4. Manager\'s negligence\n' +
+                '5. Proper procedures followed\n\n' +
+                'V. WEAKNESSES OF CASE:\n' +
+                '1. Petitioner was last seen\n' +
+                '2. Missing inventory substantial\n' +
+                '3. Possibility of circumstantial evidence\n' +
+                '4. Need to prove alternative theory\n\n' +
+                'VI. STRATEGY:\n' +
+                '1. Highlight security gaps\n' +
+                '2. Present alternative suspect\n' +
+                '3. Show manager\'s negligence\n' +
+                '4. Emphasize clean record\n' +
+                '5. File for charge quashing\n\n' +
+                'VII. TIMELINE:\n' +
+                '1. Next hearing: October 20, 2025\n' +
+                '2. Evidence recording: To be scheduled\n' +
+                '3. Final arguments: To be scheduled\n\n' +
+                '═══════════════════════════════════════════'
     },
     {
       title: 'PREPARED BY',
       caseNumber: 'RK-2025-001',
-      leftPage: `═══════════════════════════════════════════
-ATTORNEY PROFILE - LEFT PAGE
-═══════════════════════════════════════════
-
-LEGAL COUNSEL:
-${advocateName}
-
-EDUCATION:
-• Bachelor of Arts (B.A.)
-• Bachelor of Laws (LL.B) Honors
-• Bar Council of Karnataka enrollment
-
-PROFESSIONAL QUALIFICATIONS:
-• Enrolled with Bar Council of Karnataka
-• Practicing since 2018
-• Specialization in Criminal Defense
-• Certified Legal Researcher
-
-PRACTICE AREAS:
-• Criminal Law
-• Constitutional Law
-• Cyber Crime
-• White Collar Crime
-• Human Rights Law
-
-BAR ASSOCIATION MEMBERSHIPS:
-• Karnataka State Bar Council
-• Bangalore District Bar Association
-• Indian Bar Association
-
-═══════════════════════════════════════════`,
-      rightPage: `═══════════════════════════════════════════
-ATTORNEY PROFILE - RIGHT PAGE
-═══════════════════════════════════════════
-
-CONTACT INFORMATION:
-Office Address:
-Rao & Associates
-3rd Floor, Justice Complex
-Brigade Road, Bangalore - 560001
-
-Phone: 080-25598745
-Mobile: 9845012345
-Email: aditi.rao@raolaw.com
-
-OFFICE HOURS:
-Monday to Friday: 9:30 AM - 6:30 PM
-Saturday: 9:30 AM - 1:30 PM
-Emergency Contact: Available on request
-
-CASE HANDLING CAPACITY:
-• Maximum 20 active cases at a time
-• Priority given to criminal defense
-• Emergency matters handled promptly
-• Pro bono work for deserving cases
-
-FEES STRUCTURE:
-• Consultation: Rs. 1,500/- per hour
-• Appearance: Rs. 7,500/- per hearing
-• Drafting: Rs. 3,000/- per document
-• Retainership: Rs. 35,000/- per month
-
-═══════════════════════════════════════════
-END OF CASE FILE
-═══════════════════════════════════════════`
+      leftPage: '═══════════════════════════════════════════\n' +
+               'ATTORNEY PROFILE - LEFT PAGE\n' +
+               '═══════════════════════════════════════════\n\n' +
+               'LEGAL COUNSEL:\n' +
+               advocateName + '\n\n' +
+               'EDUCATION:\n' +
+               '• Bachelor of Arts (B.A.)\n' +
+               '• Bachelor of Laws (LL.B) Honors\n' +
+               '• Bar Council of Karnataka enrollment\n\n' +
+               'PROFESSIONAL QUALIFICATIONS:\n' +
+               '• Enrolled with Bar Council of Karnataka\n' +
+               '• Practicing since 2018\n' +
+               '• Specialization in Criminal Defense\n' +
+               '• Certified Legal Researcher\n\n' +
+               'PRACTICE AREAS:\n' +
+               '• Criminal Law\n' +
+               '• Constitutional Law\n' +
+               '• Cyber Crime\n' +
+               '• White Collar Crime\n' +
+               '• Human Rights Law\n\n' +
+               'BAR ASSOCIATION MEMBERSHIPS:\n' +
+               '• Karnataka State Bar Council\n' +
+               '• Bangalore District Bar Association\n' +
+               '• Indian Bar Association\n\n' +
+               '═══════════════════════════════════════════',
+      rightPage: '═══════════════════════════════════════════\n' +
+                'ATTORNEY PROFILE - RIGHT PAGE\n' +
+                '═══════════════════════════════════════════\n\n' +
+                'CONTACT INFORMATION:\n' +
+                'Office Address:\n' +
+                'Rao & Associates\n' +
+                '3rd Floor, Justice Complex\n' +
+                'Brigade Road, Bangalore - 560001\n\n' +
+                'Phone: 080-25598745\n' +
+                'Mobile: 9845012345\n' +
+                'Email: aditi.rao@raolaw.com\n\n' +
+                'OFFICE HOURS:\n' +
+                'Monday to Friday: 9:30 AM - 6:30 PM\n' +
+                'Saturday: 9:30 AM - 1:30 PM\n' +
+                'Emergency Contact: Available on request\n\n' +
+                'CASE HANDLING CAPACITY:\n' +
+                '• Maximum 20 active cases at a time\n' +
+                '• Priority given to criminal defense\n' +
+                '• Emergency matters handled promptly\n' +
+                '• Pro bono work for deserving cases\n\n' +
+                'FEES STRUCTURE:\n' +
+                '• Consultation: Rs. 1,500/- per hour\n' +
+                '• Appearance: Rs. 7,500/- per hearing\n' +
+                '• Drafting: Rs. 3,000/- per document\n' +
+                '• Retainership: Rs. 35,000/- per month\n\n' +
+                '═══════════════════════════════════════════\n' +
+                'END OF CASE FILE\n' +
+                '═══════════════════════════════════════════'
     },
     // Additional pages to increase suspense and detail
     {
       title: 'CONFIDENTIAL INVESTIGATION REPORT',
       caseNumber: 'RK-2025-004',
-      leftPage: `═══════════════════════════════════════════
-CONFIDENTIAL INVESTIGATION REPORT - LEFT PAGE
-═══════════════════════════════════════════
-
-FILE: CONFIDENTIAL - RK-2025-004
-DATE: October 18, 2025
-PREPARED BY: ${advocateName}
-SECURITY LEVEL: HIGHLY CONFIDENTIAL
-
-SUBJECT: UNAUTHORIZED ACCESS TO WAREHOUSE
-
-1. Background Investigation:
-   • Security logs show unusual activity
-   • Multiple unauthorized entries detected
-   • Pattern suggests inside knowledge of 
-     security protocols
-
-2. Personnel Analysis:
-   • Rajesh Kumar - Clean record
-   • Ravi Prasad - Financial difficulties
-   • Mr. Suresh - Manager, lost key reported
-
-3. Financial Records:
-   • Ravi's bank statements show large 
-     unexplained deposits
-   • Casino records indicate significant losses
-   • Recent pawn shop transactions
-
-═══════════════════════════════════════════
-[CONTINUED ON NEXT PAGE]
-═══════════════════════════════════════════`,
-      rightPage: `═══════════════════════════════════════════
-CONFIDENTIAL INVESTIGATION REPORT - RIGHT PAGE
-═══════════════════════════════════════════
-
-4. Physical Evidence:
-   • Fingerprints on inventory sheets
-   • Unusual wear patterns on security door
-   • Missing surveillance footage during 
-     critical hours
-
-5. Witness Statements:
-   • Security guard reported seeing shadows
-   • Night cleaner heard unusual sounds
-   • Delivery personnel noticed strange 
-     activity
-
-6. Analysis:
-   • Theft occurred during security gap
-   • Perpetrator had inside knowledge
-   • Motive: Financial desperation
-   • Opportunity: Lost key access
-
-7. Recommendations:
-   • Further investigation of Ravi Prasad
-   • Examination of pawn shop records
-   • Review of all security protocols
-
-WARNING: This document contains sensitive 
-information. Unauthorized disclosure may 
-result in legal action.
-
-═══════════════════════════════════════════
-[END OF REPORT]
-═══════════════════════════════════════════`
+      leftPage: '═══════════════════════════════════════════\n' +
+               'CONFIDENTIAL INVESTIGATION REPORT - LEFT PAGE\n' +
+               '═══════════════════════════════════════════\n\n' +
+               'FILE: CONFIDENTIAL - RK-2025-004\n' +
+               'DATE: October 18, 2025\n' +
+               'PREPARED BY: ' + advocateName + '\n' +
+               'SECURITY LEVEL: HIGHLY CONFIDENTIAL\n\n' +
+               'SUBJECT: UNAUTHORIZED ACCESS TO WAREHOUSE\n\n' +
+               '1. Background Investigation:\n' +
+               '   • Security logs show unusual activity\n' +
+               '   • Multiple unauthorized entries detected\n' +
+               '   • Pattern suggests inside knowledge of \n' +
+               '     security protocols\n\n' +
+               '2. Personnel Analysis:\n' +
+               '   • Rajesh Kumar - Clean record\n' +
+               '   • Ravi Prasad - Financial difficulties\n' +
+               '   • Mr. Suresh - Manager, lost key reported\n\n' +
+               '3. Financial Records:\n' +
+               '   • Ravi\'s bank statements show large \n' +
+               '     unexplained deposits\n' +
+               '   • Casino records indicate significant losses\n' +
+               '   • Recent pawn shop transactions\n\n' +
+               '═══════════════════════════════════════════\n' +
+               '[CONTINUED ON NEXT PAGE]\n' +
+               '═══════════════════════════════════════════',
+      rightPage: '═══════════════════════════════════════════\n' +
+                'CONFIDENTIAL INVESTIGATION REPORT - RIGHT PAGE\n' +
+                '═══════════════════════════════════════════\n\n' +
+                '4. Physical Evidence:\n' +
+                '   • Fingerprints on inventory sheets\n' +
+                '   • Unusual wear patterns on security door\n' +
+                '   • Missing surveillance footage during \n' +
+                '     critical hours\n\n' +
+                '5. Witness Statements:\n' +
+                '   • Security guard reported seeing shadows\n' +
+                '   • Night cleaner heard unusual sounds\n' +
+                '   • Delivery personnel noticed strange \n' +
+                '     activity\n\n' +
+                '6. Analysis:\n' +
+                '   • Theft occurred during security gap\n' +
+                '   • Perpetrator had inside knowledge\n' +
+                '   • Motive: Financial desperation\n' +
+                '   • Opportunity: Lost key access\n\n' +
+                '7. Recommendations:\n' +
+                '   • Further investigation of Ravi Prasad\n' +
+                '   • Examination of pawn shop records\n' +
+                '   • Review of all security protocols\n\n' +
+                'WARNING: This document contains sensitive \n' +
+                'information. Unauthorized disclosure may \n' +
+                'result in legal action.\n\n' +
+                '═══════════════════════════════════════════\n' +
+                '[END OF REPORT]\n' +
+                '═══════════════════════════════════════════'
     },
     {
       title: 'WITNESS STATEMENT',
       caseNumber: 'RK-2025-005',
-      leftPage: `═══════════════════════════════════════════
-WITNESS STATEMENT - LEFT PAGE
-═══════════════════════════════════════════
-
-STATEMENT OF: Mr. Suresh Kumar
-OCCUPATION: Warehouse Manager
-DATE RECORDED: October 19, 2025
-RECORDED BY: ${advocateName}
-
-EXAMINATION:
-
-Q: When did you first notice the missing key?
-A: Approximately 3 months ago, in July 2025.
-
-Q: Did you report this incident?
-A: No, I thought I had misplaced it myself.
-
-Q: Can you describe the key?
-A: It was a standard brass key, labeled 
-   with 'WAREHOUSE-A' engraving.
-
-Q: Who else had access to this key?
-A: Only myself and Rajesh, the supervisor.
-
-Q: Did you ever mention this to Rajesh?
-A: No, I was embarrassed about losing it.
-
-═══════════════════════════════════════════
-[CONTINUED ON NEXT PAGE]
-═══════════════════════════════════════════`,
-      rightPage: `═══════════════════════════════════════════
-WITNESS STATEMENT - RIGHT PAGE
-═══════════════════════════════════════════
-
-Q: When did you realize the key was truly 
-   missing?
-A: After Rajesh was arrested. I checked 
-   my keychain and realized it was gone.
-
-Q: Do you suspect anyone else had access?
-A: Possibly Ravi. He was always curious 
-   about security procedures.
-
-Q: Have you seen Ravi with any unusual items?
-A: Yes, he had a new smartphone recently, 
-   despite his salary.
-
-Q: Any other relevant information?
-A: Ravi has been acting nervous lately and 
-   often stays late without explanation.
-
-ADDITIONAL NOTES:
-• Witness appeared cooperative but nervous
-• Admission of negligence regarding key
-• Possible alternative suspect identified
-• Financial motive for alternative suspect
-
-STATEMENT SIGNED:
-_______________________________
-Mr. Suresh Kumar
-Date: October 19, 2025
-
-═══════════════════════════════════════════`
+      leftPage: '═══════════════════════════════════════════\n' +
+               'WITNESS STATEMENT - LEFT PAGE\n' +
+               '═══════════════════════════════════════════\n\n' +
+               'STATEMENT OF: Mr. Suresh Kumar\n' +
+               'OCCUPATION: Warehouse Manager\n' +
+               'DATE RECORDED: October 19, 2025\n' +
+               'RECORDED BY: ' + advocateName + '\n\n' +
+               'EXAMINATION:\n\n' +
+               'Q: When did you first notice the missing key?\n' +
+               'A: Approximately 3 months ago, in July 2025.\n\n' +
+               'Q: Did you report this incident?\n' +
+               'A: No, I thought I had misplaced it myself.\n\n' +
+               'Q: Can you describe the key?\n' +
+               'A: It was a standard brass key, labeled \n' +
+               '   with \'WAREHOUSE-A\' engraving.\n\n' +
+               'Q: Who else had access to this key?\n' +
+               'A: Only myself and Rajesh, the supervisor.\n\n' +
+               'Q: Did you ever mention this to Rajesh?\n' +
+               'A: No, I was embarrassed about losing it.\n\n' +
+               '═══════════════════════════════════════════\n' +
+               '[CONTINUED ON NEXT PAGE]\n' +
+               '═══════════════════════════════════════════',
+      rightPage: '═══════════════════════════════════════════\n' +
+                'WITNESS STATEMENT - RIGHT PAGE\n' +
+                '═══════════════════════════════════════════\n\n' +
+                'Q: When did you realize the key was truly \n' +
+                '   missing?\n' +
+                'A: After Rajesh was arrested. I checked \n' +
+                '   my keychain and realized it was gone.\n\n' +
+                'Q: Do you suspect anyone else had access?\n' +
+                'A: Possibly Ravi. He was always curious \n' +
+                '   about security procedures.\n\n' +
+                'Q: Have you seen Ravi with any unusual items?\n' +
+                'A: Yes, he had a new smartphone recently, \n' +
+                '   despite his salary.\n\n' +
+                'Q: Any other relevant information?\n' +
+                'A: Ravi has been acting nervous lately and \n' +
+                '   often stays late without explanation.\n\n' +
+                'ADDITIONAL NOTES:\n' +
+                '• Witness appeared cooperative but nervous\n' +
+                '• Admission of negligence regarding key\n' +
+                '• Possible alternative suspect identified\n' +
+                '• Financial motive for alternative suspect\n\n' +
+                'STATEMENT SIGNED:\n' +
+                '_______________________________\n' +
+                'Mr. Suresh Kumar\n' +
+                'Date: October 19, 2025\n\n' +
+                '═══════════════════════════════════════════'
     },
     {
       title: 'SURVEILLANCE ANALYSIS',
       caseNumber: 'RK-2025-006',
-      leftPage: `═══════════════════════════════════════════
-SURVEILLANCE ANALYSIS - LEFT PAGE
-═══════════════════════════════════════════
-
-CASE: RK-2025-001
-DATE: October 19, 2025
-ANALYST: Forensic IT Expert
-REFERENCE: Security Footage Review
-
-FINDINGS:
-
-1. CAMERA COVERAGE:
-   • Main entrance: Fully functional
-   • Side entrance: Functional
-   • Rear entrance: System failure
-   • Internal cameras: Partial coverage
-
-2. TIME GAP ANALYSIS:
-   • October 13, 2025
-   • 7:30 PM: Rajesh exits (recorded)
-   • 8:00 PM - 9:00 PM: Normal activity
-   • 9:00 PM - 11:00 PM: System failure
-   • 11:00 PM onwards: Functional
-
-3. SYSTEM LOGS:
-   • Manual override detected at 8:45 PM
-   • Unknown access code used
-   • No trace of authorized personnel
-
-═══════════════════════════════════════════
-[CONTINUED ON NEXT PAGE]
-═══════════════════════════════════════════`,
-      rightPage: `═══════════════════════════════════════════
-SURVEILLANCE ANALYSIS - RIGHT PAGE
-═══════════════════════════════════════════
-
-4. SUSPICIOUS ACTIVITY:
-   • Unusual network traffic at 8:47 PM
-   • Multiple login attempts detected
-   • Access to security system controls
-
-5. PERSONNEL ACCESS:
-   • Rajesh Kumar: Standard access
-   • Ravi Prasad: Limited access
-   • Mr. Suresh: Administrative access
-
-6. TECHNICAL ANOMALIES:
-   • System failure not accidental
-   • Deliberate disruption of recording
-   • Evidence suggests inside knowledge
-
-7. CONCLUSIONS:
-   • Theft occurred during system failure
-   • Perpetrator had technical knowledge
-   • Security override was intentional
-   • Rajesh Kumar not responsible
-
-RECOMMENDATIONS:
-• Investigate Ravi Prasad's IT skills
-• Examine system logs for additional clues
-• Review all personnel with admin access
-
-═══════════════════════════════════════════`
+      leftPage: '═══════════════════════════════════════════\n' +
+               'SURVEILLANCE ANALYSIS - LEFT PAGE\n' +
+               '═══════════════════════════════════════════\n\n' +
+               'CASE: RK-2025-001\n' +
+               'DATE: October 19, 2025\n' +
+               'ANALYST: Forensic IT Expert\n' +
+               'REFERENCE: Security Footage Review\n\n' +
+               'FINDINGS:\n\n' +
+               '1. CAMERA COVERAGE:\n' +
+               '   • Main entrance: Fully functional\n' +
+               '   • Side entrance: Functional\n' +
+               '   • Rear entrance: System failure\n' +
+               '   • Internal cameras: Partial coverage\n\n' +
+               '2. TIME GAP ANALYSIS:\n' +
+               '   • October 13, 2025\n' +
+               '   • 7:30 PM: Rajesh exits (recorded)\n' +
+               '   • 8:00 PM - 9:00 PM: Normal activity\n' +
+               '   • 9:00 PM - 11:00 PM: System failure\n' +
+               '   • 11:00 PM onwards: Functional\n\n' +
+               '3. SYSTEM LOGS:\n' +
+               '   • Manual override detected at 8:45 PM\n' +
+               '   • Unknown access code used\n' +
+               '   • No trace of authorized personnel\n\n' +
+               '═══════════════════════════════════════════\n' +
+               '[CONTINUED ON NEXT PAGE]\n' +
+               '═══════════════════════════════════════════',
+      rightPage: '═══════════════════════════════════════════\n' +
+                'SURVEILLANCE ANALYSIS - RIGHT PAGE\n' +
+                '═══════════════════════════════════════════\n\n' +
+                '4. SUSPICIOUS ACTIVITY:\n' +
+                '   • Unusual network traffic at 8:47 PM\n' +
+                '   • Multiple login attempts detected\n' +
+                '   • Access to security system controls\n\n' +
+                '5. PERSONNEL ACCESS:\n' +
+                '   • Rajesh Kumar: Standard access\n' +
+                '   • Ravi Prasad: Limited access\n' +
+                '   • Mr. Suresh: Administrative access\n\n' +
+                '6. TECHNICAL ANOMALIES:\n' +
+                '   • System failure not accidental\n' +
+                '   • Deliberate disruption of recording\n' +
+                '   • Evidence suggests inside knowledge\n\n' +
+                '7. CONCLUSIONS:\n' +
+                '   • Theft occurred during system failure\n' +
+                '   • Perpetrator had technical knowledge\n' +
+                '   • Security override was intentional\n' +
+                '   • Rajesh Kumar not responsible\n\n' +
+                'RECOMMENDATIONS:\n' +
+                '• Investigate Ravi Prasad\'s IT skills\n' +
+                '• Examine system logs for additional clues\n' +
+                '• Review all personnel with admin access\n\n' +
+                '═══════════════════════════════════════════'
     },
     {
       title: 'FINANCIAL INVESTIGATION',
       caseNumber: 'RK-2025-007',
-      leftPage: `═══════════════════════════════════════════
-FINANCIAL INVESTIGATION - LEFT PAGE
-═══════════════════════════════════════════
-
-CASE: RK-2025-001
-DATE: October 19, 2025
-INVESTIGATOR: Financial Crimes Unit
-REFERENCE: Ravi Prasad Financial Records
-
-FINDINGS:
-
-1. BANK ACCOUNTS:
-   • Savings account: TechDistributors Credit Union
-   • Checking account: State Bank of India
-   • Credit card: HDFC Platinum
-
-2. RECENT TRANSACTIONS:
-   • October 14, 2025: Deposit of ₹2,00,000
-   • October 15, 2025: Purchase electronics store
-   • October 16, 2025: Cash withdrawal ₹50,000
-   • October 17, 2025: Online gambling site
-
-3. INCOME SOURCES:
-   • Salary: ₹25,000/month
-   • Overtime: ₹5,000/month (average)
-   • Other: No declared additional income
-
-═══════════════════════════════════════════
-[CONTINUED ON NEXT PAGE]
-═══════════════════════════════════════════`,
-      rightPage: `═══════════════════════════════════════════
-FINANCIAL INVESTIGATION - RIGHT PAGE
-═══════════════════════════════════════════
-
-4. DISCREPANCIES:
-   • Deposit of ₹2,00,000 inconsistent with income
-   • Electronics purchase without financing
-   • Large cash withdrawals with no explanation
-   • Gambling transactions during investigation
-
-5. ASSETS:
-   • New smartphone (model matching stolen)
-   • Luxury watch purchased October 15
-   • Recent car loan payment reduction
-
-6. DEBTS:
-   • Casino debts: ₹3,50,000
-   • Credit card: ₹75,000
-   • Personal loans: ₹1,25,000
-
-7. ANALYSIS:
-   • Financial motive clearly established
-   • Timeline matches theft incident
-   • Assets acquired with stolen funds
-   • Attempts to launder money through gambling
-
-RECOMMENDATIONS:
-• Freeze Ravi Prasad's accounts
-• Seize recently acquired assets
-• Interview regarding source of funds
-• Coordinate with cyber crimes division
-
-═══════════════════════════════════════════`
+      leftPage: '═══════════════════════════════════════════\n' +
+               'FINANCIAL INVESTIGATION - LEFT PAGE\n' +
+               '═══════════════════════════════════════════\n\n' +
+               'CASE: RK-2025-001\n' +
+               'DATE: October 19, 2025\n' +
+               'INVESTIGATOR: Financial Crimes Unit\n' +
+               'REFERENCE: Ravi Prasad Financial Records\n\n' +
+               'FINDINGS:\n\n' +
+               '1. BANK ACCOUNTS:\n' +
+               '   • Savings account: TechDistributors Credit Union\n' +
+               '   • Checking account: State Bank of India\n' +
+               '   • Credit card: HDFC Platinum\n\n' +
+               '2. RECENT TRANSACTIONS:\n' +
+               '   • October 14, 2025: Deposit of ₹2,00,000\n' +
+               '   • October 15, 2025: Purchase electronics store\n' +
+               '   • October 16, 2025: Cash withdrawal ₹50,000\n' +
+               '   • October 17, 2025: Online gambling site\n\n' +
+               '3. INCOME SOURCES:\n' +
+               '   • Salary: ₹25,000/month\n' +
+               '   • Overtime: ₹5,000/month (average)\n' +
+               '   • Other: No declared additional income\n\n' +
+               '═══════════════════════════════════════════\n' +
+               '[CONTINUED ON NEXT PAGE]\n' +
+               '═══════════════════════════════════════════',
+      rightPage: '═══════════════════════════════════════════\n' +
+                'FINANCIAL INVESTIGATION - RIGHT PAGE\n' +
+                '═══════════════════════════════════════════\n\n' +
+                '4. DISCREPANCIES:\n' +
+                '   • Deposit of ₹2,00,000 inconsistent with income\n' +
+                '   • Electronics purchase without financing\n' +
+                '   • Large cash withdrawals with no explanation\n' +
+                '   • Gambling transactions during investigation\n\n' +
+                '5. ASSETS:\n' +
+                '   • New smartphone (model matching stolen)\n' +
+                '   • Luxury watch purchased October 15\n' +
+                '   • Recent car loan payment reduction\n\n' +
+                '6. DEBTS:\n' +
+                '   • Casino debts: ₹3,50,000\n' +
+                '   • Credit card: ₹75,000\n' +
+                '   • Personal loans: ₹1,25,000\n\n' +
+                '7. ANALYSIS:\n' +
+                '   • Financial motive clearly established\n' +
+                '   • Timeline matches theft incident\n' +
+                '   • Assets acquired with stolen funds\n' +
+                '   • Attempts to launder money through gambling\n\n' +
+                'RECOMMENDATIONS:\n' +
+                '• Freeze Ravi Prasad\'s accounts\n' +
+                '• Seize recently acquired assets\n' +
+                '• Interview regarding source of funds\n' +
+                '• Coordinate with cyber crimes division\n\n' +
+                '═══════════════════════════════════════════'
     },
     {
       title: 'FORENSIC EVIDENCE',
       caseNumber: 'RK-2025-008',
-      leftPage: `═══════════════════════════════════════════
-FORENSIC EVIDENCE REPORT - LEFT PAGE
-═══════════════════════════════════════════
-
-CASE: RK-2025-001
-DATE: October 20, 2025
-LAB: Karnataka State Forensic Science Laboratory
-REFERENCE: Physical Evidence Analysis
-
-FINDINGS:
-
-1. FINGERPRINT ANALYSIS:
-   • Warehouse door handle: 3 sets
-   • Inventory sheets: 2 sets
-   • Security panel: 1 set
-
-2. MATCHING RESULTS:
-   • Set 1: Rajesh Kumar (Petitioner)
-   • Set 2: Ravi Prasad (Employee)
-   • Set 3: Unknown (No match in database)
-
-3. DNA EVIDENCE:
-   • Hair samples from security room
-   • Fiber analysis from warehouse floor
-   • Skin cells under security panel
-
-═══════════════════════════════════════════
-[CONTINUED ON NEXT PAGE]
-═══════════════════════════════════════════`,
-      rightPage: `═══════════════════════════════════════════
-FORENSIC EVIDENCE REPORT - RIGHT PAGE
-═══════════════════════════════════════════
-
-4. DIGITAL FORENSICS:
-   • Ravi's computer: Deleted files recovered
-   • Security logs: Tampering evidence
-   • Phone records: Location data during theft
-
-5. DOCUMENT EXAMINATION:
-   • Signatures on inventory sheets
-   • Handwriting analysis of notes
-   • Paper analysis of anonymous letters
-
-6. CONCLUSIONS:
-   • Ravi Prasad's fingerprints at scene
-   • DNA evidence links to Ravi
-   • Digital evidence of system tampering
-   • Petitioner's innocence confirmed
-
-7. RECOMMENDATIONS:
-   • Arrest Ravi Prasad on additional charges
-   • Recover stolen merchandise
-   • File charges for evidence tampering
-   • Recommend case dismissal for petitioner
-
-LABORATORY SEAL: _______________
-REPORT APPROVED BY: Dr. A. Ramanathan
-FORENSIC EXPERT
-
-═══════════════════════════════════════════`
+      leftPage: '═══════════════════════════════════════════\n' +
+               'FORENSIC EVIDENCE REPORT - LEFT PAGE\n' +
+               '═══════════════════════════════════════════\n\n' +
+               'CASE: RK-2025-001\n' +
+               'DATE: October 20, 2025\n' +
+               'LAB: Karnataka State Forensic Science Laboratory\n' +
+               'REFERENCE: Physical Evidence Analysis\n\n' +
+               'FINDINGS:\n\n' +
+               '1. FINGERPRINT ANALYSIS:\n' +
+               '   • Warehouse door handle: 3 sets\n' +
+               '   • Inventory sheets: 2 sets\n' +
+               '   • Security panel: 1 set\n\n' +
+               '2. MATCHING RESULTS:\n' +
+               '   • Set 1: Rajesh Kumar (Petitioner)\n' +
+               '   • Set 2: Ravi Prasad (Employee)\n' +
+               '   • Set 3: Unknown (No match in database)\n\n' +
+               '3. DNA EVIDENCE:\n' +
+               '   • Hair samples from security room\n' +
+               '   • Fiber analysis from warehouse floor\n' +
+               '   • Skin cells under security panel\n\n' +
+               '═══════════════════════════════════════════\n' +
+               '[CONTINUED ON NEXT PAGE]\n' +
+               '═══════════════════════════════════════════',
+      rightPage: '═══════════════════════════════════════════\n' +
+                'FORENSIC EVIDENCE REPORT - RIGHT PAGE\n' +
+                '═══════════════════════════════════════════\n\n' +
+                '4. DIGITAL FORENSICS:\n' +
+                '   • Ravi\'s computer: Deleted files recovered\n' +
+                '   • Security logs: Tampering evidence\n' +
+                '   • Phone records: Location data during theft\n\n' +
+                '5. DOCUMENT EXAMINATION:\n' +
+                '   • Signatures on inventory sheets\n' +
+                '   • Handwriting analysis of notes\n' +
+                '   • Paper analysis of anonymous letters\n\n' +
+                '6. CONCLUSIONS:\n' +
+                '   • Ravi Prasad\'s fingerprints at scene\n' +
+                '   • DNA evidence links to Ravi\n' +
+                '   • Digital evidence of system tampering\n' +
+                '   • Petitioner\'s innocence confirmed\n\n' +
+                '7. RECOMMENDATIONS:\n' +
+                '   • Arrest Ravi Prasad on additional charges\n' +
+                '   • Recover stolen merchandise\n' +
+                '   • File charges for evidence tampering\n' +
+                '   • Recommend case dismissal for petitioner\n\n' +
+                'LABORATORY SEAL: _______________\n' +
+                'REPORT APPROVED BY: Dr. A. Ramanathan\n' +
+                'FORENSIC EXPERT\n\n' +
+                '═══════════════════════════════════════════'
     },
     {
       title: 'CASE STRATEGY',
       caseNumber: 'RK-2025-009',
-      leftPage: `═══════════════════════════════════════════
-CASE STRATEGY DOCUMENT - LEFT PAGE
-═══════════════════════════════════════════
-
-CASE: RK-2025-001
-DATE: October 20, 2025
-PREPARED BY: ${advocateName}
-STRATEGIC PLANNING DOCUMENT
-
-STRATEGY OVERVIEW:
-
-1. PRIMARY OBJECTIVE:
-   • Secure dismissal of charges against client
-   • Identify and prosecute actual perpetrator
-   • Restore client's reputation and livelihood
-
-2. EVIDENCE PRESENTATION:
-   • Forensic evidence linking Ravi Prasad
-   • Financial records showing motive
-   • Surveillance analysis proving innocence
-   • Witness statements corroborating theory
-
-3. LEGAL ARGUMENTS:
-   • Lack of evidence against petitioner
-   • Strong circumstantial case against Ravi
-   • Violation of petitioner's fundamental rights
-   • Prosecutorial misconduct investigation
-
-═══════════════════════════════════════════
-[CONTINUED ON NEXT PAGE]
-═══════════════════════════════════════════`,
-      rightPage: `═══════════════════════════════════════════
-CASE STRATEGY DOCUMENT - RIGHT PAGE
-═══════════════════════════════════════════
-
-4. COURT PRESENTATION:
-   • Opening statement highlighting innocence
-   • Systematic presentation of evidence
-   • Cross-examination of prosecution witnesses
-   • Expert testimony on forensic findings
-
-5. PUBLIC RELATIONS:
-   • Controlled media release
-   • Client reputation management
-   • Professional network notifications
-   • Social media monitoring
-
-6. CONTINGENCY PLANNING:
-   • If charges not dismissed: Appeal strategy
-   • If trial proceeds: Defense preparation
-   • If conviction occurs: Immediate appeal
-   • Client support throughout process
-
-7. TIMELINE:
-   • Next hearing: October 20, 2025
-   • Evidence submission: October 22, 2025
-   • Final arguments: To be scheduled
-   • Expected resolution: November 2025
-
-APPROVAL:
-_______________________________
-${advocateName}
-Date: October 20, 2025
-
-═══════════════════════════════════════════`
+      leftPage: '═══════════════════════════════════════════\n' +
+               'CASE STRATEGY DOCUMENT - LEFT PAGE\n' +
+               '═══════════════════════════════════════════\n\n' +
+               'CASE: RK-2025-001\n' +
+               'DATE: October 20, 2025\n' +
+               'PREPARED BY: ' + advocateName + '\n' +
+               'STRATEGIC PLANNING DOCUMENT\n\n' +
+               'STRATEGY OVERVIEW:\n\n' +
+               '1. PRIMARY OBJECTIVE:\n' +
+               '   • Secure dismissal of charges against client\n' +
+               '   • Identify and prosecute actual perpetrator\n' +
+               '   • Restore client\'s reputation and livelihood\n\n' +
+               '2. EVIDENCE PRESENTATION:\n' +
+               '   • Forensic evidence linking Ravi Prasad\n' +
+               '   • Financial records showing motive\n' +
+               '   • Surveillance analysis proving innocence\n' +
+               '   • Witness statements corroborating theory\n\n' +
+               '3. LEGAL ARGUMENTS:\n' +
+               '   • Lack of evidence against petitioner\n' +
+               '   • Strong circumstantial case against Ravi\n' +
+               '   • Violation of petitioner\'s fundamental rights\n' +
+               '   • Prosecutorial misconduct investigation\n\n' +
+               '═══════════════════════════════════════════\n' +
+               '[CONTINUED ON NEXT PAGE]\n' +
+               '═══════════════════════════════════════════',
+      rightPage: '═══════════════════════════════════════════\n' +
+                'CASE STRATEGY DOCUMENT - RIGHT PAGE\n' +
+                '═══════════════════════════════════════════\n\n' +
+                '4. COURT PRESENTATION:\n' +
+                '   • Opening statement highlighting innocence\n' +
+                '   • Systematic presentation of evidence\n' +
+                '   • Cross-examination of prosecution witnesses\n' +
+                '   • Expert testimony on forensic findings\n\n' +
+                '5. PUBLIC RELATIONS:\n' +
+                '   • Controlled media release\n' +
+                '   • Client reputation management\n' +
+                '   • Professional network notifications\n' +
+                '   • Social media monitoring\n\n' +
+                '6. CONTINGENCY PLANNING:\n' +
+                '   • If charges not dismissed: Appeal strategy\n' +
+                '   • If trial proceeds: Defense preparation\n' +
+                '   • If conviction occurs: Immediate appeal\n' +
+                '   • Client support throughout process\n\n' +
+                '7. TIMELINE:\n' +
+                '   • Next hearing: October 20, 2025\n' +
+                '   • Evidence submission: October 22, 2025\n' +
+                '   • Final arguments: To be scheduled\n' +
+                '   • Expected resolution: November 2025\n\n' +
+                'APPROVAL:\n' +
+                '_______________________________\n' +
+                advocateName + '\n' +
+                'Date: October 20, 2025\n\n' +
+                '═══════════════════════════════════════════'
     },
     {
       title: 'PROSECUTOR BRIEF',
       caseNumber: 'RK-2025-010',
-      leftPage: `═══════════════════════════════════════════
-PROSECUTOR BRIEF - LEFT PAGE
-═══════════════════════════════════════════
-
-TO: Public Prosecutor's Office
-FROM: ${advocateName}
-DATE: October 20, 2025
-RE: Case RK-2025-001 - Rajesh Kumar
-
-SUBJECT: Request for Case Review and Reopening
-
-1. EXECUTIVE SUMMARY:
-   New evidence has emerged that completely 
-   exonerates my client, Rajesh Kumar, and 
-   identifies the actual perpetrator, Ravi 
-   Prasad, as the sole responsible party.
-
-2. KEY EVIDENCE:
-   • Forensic evidence linking Ravi to the scene
-   • Financial records showing motive and means
-   • Surveillance analysis proving system tampering
-   • Witness statements corroborating innocence
-
-3. LEGAL IMPLICATIONS:
-   • Insufficient evidence against petitioner
-   • Strong probable cause against Ravi Prasad
-   • Potential misconduct in original investigation
-   • Violation of petitioner's fundamental rights
-
-═══════════════════════════════════════════
-[CONTINUED ON NEXT PAGE]
-═══════════════════════════════════════════`,
-      rightPage: `═══════════════════════════════════════════
-PROSECUTOR BRIEF - RIGHT PAGE
-═══════════════════════════════════════════
-
-4. RECOMMENDATIONS:
-   • Immediate dismissal of charges against Rajesh
-   • Arrest and charging of Ravi Prasad
-   • Recovery of stolen merchandise
-   • Investigation of original investigation quality
-
-5. SUPPORTING DOCUMENTS:
-   • Forensic laboratory report (Exhibit F)
-   • Financial investigation report (Exhibit G)
-   • Surveillance analysis report (Exhibit H)
-   • Witness statements (Exhibits I, J, K)
-
-6. TIMELINE CONCERNS:
-   • Next hearing scheduled for today
-   • Evidence ready for immediate presentation
-   • Client's reputation at stake
-   • Public interest in proper prosecution
-
-7. REQUESTED ACTIONS:
-   • Review of new evidence before hearing
-   • Dismissal of charges against petitioner
-   • Issuance of arrest warrant for Ravi Prasad
-   • Return of client's personal effects
-
-CONTACT:
-${advocateName}
-Phone: 9845012345
-Email: aditi.rao@raolaw.com
-
-═══════════════════════════════════════════`
+      leftPage: '═══════════════════════════════════════════\n' +
+               'PROSECUTOR BRIEF - LEFT PAGE\n' +
+               '═══════════════════════════════════════════\n\n' +
+               'TO: Public Prosecutor\'s Office\n' +
+               'FROM: ' + advocateName + '\n' +
+               'DATE: October 20, 2025\n' +
+               'RE: Case RK-2025-001 - Rajesh Kumar\n\n' +
+               'SUBJECT: Request for Case Review and Reopening\n\n' +
+               '1. EXECUTIVE SUMMARY:\n' +
+               '   New evidence has emerged that completely \n' +
+               '   exonerates my client, Rajesh Kumar, and \n' +
+               '   identifies the actual perpetrator, Ravi \n' +
+               '   Prasad, as the sole responsible party.\n\n' +
+               '2. KEY EVIDENCE:\n' +
+               '   • Forensic evidence linking Ravi to the scene\n' +
+               '   • Financial records showing motive and means\n' +
+               '   • Surveillance analysis proving system tampering\n' +
+               '   • Witness statements corroborating innocence\n\n' +
+               '3. LEGAL IMPLICATIONS:\n' +
+               '   • Insufficient evidence against petitioner\n' +
+               '   • Strong probable cause against Ravi Prasad\n' +
+               '   • Potential misconduct in original investigation\n' +
+               '   • Violation of petitioner\'s fundamental rights\n\n' +
+               '═══════════════════════════════════════════\n' +
+               '[CONTINUED ON NEXT PAGE]\n' +
+               '═══════════════════════════════════════════',
+      rightPage: '═══════════════════════════════════════════\n' +
+                'PROSECUTOR BRIEF - RIGHT PAGE\n' +
+                '═══════════════════════════════════════════\n\n' +
+                '4. RECOMMENDATIONS:\n' +
+                '   • Immediate dismissal of charges against Rajesh\n' +
+                '   • Arrest and charging of Ravi Prasad\n' +
+                '   • Recovery of stolen merchandise\n' +
+                '   • Investigation of original investigation quality\n\n' +
+                '5. SUPPORTING DOCUMENTS:\n' +
+                '   • Forensic laboratory report (Exhibit F)\n' +
+                '   • Financial investigation report (Exhibit G)\n' +
+                '   • Surveillance analysis report (Exhibit H)\n' +
+                '   • Witness statements (Exhibits I, J, K)\n\n' +
+                '6. TIMELINE CONCERNS:\n' +
+                '   • Next hearing scheduled for today\n' +
+                '   • Evidence ready for immediate presentation\n' +
+                '   • Client\'s reputation at stake\n' +
+                '   • Public interest in proper prosecution\n\n' +
+                '7. REQUESTED ACTIONS:\n' +
+                '   • Review of new evidence before hearing\n' +
+                '   • Dismissal of charges against petitioner\n' +
+                '   • Issuance of arrest warrant for Ravi Prasad\n' +
+                '   • Return of client\'s personal effects\n\n' +
+                'CONTACT:\n' +
+                advocateName + '\n' +
+                'Phone: 9845012345\n' +
+                'Email: aditi.rao@raolaw.com\n\n' +
+                '═══════════════════════════════════════════'
     },
     {
       title: 'MEDIA STRATEGY',
       caseNumber: 'RK-2025-011',
-      leftPage: `═══════════════════════════════════════════
-MEDIA STRATEGY DOCUMENT - LEFT PAGE
-═══════════════════════════════════════════
-
-CASE: RK-2025-001
-DATE: October 20, 2025
-PREPARED BY: ${advocateName}
-REFERENCE: Client Reputation Management
-
-STRATEGY OVERVIEW:
-
-1. OBJECTIVES:
-   • Protect client's professional reputation
-   • Counteract negative publicity from arrest
-   • Position client as victim of circumstance
-   • Prepare for potential exoneration announcement
-
-2. TARGET AUDIENCES:
-   • Legal community and bar associations
-   • Local media and news outlets
-   • Client's professional network
-   • General public in client's community
-
-3. KEY MESSAGES:
-   • Client maintains complete innocence
-   • New evidence points to actual perpetrator
-   • Investigation ongoing with promising leads
-   • Client cooperating fully with authorities
-
-═══════════════════════════════════════════
-[CONTINUED ON NEXT PAGE]
-═══════════════════════════════════════════`,
-      rightPage: `═══════════════════════════════════════════
-MEDIA STRATEGY DOCUMENT - RIGHT PAGE
-═══════════════════════════════════════════
-
-4. COMMUNICATION CHANNELS:
-   • Press release to major news outlets
-   • Statement to bar association newsletter
-   • Social media updates (controlled)
-   • Direct communication with key contacts
-
-5. TIMING:
-   • Immediate: Controlled information release
-   • Ongoing: Regular updates as appropriate
-   • Resolution: Full exoneration announcement
-   • Follow-up: Reputation restoration efforts
-
-6. TACTICS:
-   • Emphasize strength of defense case
-   • Highlight investigative diligence
-   • Avoid speculation about outcome
-   • Maintain professional decorum
-
-7. CRISIS MANAGEMENT:
-   • Rapid response to negative coverage
-   • Legal action against defamation
-   • Support network activation
-   • Client counseling and preparation
-
-APPROVAL:
-_______________________________
-${advocateName}
-Date: October 20, 2025
-
-═══════════════════════════════════════════`
+      leftPage: '═══════════════════════════════════════════\n' +
+               'MEDIA STRATEGY DOCUMENT - LEFT PAGE\n' +
+               '═══════════════════════════════════════════\n\n' +
+               'CASE: RK-2025-001\n' +
+               'DATE: October 20, 2025\n' +
+               'PREPARED BY: ' + advocateName + '\n' +
+               'REFERENCE: Client Reputation Management\n\n' +
+               'STRATEGY OVERVIEW:\n\n' +
+               '1. OBJECTIVES:\n' +
+               '   • Protect client\'s professional reputation\n' +
+               '   • Counteract negative publicity from arrest\n' +
+               '   • Position client as victim of circumstance\n' +
+               '   • Prepare for potential exoneration announcement\n\n' +
+               '2. TARGET AUDIENCES:\n' +
+               '   • Legal community and bar associations\n' +
+               '   • Local media and news outlets\n' +
+               '   • Client\'s professional network\n' +
+               '   • General public in client\'s community\n\n' +
+               '3. KEY MESSAGES:\n' +
+               '   • Client maintains complete innocence\n' +
+               '   • New evidence points to actual perpetrator\n' +
+               '   • Investigation ongoing with promising leads\n' +
+               '   • Client cooperating fully with authorities\n\n' +
+               '═══════════════════════════════════════════\n' +
+               '[CONTINUED ON NEXT PAGE]\n' +
+               '═══════════════════════════════════════════',
+      rightPage: '═══════════════════════════════════════════\n' +
+                'MEDIA STRATEGY DOCUMENT - RIGHT PAGE\n' +
+                '═══════════════════════════════════════════\n\n' +
+                '4. COMMUNICATION CHANNELS:\n' +
+                '   • Press release to major news outlets\n' +
+                '   • Statement to bar association newsletter\n' +
+                '   • Social media updates (controlled)\n' +
+                '   • Direct communication with key contacts\n\n' +
+                '5. TIMING:\n' +
+                '   • Immediate: Controlled information release\n' +
+                '   • Ongoing: Regular updates as appropriate\n' +
+                '   • Resolution: Full exoneration announcement\n' +
+                '   • Follow-up: Reputation restoration efforts\n\n' +
+                '6. TACTICS:\n' +
+                '   • Emphasize strength of defense case\n' +
+                '   • Highlight investigative diligence\n' +
+                '   • Avoid speculation about outcome\n' +
+                '   • Maintain professional decorum\n\n' +
+                '7. CRISIS MANAGEMENT:\n' +
+                '   • Rapid response to negative coverage\n' +
+                '   • Legal action against defamation\n' +
+                '   • Support network activation\n' +
+                '   • Client counseling and preparation\n\n' +
+                'APPROVAL:\n' +
+                '_______________________________\n' +
+                advocateName + '\n' +
+                'Date: October 20, 2025\n\n' +
+                '═══════════════════════════════════════════'
     },
     {
       title: 'COURT HEARING NOTES',
       caseNumber: 'RK-2025-012',
-      leftPage: `═══════════════════════════════════════════
-COURT HEARING NOTES - LEFT PAGE
-═══════════════════════════════════════════
-
-CASE: RK-2025-001
-DATE: October 20, 2025
-HEARING: Morning Session
-COURT: Magistrate Court, Hall 2B
-JUDGE: Hon'ble Justice Priya Menon
-
-ATTENDANCE:
-• ${advocateName} - Defense Counsel
-• Mr. Rajesh Kumar - Petitioner
-• Public Prosecutor - Representing State
-• Court Reporter - Documentation
-• Security Personnel - Court Security
-
-AGENDA:
-1. Review of Bail Conditions
-2. Presentation of New Evidence
-3. Discussion of Investigation Progress
-4. Scheduling of Future Proceedings
-
-OPENING REMARKS:
-The Hon'ble Justice welcomed all parties and 
-acknowledged receipt of defense submissions.
-
-═══════════════════════════════════════════
-[CONTINUED ON NEXT PAGE]
-═══════════════════════════════════════════`,
-      rightPage: `═══════════════════════════════════════════
-COURT HEARING NOTES - RIGHT PAGE
-═══════════════════════════════════════════
-
-EVIDENCE PRESENTATION:
-Defense counsel presented comprehensive 
-evidence package including:
-
-1. Forensic Reports:
-   • Fingerprints matching Ravi Prasad
-   • DNA evidence linking to suspect
-   • Digital forensics of system tampering
-
-2. Financial Documentation:
-   • Bank records showing suspicious deposits
-   • Asset acquisition by Ravi Prasad
-   • Gambling debts creating motive
-
-3. Surveillance Analysis:
-   • System failure during theft window
-   • Unauthorized access codes used
-   • Technical expertise required for override
-
-JUDGE'S REACTION:
-Justice Menon expressed serious concern about 
-the new evidence and requested additional time 
-to review all materials before making a ruling.
-
-NEXT STEPS:
-• Court to review evidence overnight
-• Hearing reconvened tomorrow at 10:00 AM
-• Prosecution given time to respond
-• Potential for immediate resolution
-
-CLOSING REMARKS:
-The court emphasized the importance of justice 
-and thorough investigation of all facts.
-
-═══════════════════════════════════════════`
+      leftPage: '═══════════════════════════════════════════\n' +
+               'COURT HEARING NOTES - LEFT PAGE\n' +
+               '═══════════════════════════════════════════\n\n' +
+               'CASE: RK-2025-001\n' +
+               'DATE: October 20, 2025\n' +
+               'HEARING: Morning Session\n' +
+               'COURT: Magistrate Court, Hall 2B\n' +
+               'JUDGE: Hon\'ble Justice Priya Menon\n\n' +
+               'ATTENDANCE:\n' +
+               '• ' + advocateName + ' - Defense Counsel\n' +
+               '• Mr. Rajesh Kumar - Petitioner\n' +
+               '• Public Prosecutor - Representing State\n' +
+               '• Court Reporter - Documentation\n' +
+               '• Security Personnel - Court Security\n\n' +
+               'AGENDA:\n' +
+               '1. Review of Bail Conditions\n' +
+               '2. Presentation of New Evidence\n' +
+               '3. Discussion of Investigation Progress\n' +
+               '4. Scheduling of Future Proceedings\n\n' +
+               'OPENING REMARKS:\n' +
+               'The Hon\'ble Justice welcomed all parties and \n' +
+               'acknowledged receipt of defense submissions.\n\n' +
+               '═══════════════════════════════════════════\n' +
+               '[CONTINUED ON NEXT PAGE]\n' +
+               '═══════════════════════════════════════════',
+      rightPage: '═══════════════════════════════════════════\n' +
+                'COURT HEARING NOTES - RIGHT PAGE\n' +
+                '═══════════════════════════════════════════\n\n' +
+                'EVIDENCE PRESENTATION:\n' +
+                'Defense counsel presented comprehensive \n' +
+                'evidence package including:\n\n' +
+                '1. Forensic Reports:\n' +
+                '   • Fingerprints matching Ravi Prasad\n' +
+                '   • DNA evidence linking to suspect\n' +
+                '   • Digital forensics of system tampering\n\n' +
+                '2. Financial Documentation:\n' +
+                '   • Bank records showing suspicious deposits\n' +
+                '   • Asset acquisition by Ravi Prasad\n' +
+                '   • Gambling debts creating motive\n\n' +
+                '3. Surveillance Analysis:\n' +
+                '   • System failure during theft window\n' +
+                '   • Unauthorized access codes used\n' +
+                '   • Technical expertise required for override\n\n' +
+                'JUDGE\'S REACTION:\n' +
+                'Justice Menon expressed serious concern about \n' +
+                'the new evidence and requested additional time \n' +
+                'to review all materials before making a ruling.\n\n' +
+                'NEXT STEPS:\n' +
+                '• Court to review evidence overnight\n' +
+                '• Hearing reconvened tomorrow at 10:00 AM\n' +
+                '• Prosecution given time to respond\n' +
+                '• Potential for immediate resolution\n\n' +
+                'CLOSING REMARKS:\n' +
+                'The court emphasized the importance of justice \n' +
+                'and thorough investigation of all facts.\n\n' +
+                '═══════════════════════════════════════════'
     },
     {
       title: 'INVESTIGATION SUMMARY',
       caseNumber: 'RK-2025-013',
       leftPage: `═══════════════════════════════════════════
 INVESTIGATION SUMMARY - LEFT PAGE
-═══════════════════════════════════════════
+import React, { useState, useRef, useEffect } from 'react';
+import { ChevronLeft, ChevronRight, X, Volume2, VolumeX } from 'lucide-react';
+import { useUser } from '../contexts/UserContext';
 
-CASE: RK-2025-001
-DATE: October 20, 2025
-PREPARED BY: ${advocateName}
-COMPREHENSIVE INVESTIGATION SUMMARY
+export default function BookViewer() {
+  const { user } = useUser();
+  const [opened, setOpened] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [isFlipping, setIsFlipping] = useState(false);
+  const [rotation, setRotation] = useState({ x: 0, y: 0 });
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [currentSpeech, setCurrentSpeech] = useState<'left' | 'right' | null>(null);
+  const [showIntro, setShowIntro] = useState(true); // For animation intro
+  const [introStep, setIntroStep] = useState(0); // For step-by-step animation
+  const containerRef = useRef<HTMLDivElement>(null);
+  const speechSynthesisRef = useRef<SpeechSynthesisUtterance | null>(null);
+
+  // Cleanup speech on unmount
+  useEffect(() => {
+    return () => {
+      if (speechSynthesisRef.current && window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
+
+  // Get advocate name from user profile or use default
+  const advocateName = user?.firstName && user?.lastName 
+    ? 'Adv. ' + user.firstName + ' ' + user.lastName 
+    : 'Adv. Aditi Rao';
+
+  // Generate suspenseful case data with more pages
+  const generateCaseData = () => {
+    const baseCaseData = [
+      {
+        title: 'INVESTIGATION SUMMARY',
+        caseNumber: 'RK-2025-001',
+        leftPage: '═══════════════════════════════════════════\n\nCASE: RK-2025-001\nDATE: October 20, 2025\nPREPARED BY: ' + advocateName + '\nCOMPREHENSIVE INVESTIGATION SUMMARY'
 
 INVESTIGATION TIMELINE:
 
@@ -1442,6 +1263,136 @@ Badge Number: DI-${(1000 + index * 23).toString()}
   // Check if speech synthesis is supported
   const isSpeechSupported = 'speechSynthesis' in window;
 
+  // Intro animation sequence
+  useEffect(() => {
+    if (!showIntro) return;
+    
+    const timer = setTimeout(() => {
+      if (introStep < 4) {
+        setIntroStep(introStep + 1);
+      } else {
+        setShowIntro(false);
+      }
+    }, 1500);
+    
+    return () => clearTimeout(timer);
+  }, [showIntro, introStep]);
+
+  // Enhanced intro animation
+  if (showIntro) {
+    return (
+      <div className="w-full h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 flex items-center justify-center overflow-hidden relative">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className={'absolute top-1/4 left-1/4 w-64 h-64 bg-blue-500 rounded-full mix-blend-soft-light filter blur-3xl opacity-30 animate-blob ' + (introStep >= 1 ? 'animate-blob' : '')}></div>
+          <div className={'absolute top-1/3 right-1/4 w-64 h-64 bg-purple-500 rounded-full mix-blend-soft-light filter blur-3xl opacity-30 animate-blob animation-delay-2000 ' + (introStep >= 1 ? 'animate-blob' : '')}></div>
+          <div className={'absolute bottom-1/4 left-1/2 w-64 h-64 bg-indigo-500 rounded-full mix-blend-soft-light filter blur-3xl opacity-30 animate-blob animation-delay-4000 ' + (introStep >= 1 ? 'animate-blob' : '')}></div>
+          
+          {/* Indian law decorative elements */}
+          <div className={'absolute top-10 left-10 text-amber-200 opacity-20 ' + (introStep >= 2 ? 'animate-fade-in' : 'opacity-0')}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+          </div>
+          
+          <div className={'absolute bottom-10 right-10 text-amber-200 opacity-20 ' + (introStep >= 2 ? 'animate-fade-in' : 'opacity-0')}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+          </div>
+        </div>
+        
+        {/* Step-by-step animation */}
+        {introStep === 0 && (
+          <div className="text-center z-10 animate-fade-in">
+            <div className="animate-pulse mb-8">
+              <div className="w-32 h-32 bg-gradient-to-br from-amber-500 to-orange-600 rounded-full mx-auto flex items-center justify-center shadow-2xl">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-20 w-20 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+                </svg>
+              </div>
+            </div>
+            <h1 className="text-5xl font-bold text-white mb-4 tracking-wider">धर्मशिखर</h1>
+            <p className="text-2xl text-amber-200 font-semibold">DHARMASIKHARA</p>
+          </div>
+        )}
+        
+        {introStep === 1 && (
+          <div className="text-center z-10 animate-fade-in">
+            <div className="mb-8">
+              <div className="w-32 h-32 bg-gradient-to-br from-amber-500 to-orange-600 rounded-full mx-auto flex items-center justify-center shadow-2xl animate-bounce">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-20 w-20 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+                </svg>
+              </div>
+            </div>
+            <h1 className="text-5xl font-bold text-white mb-4 tracking-wider animate-pulse">धर्मशिखर</h1>
+            <p className="text-2xl text-amber-200 font-semibold animate-pulse">DHARMASIKHARA</p>
+            <p className="text-xl text-amber-100 mt-4 animate-fade-in">The Pinnacle of Law</p>
+          </div>
+        )}
+        
+        {introStep === 2 && (
+          <div className="text-center z-10 animate-fade-in">
+            <div className="mb-8 flex justify-center">
+              <div className="relative">
+                <div className="w-32 h-32 bg-gradient-to-br from-amber-500 to-orange-600 rounded-full mx-auto flex items-center justify-center shadow-2xl animate-spin-slow">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-20 w-20 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+                  </svg>
+                </div>
+                <div className="absolute inset-0 w-32 h-32 rounded-full border-4 border-amber-300 animate-ping opacity-20"></div>
+              </div>
+            </div>
+            <h1 className="text-5xl font-bold text-white mb-4 tracking-wider">धर्मशिखर</h1>
+            <p className="text-2xl text-amber-200 font-semibold">DHARMASIKHARA</p>
+            <p className="text-xl text-amber-100 mt-4">Legal Practice Simulator</p>
+          </div>
+        )}
+        
+        {introStep === 3 && (
+          <div className="text-center z-10 animate-fade-in">
+            <div className="mb-8">
+              <div className="w-32 h-32 bg-gradient-to-br from-amber-500 to-orange-600 rounded-full mx-auto flex items-center justify-center shadow-2xl animate-bounce">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-20 w-20 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+                </svg>
+              </div>
+            </div>
+            <h1 className="text-5xl font-bold text-white mb-2 tracking-wider">धर्मशिखर</h1>
+            <p className="text-2xl text-amber-200 font-semibold mb-6">DHARMASIKHARA</p>
+            <div className="border-t border-b border-amber-300 py-3 mb-4 inline-block px-8">
+              <p className="text-amber-100 text-lg font-medium">{advocateName}</p>
+              <p className="text-amber-200 text-sm">B.A. LL.B (Hons.)</p>
+            </div>
+            <p className="text-xl text-amber-100 mt-4">Initializing Legal Scenario...</p>
+          </div>
+        )}
+        
+        {introStep === 4 && (
+          <div className="text-center z-10 animate-fade-in">
+            <div className="mb-8 animate-bounce">
+              <div className="w-32 h-32 bg-gradient-to-br from-amber-500 to-orange-600 rounded-full mx-auto flex items-center justify-center shadow-2xl">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-20 w-20 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+            </div>
+            <h1 className="text-5xl font-bold text-white mb-2 tracking-wider">धर्मशिखर</h1>
+            <p className="text-2xl text-amber-200 font-semibold mb-6">DHARMASIKHARA</p>
+            <p className="text-xl text-amber-100">Ready to Open Case Files</p>
+            <button 
+              onClick={() => setShowIntro(false)}
+              className="mt-8 px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg transition transform hover:scale-105 shadow-lg"
+            >
+              ENTER SIMULATION
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   if (!opened) {
     return (
       <div 
@@ -1511,14 +1462,14 @@ Badge Number: DI-${(1000 + index * 23).toString()}
   return (
     <div className="w-full h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex flex-col p-4">
       {/* Header */}
-      <div className="bg-gradient-to-r from-pink-700 to-pink-600 text-white p-6 rounded-t-xl flex items-center justify-between mb-0">
+      <div className="bg-gradient-to-r from-amber-700 to-amber-600 text-white p-6 rounded-t-xl flex items-center justify-between mb-0">
         <div className="flex-1">
           <h1 className="text-3xl font-bold">{expandedCaseData[currentPage].title}</h1>
-          <p className="text-pink-100 text-sm">Case #{expandedCaseData[currentPage].caseNumber}</p>
+          <p className="text-amber-100 text-sm">Case #{expandedCaseData[currentPage].caseNumber}</p>
         </div>
         <button
           onClick={() => setOpened(false)}
-          className="p-3 hover:bg-pink-700 rounded-lg transition transform hover:scale-110"
+          className="p-3 hover:bg-amber-700 rounded-lg transition transform hover:scale-110"
         >
           <X size={32} />
         </button>
@@ -1527,7 +1478,7 @@ Badge Number: DI-${(1000 + index * 23).toString()}
       {/* Book Container */}
       <div className="flex-1 bg-gradient-to-b from-gray-800 to-gray-900 flex items-center justify-center px-8 py-6 gap-6 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 200px)' }}>
         {/* Left Page */}
-        <div className={`w-1/2 bg-yellow-50 rounded-lg shadow-2xl p-10 overflow-y-auto transition-all duration-500 transform ${isFlipping ? 'opacity-50 -translate-x-12 rotate-y-45' : 'opacity-100 translate-x-0'} hover:shadow-pink-500/50 relative`} style={{ maxHeight: '70vh' }}>
+        <div className={`w-1/2 bg-yellow-50 rounded-lg shadow-2xl p-10 overflow-y-auto transition-all duration-500 transform ${isFlipping ? 'opacity-50 -translate-x-12 rotate-y-45' : 'opacity-100 translate-x-0'} hover:shadow-amber-500/50 relative`} style={{ maxHeight: '70vh' }}>
           <div className="text-gray-800 text-xs leading-relaxed font-mono whitespace-pre-wrap select-text">
             {expandedCaseData[currentPage].leftPage}
           </div>
@@ -1551,7 +1502,7 @@ Badge Number: DI-${(1000 + index * 23).toString()}
         </div>
 
         {/* Right Page */}
-        <div className={`w-1/2 bg-yellow-50 rounded-lg shadow-2xl p-10 overflow-y-auto transition-all duration-500 transform ${isFlipping ? 'opacity-50 translate-x-12 -rotate-y-45' : 'opacity-100 translate-x-0'} hover:shadow-pink-500/50 relative`} style={{ maxHeight: '70vh' }}>
+        <div className={`w-1/2 bg-yellow-50 rounded-lg shadow-2xl p-10 overflow-y-auto transition-all duration-500 transform ${isFlipping ? 'opacity-50 translate-x-12 -rotate-y-45' : 'opacity-100 translate-x-0'} hover:shadow-amber-500/50 relative`} style={{ maxHeight: '70vh' }}>
           <div className="text-gray-800 text-xs leading-relaxed font-mono whitespace-pre-wrap select-text">
             {expandedCaseData[currentPage].rightPage}
           </div>
@@ -1576,11 +1527,11 @@ Badge Number: DI-${(1000 + index * 23).toString()}
       </div>
 
       {/* Navigation Footer */}
-      <div className="bg-gradient-to-r from-gray-800 to-gray-700 p-6 rounded-b-xl flex items-center justify-between border-t-4 border-pink-600">
+      <div className="bg-gradient-to-r from-gray-800 to-gray-700 p-6 rounded-b-xl flex items-center justify-between border-t-4 border-amber-600">
         <button
           onClick={() => flipPage('prev')}
           disabled={currentPage === 0 || isFlipping}
-          className="flex items-center gap-2 px-8 py-3 bg-pink-500 hover:bg-pink-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition font-bold transform hover:scale-105"
+          className="flex items-center gap-2 px-8 py-3 bg-amber-500 hover:bg-amber-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition font-bold transform hover:scale-105"
         >
           <ChevronLeft size={24} />
           Previous
@@ -1594,7 +1545,7 @@ Badge Number: DI-${(1000 + index * 23).toString()}
         <button
           onClick={() => flipPage('next')}
           disabled={currentPage === expandedCaseData.length - 1 || isFlipping}
-          className="flex items-center gap-2 px-8 py-3 bg-pink-500 hover:bg-pink-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition font-bold transform hover:scale-105"
+          className="flex items-center gap-2 px-8 py-3 bg-amber-500 hover:bg-amber-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition font-bold transform hover:scale-105"
         >
           Next
           <ChevronRight size={24} />

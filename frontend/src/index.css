@@ -48,6 +48,15 @@ code {
   }
 }
 
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .animate-fade-in {
   animation: fadeIn 1s ease-in-out;
 }
@@ -62,6 +71,10 @@ code {
 
 .animate-blob {
   animation: blob 7s infinite;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 8s linear infinite;
 }
 
 .animation-delay-2000 {
