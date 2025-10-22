@@ -727,441 +727,590 @@ export default function BookViewer() {
                 '═══════════════════════════════════════════'
     },
     {
-      title: 'CASE FILE #001',
+      title: 'INVESTIGATION SUMMARY',
       caseNumber: 'RK-2025-001',
-      leftPage: '═══════════════════════════════════════════\n' +
-               'PROSECUTOR BRIEF - LEFT PAGE\n' +
-               '═══════════════════════════════════════════\n\n' +
-               'TO: Public Prosecutor\'s Office\n' +
-               'FROM: ' + advocateName + '\n' +
-               'DATE: October 20, 2025\n' +
-               'RE: Case RK-2025-001 - Rajesh Kumar\n\n' +
-               'SUBJECT: Request for Case Review and Reopening\n\n' +
-               '1. EXECUTIVE SUMMARY:\n' +
-               '   New evidence has emerged that completely \n' +
-               '   exonerates my client, Rajesh Kumar, and \n' +
-               '   identifies the actual perpetrator, Ravi \n' +
-               '   Prasad, as the sole responsible party.\n\n' +
-               '2. KEY EVIDENCE:\n' +
-               '   • Forensic evidence linking Ravi to the scene\n' +
-               '   • Financial records showing motive and means\n' +
-               '   • Surveillance analysis proving system tampering\n' +
-               '   • Witness statements corroborating innocence\n\n' +
-               '3. LEGAL IMPLICATIONS:\n' +
-               '   • Insufficient evidence against petitioner\n' +
-               '   • Strong probable cause against Ravi Prasad\n' +
-               '   • Potential misconduct in original investigation\n' +
-               '   • Violation of petitioner\'s fundamental rights\n\n' +
-               '═══════════════════════════════════════════\n' +
-               '[CONTINUED ON NEXT PAGE]\n' +
-               '═══════════════════════════════════════════',
-      rightPage: '═══════════════════════════════════════════\n' +
-                'PROSECUTOR BRIEF - RIGHT PAGE\n' +
-                '═══════════════════════════════════════════\n\n' +
-                '4. RECOMMENDATIONS:\n' +
-                '   • Immediate dismissal of charges against Rajesh\n' +
-                '   • Arrest and charging of Ravi Prasad\n' +
-                '   • Recovery of stolen merchandise\n' +
-                '   • Investigation of original investigation quality\n\n' +
-                '5. SUPPORTING DOCUMENTS:\n' +
-                '   • Forensic laboratory report (Exhibit F)\n' +
-                '   • Financial investigation report (Exhibit G)\n' +
-                '   • Surveillance analysis report (Exhibit H)\n' +
-                '   • Witness statements (Exhibits I, J, K)\n\n' +
-                '6. TIMELINE CONCERNS:\n' +
-                '   • Next hearing scheduled for today\n' +
-                '   • Evidence ready for immediate presentation\n' +
-                '   • Client\'s reputation at stake\n' +
-                '   • Public interest in proper prosecution\n\n' +
-                '7. REQUESTED ACTIONS:\n' +
-                '   • Review of new evidence before hearing\n' +
-                '   • Dismissal of charges against petitioner\n' +
-                '   • Issuance of arrest warrant for Ravi Prasad\n' +
-                '   • Return of client\'s personal effects\n\n' +
-                'CONTACT:\n' +
-                advocateName + '\n' +
-                'Phone: 9845012345\n' +
-                'Email: aditi.rao@raolaw.com\n\n' +
-                '═══════════════════════════════════════════'
+      leftPage: [
+        '═══════════════════════════════════════════',
+        'INVESTIGATION SUMMARY - LEFT PAGE',
+        '═══════════════════════════════════════════',
+        '',
+        'CASE: RK-2025-001',
+        'DATE: October 20, 2025',
+        'PREPARED BY: ' + advocateName,
+        'COMPREHENSIVE INVESTIGATION SUMMARY',
+        '',
+        'INVESTIGATION TIMELINE:',
+        '',
+        'October 13, 2025:',
+        '• Theft reported by Rajesh Kumar',
+        '• Initial police investigation begun',
+        '• Rajesh Kumar wrongfully arrested',
+        '',
+        'October 14-15, 2025:',
+        '• Bail hearing for Rajesh Kumar',
+        '• Initial forensic collection',
+        '• Security footage review begins',
+        '',
+        'October 16-17, 2025:',
+        '• Detailed forensic analysis',
+        '• Financial investigation initiated',
+        '• Witness interviews conducted',
+        '',
+        '═══════════════════════════════════════════',
+        '[CONTINUED ON NEXT PAGE]',
+        '═══════════════════════════════════════════'
+      ].join('\n'),
+      rightPage: [
+        '═══════════════════════════════════════════',
+        'INVESTIGATION SUMMARY - RIGHT PAGE',
+        '═══════════════════════════════════════════',
+        '',
+        'October 18-19, 2025:',
+        '• Breakthrough in digital forensics',
+        '• Ravi Prasad identified as suspect',
+        '• Financial evidence corroborating theory',
+        '',
+        'October 20, 2025:',
+        '• Comprehensive evidence package prepared',
+        '• Court presentation ready',
+        '• Arrest warrant drafted for Ravi Prasad',
+        '',
+        'KEY FINDINGS:',
+        '',
+        '1. PRIMARY SUSPECT:',
+        '   • Ravi Prasad, warehouse assistant',
+        '   • Strong financial motive',
+        '   • Technical knowledge for security override',
+        '',
+        '2. EVIDENCE CATEGORIES:',
+        '   • Physical: Fingerprints, DNA, tool marks',
+        '   • Digital: System logs, deleted files',
+        '   • Financial: Bank records, asset acquisition',
+        '   • Testimonial: Witness statements, behavior',
+        '',
+        '3. INVESTIGATION QUALITY:',
+        '   • Initial investigation was superficial',
+        '   • Key evidence overlooked',
+        '   • Wrongful focus on petitioner',
+        '   • Need for procedural review',
+        '',
+        'RECOMMENDATIONS:',
+        '• Immediate arrest of Ravi Prasad',
+        '• Full case dismissal for Rajesh Kumar',
+        '• Return of all personal effects',
+        '• Investigation of original procedures',
+        '',
+        '═══════════════════════════════════════════'
+      ].join('\n')
     },
     {
       title: 'CASE FILE #001',
       caseNumber: 'RK-2025-001',
+      leftPage: [
+        '═══════════════════════════════════════════',
+        'CASE RESOLUTION DOCUMENT - LEFT PAGE',
+        '═══════════════════════════════════════════',
+        '',
+        'CASE: RK-2025-001',
+        'DATE: October 21, 2025',
+        'PREPARED BY: Court Registry',
+        'REFERENCE: Final Judgment',
+        '',
+        'COURT ORDER:',
+        '',
+        'IN THE MAGISTRATE COURT',
+        '[Court Address, Bangalore]',
+        '',
+        'Case No.: RK-2025-001',
+        'Date: October 21, 2025',
+        '',
+        'Hon\'ble Justice Priya Menon',
+        'Presiding Officer',
+        '',
+        'BETWEEN:',
+        'Rajesh Kumar ........................ Petitioner',
+        '                    and',
+        'State of Karnataka ............. Respondent',
+        '',
+        'FINAL JUDGMENT:',
+        '',
+        'Upon thorough review of all evidence presented ',
+        'by both parties and consideration of the ',
+        'comprehensive investigation findings, this ',
+        'Court hereby passes the following judgment:',
+        '',
+        '1. All charges against the petitioner, ',
+        '   Rajesh Kumar, are hereby dismissed.',
+        '',
+        '2. The petitioner is fully exonerated of all ',
+        '   allegations related to this case.',
+        '',
+        '═══════════════════════════════════════════',
+        '[CONTINUED ON NEXT PAGE]',
+        '═══════════════════════════════════════════'
+      ].join('\n'),
+      rightPage: [
+        '═══════════════════════════════════════════',
+        'CASE RESOLUTION DOCUMENT - RIGHT PAGE',
+        '═══════════════════════════════════════════',
+        '',
+        '3. An arrest warrant is hereby issued for ',
+        '   Ravi Prasad, employee of TechDistributors, ',
+        '   for theft and evidence tampering.',
+        '',
+        '4. All personal effects of the petitioner ',
+        '   shall be immediately returned.',
+        '',
+        '5. The petitioner shall receive a formal ',
+        '   apology from the Bangalore Police Department.',
+        '',
+        '6. This case is hereby closed with prejudice.',
+        '',
+        'It is so ordered.',
+        '',
+        '                    _______________________________',
+        '                    (Signature)',
+        '                    Hon\'ble Justice Priya Menon',
+        '                    ',
+        'Date: October 21, 2025',
+        'Seal of Court: _______________',
+        '',
+        'NOTES:',
+        '• Judgment delivered in open court',
+        '• Both parties present during reading',
+        '• Petitioner\'s counsel expressed satisfaction',
+        '• Prosecution indicated intention to appeal',
+        '• Media present for public interest aspects',
+        '',
+        '═══════════════════════════════════════════',
+        'END OF CASE FILE',
+        '═══════════════════════════════════════════'
+      ].join('\n')
+    },
+    {
+      title: 'PROSECUTOR BRIEF',
+      caseNumber: 'RK-2025-001',
+      leftPage: [
+        '═══════════════════════════════════════════',
+        'PROSECUTOR BRIEF - LEFT PAGE',
+        '═══════════════════════════════════════════',
+        '',
+        'TO: Public Prosecutor\'s Office',
+        'FROM: ' + advocateName,
+        'DATE: October 20, 2025',
+        'RE: Case RK-2025-001 - Rajesh Kumar',
+        '',
+        'SUBJECT: Request for Case Review and Reopening',
+        '',
+        '1. EXECUTIVE SUMMARY:',
+        '   New evidence has emerged that completely ',
+        '   exonerates my client, Rajesh Kumar, and ',
+        '   identifies the actual perpetrator, Ravi ',
+        '   Prasad, as the sole responsible party.',
+        '',
+        '2. KEY EVIDENCE:',
+        '   • Forensic evidence linking Ravi to the scene',
+        '   • Financial records showing motive and means',
+        '   • Surveillance analysis proving system tampering',
+        '   • Witness statements corroborating innocence',
+        '',
+        '3. LEGAL IMPLICATIONS:',
+        '   • Insufficient evidence against petitioner',
+        '   • Strong probable cause against Ravi Prasad',
+        '   • Potential misconduct in original investigation',
+        '   • Violation of petitioner\'s fundamental rights',
+        '',
+        '═══════════════════════════════════════════',
+        '[CONTINUED ON NEXT PAGE]',
+        '═══════════════════════════════════════════'
+      ].join('\n'),
+      rightPage: [
+        '═══════════════════════════════════════════',
+        'PROSECUTOR BRIEF - RIGHT PAGE',
+        '═══════════════════════════════════════════',
+        '',
+        '4. RECOMMENDATIONS:',
+        '   • Immediate dismissal of charges against Rajesh',
+        '   • Arrest and charging of Ravi Prasad',
+        '   • Recovery of stolen merchandise',
+        '   • Investigation of original investigation quality',
+        '',
+        '5. SUPPORTING DOCUMENTS:',
+        '   • Forensic laboratory report (Exhibit F)',
+        '   • Financial investigation report (Exhibit G)',
+        '   • Surveillance analysis report (Exhibit H)',
+        '   • Witness statements (Exhibits I, J, K)',
+        '',
+        '6. TIMELINE CONCERNS:',
+        '   • Next hearing scheduled for today',
+        '   • Evidence ready for immediate presentation',
+        '   • Client\'s reputation at stake',
+        '   • Public interest in proper prosecution',
+        '',
+        '7. REQUESTED ACTIONS:',
+        '   • Review of new evidence before hearing',
+        '   • Dismissal of charges against petitioner',
+        '   • Issuance of arrest warrant for Ravi Prasad',
+        '   • Return of client\'s personal effects',
+        '',
+        'CONTACT:',
+        advocateName,
+        'Phone: 9845012345',
+        'Email: aditi.rao@raolaw.com',
+        '',
+        '═══════════════════════════════════════════'
+      ].join('\n')
+    },
+    {
+      title: 'MEDIA STRATEGY DOCUMENT',
+      caseNumber: 'RK-2025-001',
+      leftPage: [
+        '═══════════════════════════════════════════',
+        'MEDIA STRATEGY DOCUMENT - LEFT PAGE',
+        '═══════════════════════════════════════════',
+        '',
+        'CASE: RK-2025-001',
+        'DATE: October 20, 2025',
+        'PREPARED BY: ' + advocateName,
+        'REFERENCE: Client Reputation Management',
+        '',
+        'STRATEGY OVERVIEW:',
+        '',
+        '1. OBJECTIVES:',
+        '   • Protect client\'s professional reputation',
+        '   • Counteract negative publicity from arrest',
+        '   • Position client as victim of circumstance',
+        '   • Prepare for potential exoneration announcement',
+        '',
+        '2. TARGET AUDIENCES:',
+        '   • Legal community and bar associations',
+        '   • Local media and news outlets',
+        '   • Client\'s professional network',
+        '   • General public in client\'s community',
+        '',
+        '3. KEY MESSAGES:',
+        '   • Client maintains complete innocence',
+        '   • New evidence points to actual perpetrator',
+        '   • Investigation ongoing with promising leads',
+        '   • Client cooperating fully with authorities',
+        '',
+        '═══════════════════════════════════════════',
+        '[CONTINUED ON NEXT PAGE]',
+        '═══════════════════════════════════════════'
+      ].join('\n'),
+      rightPage: [
+        '═══════════════════════════════════════════',
+        'MEDIA STRATEGY DOCUMENT - RIGHT PAGE',
+        '═══════════════════════════════════════════',
+        '',
+        '4. COMMUNICATION CHANNELS:',
+        '   • Press release to major news outlets',
+        '   • Statement to bar association newsletter',
+        '   • Social media updates (controlled)',
+        '   • Direct communication with key contacts',
+        '',
+        '5. TIMELINE:',
+        '   • Immediate: Controlled information release',
+        '   • Ongoing: Regular updates as appropriate',
+        '   • Resolution: Full exoneration announcement',
+        '   • Follow-up: Reputation restoration efforts',
+        '',
+        '6. TACTICS:',
+        '   • Emphasize strength of defense case',
+        '   • Highlight investigative diligence',
+        '   • Avoid speculation about outcome',
+        '   • Maintain professional decorum',
+        '',
+        '7. CRISIS MANAGEMENT:',
+        '   • Rapid response to negative coverage',
+        '   • Legal action against defamation',
+        '   • Support network activation',
+        '   • Client counseling and preparation',
+        '',
+        'APPROVAL:',
+        '_______________________________',
+        advocateName,
+        'Date: October 20, 2025',
+        '',
+        '═══════════════════════════════════════════'
+      ].join('\n')
+    },
+    {
+      title: 'COURT HEARING NOTES',
+      caseNumber: 'RK-2025-001',
+      leftPage: [
+        '═══════════════════════════════════════════',
+        'COURT HEARING NOTES - LEFT PAGE',
+        '═══════════════════════════════════════════',
+        '',
+        'CASE: RK-2025-001',
+        'DATE: October 20, 2025',
+        'HEARING: Morning Session',
+        'COURT: Magistrate Court, Hall 2B',
+        'JUDGE: Hon\'ble Justice Priya Menon',
+        '',
+        'ATTENDANCE:',
+        '• ' + advocateName + ' - Defense Counsel',
+        '• Mr. Rajesh Kumar - Petitioner',
+        '• Public Prosecutor - Representing State',
+        '• Court Reporter - Documentation',
+        '• Security Personnel - Court Security',
+        '',
+        'AGENDA:',
+        '1. Review of Bail Conditions',
+        '2. Presentation of New Evidence',
+        '3. Discussion of Investigation Progress',
+        '4. Scheduling of Future Proceedings',
+        '',
+        'OPENING REMARKS:',
+        'The Hon\'ble Justice welcomed all parties and ',
+        'acknowledged receipt of defense submissions.',
+        '',
+        '═══════════════════════════════════════════',
+        '[CONTINUED ON NEXT PAGE]',
+        '═══════════════════════════════════════════'
+      ].join('\n'),
+      rightPage: [
+        '═══════════════════════════════════════════',
+        'COURT HEARING NOTES - RIGHT PAGE',
+        '═══════════════════════════════════════════',
+        '',
+        'EVIDENCE PRESENTATION:',
+        'Defense counsel presented comprehensive ',
+        'evidence package including:',
+        '',
+        '1. Forensic Reports:',
+        '   • Fingerprints matching Ravi Prasad',
+        '   • DNA evidence linking to suspect',
+        '   • Digital forensics of system tampering',
+        '',
+        '2. Financial Documentation:',
+        '   • Bank records showing suspicious deposits',
+        '   • Asset acquisition by Ravi Prasad',
+        '   • Gambling debts creating motive',
+        '',
+        '3. Surveillance Analysis:',
+        '   • System failure during theft window',
+        '   • Unauthorized access codes used',
+        '   • Technical expertise required for override',
+        '',
+        'JUDGE\'S REACTION:',
+        'Justice Menon expressed serious concern about ',
+        'the new evidence and requested additional time ',
+        'to review all materials before making a ruling.',
+        '',
+        'NEXT STEPS:',
+        '• Court to review evidence overnight',
+        '• Hearing reconvened tomorrow at 10:00 AM',
+        '• Prosecution given time to respond',
+        '• Potential for immediate resolution',
+        '',
+        'CLOSING REMARKS:',
+        'The court emphasized the importance of justice ',
+        'and thorough investigation of all facts.',
+        '',
+        '═══════════════════════════════════════════'
+      ].join('\n')
+    },
+    {
+      title: 'INVESTIGATION SUMMARY',
+      caseNumber: 'RK-2025-001',
       leftPage: '═══════════════════════════════════════════\n' +
-               'MEDIA STRATEGY DOCUMENT - LEFT PAGE\n' +
+               'INVESTIGATION SUMMARY - LEFT PAGE\n' +
                '═══════════════════════════════════════════\n\n' +
                'CASE: RK-2025-001\n' +
                'DATE: October 20, 2025\n' +
                'PREPARED BY: ' + advocateName + '\n' +
-               'REFERENCE: Client Reputation Management\n\n' +
-               'STRATEGY OVERVIEW:\n\n' +
-               '1. OBJECTIVES:\n' +
-               '   • Protect client\'s professional reputation\n' +
-               '   • Counteract negative publicity from arrest\n' +
-               '   • Position client as victim of circumstance\n' +
-               '   • Prepare for potential exoneration announcement\n\n' +
-               '2. TARGET AUDIENCES:\n' +
-               '   • Legal community and bar associations\n' +
-               '   • Local media and news outlets\n' +
-               '   • Client\'s professional network\n' +
-               '   • General public in client\'s community\n\n' +
-               '3. KEY MESSAGES:\n' +
-               '   • Client maintains complete innocence\n' +
-               '   • New evidence points to actual perpetrator\n' +
-               '   • Investigation ongoing with promising leads\n' +
-               '   • Client cooperating fully with authorities\n\n' +
+               'COMPREHENSIVE INVESTIGATION SUMMARY\n\n' +
+               'INVESTIGATION TIMELINE:\n\n' +
+               'October 13, 2025:\n' +
+               '• Theft reported by Rajesh Kumar\n' +
+               '• Initial police investigation begun\n' +
+               '• Rajesh Kumar wrongfully arrested\n\n' +
+               'October 14-15, 2025:\n' +
+               '• Bail hearing for Rajesh Kumar\n' +
+               '• Initial forensic collection\n' +
+               '• Security footage review begins\n\n' +
+               'October 16-17, 2025:\n' +
+               '• Detailed forensic analysis\n' +
+               '• Financial investigation initiated\n' +
+               '• Witness interviews conducted\n\n' +
                '═══════════════════════════════════════════\n' +
                '[CONTINUED ON NEXT PAGE]\n' +
                '═══════════════════════════════════════════',
       rightPage: '═══════════════════════════════════════════\n' +
-                'MEDIA STRATEGY DOCUMENT - RIGHT PAGE\n' +
+                'INVESTIGATION SUMMARY - RIGHT PAGE\n' +
                 '═══════════════════════════════════════════\n\n' +
-                '4. COMMUNICATION CHANNELS:\n' +
-                '   • Press release to major news outlets\n' +
-                '   • Statement to bar association newsletter\n' +
-                '   • Social media updates (controlled)\n' +
-                '   • Direct communication with key contacts\n\n' +
-                '5. TIMING:\n' +
-                '   • Immediate: Controlled information release\n' +
-                '   • Ongoing: Regular updates as appropriate\n' +
-                '   • Resolution: Full exoneration announcement\n' +
-                '   • Follow-up: Reputation restoration efforts\n\n' +
-                '6. TACTICS:\n' +
-                '   • Emphasize strength of defense case\n' +
-                '   • Highlight investigative diligence\n' +
-                '   • Avoid speculation about outcome\n' +
-                '   • Maintain professional decorum\n\n' +
-                '7. CRISIS MANAGEMENT:\n' +
-                '   • Rapid response to negative coverage\n' +
-                '   • Legal action against defamation\n' +
-                '   • Support network activation\n' +
-                '   • Client counseling and preparation\n\n' +
-                'APPROVAL:\n' +
-                '_______________________________\n' +
-                advocateName + '\n' +
-                'Date: October 20, 2025\n\n' +
+                'October 18-19, 2025:\n' +
+                '• Breakthrough in digital forensics\n' +
+                '• Ravi Prasad identified as suspect\n' +
+                '• Financial evidence corroborating theory\n\n' +
+                'October 20, 2025:\n' +
+                '• Comprehensive evidence package prepared\n' +
+                '• Court presentation ready\n' +
+                '• Arrest warrant drafted for Ravi Prasad\n\n' +
+                'KEY FINDINGS:\n\n' +
+                '1. PRIMARY SUSPECT:\n' +
+                '   • Ravi Prasad, warehouse assistant\n' +
+                '   • Strong financial motive\n' +
+                '   • Technical knowledge for security override\n\n' +
+                '2. EVIDENCE CATEGORIES:\n' +
+                '   • Physical: Fingerprints, DNA, tool marks\n' +
+                '   • Digital: System logs, deleted files\n' +
+                '   • Financial: Bank records, asset acquisition\n' +
+                '   • Testimonial: Witness statements, behavior\n\n' +
+                '3. INVESTIGATION QUALITY:\n' +
+                '   • Initial investigation was superficial\n' +
+                '   • Key evidence overlooked\n' +
+                '   • Wrongful focus on petitioner\n' +
+                '   • Need for procedural review\n\n' +
+                'RECOMMENDATIONS:\n' +
+                '• Immediate arrest of Ravi Prasad\n' +
+                '• Full case dismissal for Rajesh Kumar\n' +
+                '• Return of all personal effects\n' +
+                '• Investigation of original procedures\n\n' +
                 '═══════════════════════════════════════════'
     },
     {
       title: 'CASE FILE #001',
       caseNumber: 'RK-2025-001',
       leftPage: '═══════════════════════════════════════════\n' +
-               'COURT HEARING NOTES - LEFT PAGE\n' +
+               'CASE RESOLUTION DOCUMENT - LEFT PAGE\n' +
                '═══════════════════════════════════════════\n\n' +
                'CASE: RK-2025-001\n' +
-               'DATE: October 20, 2025\n' +
-               'HEARING: Morning Session\n' +
-               'COURT: Magistrate Court, Hall 2B\n' +
-               'JUDGE: Hon\'ble Justice Priya Menon\n\n' +
-               'ATTENDANCE:\n' +
-               '• ' + advocateName + ' - Defense Counsel\n' +
-               '• Mr. Rajesh Kumar - Petitioner\n' +
-               '• Public Prosecutor - Representing State\n' +
-               '• Court Reporter - Documentation\n' +
-               '• Security Personnel - Court Security\n\n' +
-               'AGENDA:\n' +
-               '1. Review of Bail Conditions\n' +
-               '2. Presentation of New Evidence\n' +
-               '3. Discussion of Investigation Progress\n' +
-               '4. Scheduling of Future Proceedings\n\n' +
-               'OPENING REMARKS:\n' +
-               'The Hon\'ble Justice welcomed all parties and \n' +
-               'acknowledged receipt of defense submissions.\n\n' +
+               'DATE: October 21, 2025\n' +
+               'PREPARED BY: Court Registry\n' +
+               'REFERENCE: Final Judgment\n\n' +
+               'COURT ORDER:\n\n' +
+               'IN THE MAGISTRATE COURT\n' +
+               '[Court Address, Bangalore]\n\n' +
+               'Case No.: RK-2025-001\n' +
+               'Date: October 21, 2025\n\n' +
+               'Hon\'ble Justice Priya Menon\n' +
+               'Presiding Officer\n\n' +
+               'BETWEEN:\n' +
+               'Rajesh Kumar ........................ Petitioner\n' +
+               '                    and\n' +
+               'State of Karnataka ............. Respondent\n\n' +
+               'FINAL JUDGMENT:\n\n' +
+               'Upon thorough review of all evidence presented \n' +
+               'by both parties and consideration of the \n' +
+               'comprehensive investigation findings, this \n' +
+               'Court hereby passes the following judgment:\n\n' +
+               '1. All charges against the petitioner, \n' +
+               '   Rajesh Kumar, are hereby dismissed.\n\n' +
+               '2. The petitioner is fully exonerated of all \n' +
+               '   allegations related to this case.\n\n' +
                '═══════════════════════════════════════════\n' +
                '[CONTINUED ON NEXT PAGE]\n' +
                '═══════════════════════════════════════════',
       rightPage: '═══════════════════════════════════════════\n' +
-                'COURT HEARING NOTES - RIGHT PAGE\n' +
+                'CASE RESOLUTION DOCUMENT - RIGHT PAGE\n' +
                 '═══════════════════════════════════════════\n\n' +
-                'EVIDENCE PRESENTATION:\n' +
-                'Defense counsel presented comprehensive \n' +
-                'evidence package including:\n\n' +
-                '1. Forensic Reports:\n' +
-                '   • Fingerprints matching Ravi Prasad\n' +
-                '   • DNA evidence linking to suspect\n' +
-                '   • Digital forensics of system tampering\n\n' +
-                '2. Financial Documentation:\n' +
-                '   • Bank records showing suspicious deposits\n' +
-                '   • Asset acquisition by Ravi Prasad\n' +
-                '   • Gambling debts creating motive\n\n' +
-                '3. Surveillance Analysis:\n' +
-                '   • System failure during theft window\n' +
-                '   • Unauthorized access codes used\n' +
-                '   • Technical expertise required for override\n\n' +
-                'JUDGE\'S REACTION:\n' +
-                'Justice Menon expressed serious concern about \n' +
-                'the new evidence and requested additional time \n' +
-                'to review all materials before making a ruling.\n\n' +
-                'NEXT STEPS:\n' +
-                '• Court to review evidence overnight\n' +
-                '• Hearing reconvened tomorrow at 10:00 AM\n' +
-                '• Prosecution given time to respond\n' +
-                '• Potential for immediate resolution\n\n' +
-                'CLOSING REMARKS:\n' +
-                'The court emphasized the importance of justice \n' +
-                'and thorough investigation of all facts.\n\n' +
+                '3. An arrest warrant is hereby issued for \n' +
+                '   Ravi Prasad, employee of TechDistributors, \n' +
+                '   for theft and evidence tampering.\n\n' +
+                '4. All personal effects of the petitioner \n' +
+                '   shall be immediately returned.\n\n' +
+                '5. The petitioner shall receive a formal \n' +
+                '   apology from the Bangalore Police Department.\n\n' +
+                '6. This case is hereby closed with prejudice.\n\n' +
+                'It is so ordered.\n\n' +
+                '                    _______________________________\n' +
+                '                    (Signature)\n' +
+                '                    Hon\'ble Justice Priya Menon\n' +
+                '                    \n' +
+                'Date: October 21, 2025\n' +
+                'Seal of Court: _______________\n\n' +
+                'NOTES:\n' +
+                '• Judgment delivered in open court\n' +
+                '• Both parties present during reading\n' +
+                '• Petitioner\'s counsel expressed satisfaction\n' +
+                '• Prosecution indicated intention to appeal\n' +
+                '• Media present for public interest aspects\n\n' +
+                '═══════════════════════════════════════════\n' +
+                'END OF CASE FILE\n' +
                 '═══════════════════════════════════════════'
-    },
-    {
-      title: 'INVESTIGATION SUMMARY',
-      caseNumber: 'RK-2025-013',
-      leftPage: `═══════════════════════════════════════════
-INVESTIGATION SUMMARY - LEFT PAGE
-import React, { useState, useRef, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, X, Volume2, VolumeX } from 'lucide-react';
-import { useUser } from '../contexts/UserContext';
-
-export default function BookViewer() {
-  const { user } = useUser();
-  const [opened, setOpened] = useState(false);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [isFlipping, setIsFlipping] = useState(false);
-  const [rotation, setRotation] = useState({ x: 0, y: 0 });
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  const [currentSpeech, setCurrentSpeech] = useState<'left' | 'right' | null>(null);
-  const [showIntro, setShowIntro] = useState(true); // For animation intro
-  const [introStep, setIntroStep] = useState(0); // For step-by-step animation
-  const containerRef = useRef<HTMLDivElement>(null);
-  const speechSynthesisRef = useRef<SpeechSynthesisUtterance | null>(null);
-
-  // Cleanup speech on unmount
-  useEffect(() => {
-    return () => {
-      if (speechSynthesisRef.current && window.speechSynthesis.speaking) {
-        window.speechSynthesis.cancel();
-      }
-    };
-  }, []);
-
-  // Get advocate name from user profile or use default
-  const advocateName = user?.firstName && user?.lastName 
-    ? 'Adv. ' + user.firstName + ' ' + user.lastName 
-    : 'Adv. Aditi Rao';
-
-  // Generate suspenseful case data with more pages
-  const generateCaseData = () => {
-    const baseCaseData = [
-      {
-        title: 'INVESTIGATION SUMMARY',
-        caseNumber: 'RK-2025-001',
-        leftPage: '═══════════════════════════════════════════\n\nCASE: RK-2025-001\nDATE: October 20, 2025\nPREPARED BY: ' + advocateName + '\nCOMPREHENSIVE INVESTIGATION SUMMARY'
-
-INVESTIGATION TIMELINE:
-
-October 13, 2025:
-• Theft reported by Rajesh Kumar
-• Initial police investigation begun
-• Rajesh Kumar wrongfully arrested
-
-October 14-15, 2025:
-• Bail hearing for Rajesh Kumar
-• Initial forensic collection
-• Security footage review begins
-
-October 16-17, 2025:
-• Detailed forensic analysis
-• Financial investigation initiated
-• Witness interviews conducted
-
-═══════════════════════════════════════════
-[CONTINUED ON NEXT PAGE]
-═══════════════════════════════════════════`,
-      rightPage: `═══════════════════════════════════════════
-INVESTIGATION SUMMARY - RIGHT PAGE
-═══════════════════════════════════════════
-
-October 18-19, 2025:
-• Breakthrough in digital forensics
-• Ravi Prasad identified as suspect
-• Financial evidence corroborating theory
-
-October 20, 2025:
-• Comprehensive evidence package prepared
-• Court presentation ready
-• Arrest warrant drafted for Ravi Prasad
-
-KEY FINDINGS:
-
-1. PRIMARY SUSPECT:
-   • Ravi Prasad, warehouse assistant
-   • Strong financial motive
-   • Technical knowledge for security override
-
-2. EVIDENCE CATEGORIES:
-   • Physical: Fingerprints, DNA, tool marks
-   • Digital: System logs, deleted files
-   • Financial: Bank records, asset acquisition
-   • Testimonial: Witness statements, behavior
-
-3. INVESTIGATION QUALITY:
-   • Initial investigation was superficial
-   • Key evidence overlooked
-   • Wrongful focus on petitioner
-   • Need for procedural review
-
-RECOMMENDATIONS:
-• Immediate arrest of Ravi Prasad
-• Full case dismissal for Rajesh Kumar
-• Return of all personal effects
-• Investigation of original procedures
-
-═══════════════════════════════════════════`
-    },
-    {
-      title: 'CASE FILE #001',
-      caseNumber: 'RK-2025-001',
-      leftPage: `═══════════════════════════════════════════
-CASE RESOLUTION DOCUMENT - LEFT PAGE
-═══════════════════════════════════════════
-
-CASE: RK-2025-001
-DATE: October 21, 2025
-PREPARED BY: Court Registry
-REFERENCE: Final Judgment
-
-COURT ORDER:
-
-IN THE MAGISTRATE COURT
-[Court Address, Bangalore]
-
-Case No.: RK-2025-001
-Date: October 21, 2025
-
-Hon'ble Justice Priya Menon
-Presiding Officer
-
-BETWEEN:
-Rajesh Kumar ........................ Petitioner
-                    and
-State of Karnataka ............. Respondent
-
-FINAL JUDGMENT:
-
-Upon thorough review of all evidence presented 
-by both parties and consideration of the 
-comprehensive investigation findings, this 
-Court hereby passes the following judgment:
-
-1. All charges against the petitioner, 
-   Rajesh Kumar, are hereby dismissed.
-
-2. The petitioner is fully exonerated of all 
-   allegations related to this case.
-
-═══════════════════════════════════════════
-[CONTINUED ON NEXT PAGE]
-═══════════════════════════════════════════`,
-      rightPage: `═══════════════════════════════════════════
-CASE RESOLUTION DOCUMENT - RIGHT PAGE
-═══════════════════════════════════════════
-
-3. An arrest warrant is hereby issued for 
-   Ravi Prasad, employee of TechDistributors, 
-   for theft and evidence tampering.
-
-4. All personal effects of the petitioner 
-   shall be immediately returned.
-
-5. The petitioner shall receive a formal 
-   apology from the Bangalore Police Department.
-
-6. This case is hereby closed with prejudice.
-
-It is so ordered.
-
-                    _______________________________
-                    (Signature)
-                    Hon'ble Justice Priya Menon
-                    
-Date: October 21, 2025
-Seal of Court: _______________
-
-NOTES:
-• Judgment delivered in open court
-• Both parties present during reading
-• Petitioner's counsel expressed satisfaction
-• Prosecution indicated intention to appeal
-• Media present for public interest aspects
-
-═══════════════════════════════════════════
-END OF CASE FILE
-═══════════════════════════════════════════`
     }
   ];
 
-  // Expand caseData to 30+ pages by duplicating with variations
+  // Expand caseData to 35+ pages by duplicating with variations
   const expandedCaseData = [...caseData];
   while (expandedCaseData.length < 35) {
     // Add more suspenseful pages with variations
     const index = expandedCaseData.length - caseData.length + 1;
     expandedCaseData.push({
-      title: `CASE FILE #001`,
-      caseNumber: `RK-2025-001`,
-      leftPage: `═══════════════════════════════════════════
-INVESTIGATION NOTES - LEFT PAGE
-═══════════════════════════════════════════
-
-FILE: RK-2025-001
-DATE: October 20, 2025
-INVESTIGATOR: Detective Unit ${index}
-REFERENCE: Ongoing Case Analysis
-
-SUSPICIOUS ACTIVITIES:
-
-1. UNUSUAL PATTERNS:
-   • ${index === 1 ? 'Ravi' : 'Subject'} seen near warehouse after hours
-   • Multiple unexplained absences from work
-   • Recent changes in behavior and spending
-
-2. DIGITAL TRACES:
-   • Internet searches for "security override"
-   • Visits to pawn shops and electronics stores
-   • Unusual phone activity during critical times
-
-3. WITNESS REPORTS:
-   • Neighbor sightings of suspicious activity
-   • Colleague observations of nervous behavior
-   • Security guard notes about late departures
-
-═══════════════════════════════════════════
-[CONTINUED ON NEXT PAGE]
-═══════════════════════════════════════════`,
-      rightPage: `═══════════════════════════════════════════
-INVESTIGATION NOTES - RIGHT PAGE
-═══════════════════════════════════════════
-
-4. FINANCIAL ANOMALIES:
-   • Sudden increase in cash transactions
-   • Unexplained deposits in bank accounts
-   • Purchase of luxury items without income
-
-5. PHYSICAL EVIDENCE:
-   • Tool marks matching warehouse security
-   • Fibers consistent with warehouse materials
-   • Traces of substances used in electronics
-
-6. INTERROGATION NOTES:
-   • Subject becomes agitated when questioned
-   • Provides inconsistent statements
-   • Shows signs of guilt and deception
-
-7. RECOMMENDATIONS:
-   • Continue surveillance of subject
-   • Obtain search warrant for residence
-   • Interview additional witnesses
-   • Coordinate with cyber crimes unit
-
-INVESTIGATOR'S NOTES:
-The evidence continues to point toward 
-${index === 1 ? 'Ravi Prasad' : 'the primary suspect'} 
-as the perpetrator. Further investigation 
-is warranted to build a stronger case.
-
-_______________________________
-Detective Inspector ${String.fromCharCode(64 + index)}
-Badge Number: DI-${(1000 + index * 23).toString()}
-
-═══════════════════════════════════════════`
+      title: 'CASE FILE #001',
+      caseNumber: 'RK-2025-001',
+      leftPage: [
+        '═══════════════════════════════════════════',
+        'INVESTIGATION NOTES - LEFT PAGE',
+        '═══════════════════════════════════════════',
+        '',
+        'FILE: RK-2025-001',
+        'DATE: October 20, 2025',
+        'INVESTIGATOR: Detective Unit ' + index,
+        'REFERENCE: Ongoing Case Analysis',
+        '',
+        'SUSPICIOUS ACTIVITIES:',
+        '',
+        '1. UNUSUAL PATTERNS:',
+        '   • ' + (index === 1 ? 'Ravi' : 'Subject') + ' seen near warehouse after hours',
+        '   • Multiple unexplained absences from work',
+        '   • Recent changes in behavior and spending',
+        '',
+        '2. DIGITAL TRACES:',
+        '   • Internet searches for "security override"',
+        '   • Visits to pawn shops and electronics stores',
+        '   • Unusual phone activity during critical times',
+        '',
+        '3. WITNESS REPORTS:',
+        '   • Neighbor sightings of suspicious activity',
+        '   • Colleague observations of nervous behavior',
+        '   • Security guard notes about late departures',
+        '',
+        '═══════════════════════════════════════════',
+        '[CONTINUED ON NEXT PAGE]',
+        '═══════════════════════════════════════════'
+      ].join('\n'),
+      rightPage: [
+        '═══════════════════════════════════════════',
+        'INVESTIGATION NOTES - RIGHT PAGE',
+        '═══════════════════════════════════════════',
+        '',
+        '4. FINANCIAL ANOMALIES:',
+        '   • Sudden increase in cash transactions',
+        '   • Unexplained deposits in bank accounts',
+        '   • Purchase of luxury items without income',
+        '',
+        '5. PHYSICAL EVIDENCE:',
+        '   • Tool marks matching warehouse security',
+        '   • Fibers consistent with warehouse materials',
+        '   • Traces of substances used in electronics',
+        '',
+        '6. INTERROGATION NOTES:',
+        '   • Subject becomes agitated when questioned',
+        '   • Provides inconsistent statements',
+        '   • Shows signs of guilt and deception',
+        '',
+        '7. RECOMMENDATIONS:',
+        '   • Continue surveillance of subject',
+        '   • Obtain search warrant for residence',
+        '   • Interview additional witnesses',
+        '   • Coordinate with cyber crimes unit',
+        '',
+        'INVESTIGATOR\'S NOTES:',
+        'The evidence continues to point toward ',
+        (index === 1 ? 'Ravi Prasad' : 'the primary suspect'),
+        'as the perpetrator. Further investigation ',
+        'is warranted to build a stronger case.',
+        '',
+        '_______________________________',
+        'Detective Inspector ' + String.fromCharCode(64 + index),
+        'Badge Number: DI-' + (1000 + index * 23).toString(),
+        '',
+        '═══════════════════════════════════════════'
+      ].join('\n')
     });
   }
 
@@ -1284,9 +1433,9 @@ Badge Number: DI-${(1000 + index * 23).toString()}
       <div className="w-full h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 flex items-center justify-center overflow-hidden relative">
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className={'absolute top-1/4 left-1/4 w-64 h-64 bg-blue-500 rounded-full mix-blend-soft-light filter blur-3xl opacity-30 animate-blob ' + (introStep >= 1 ? 'animate-blob' : '')}></div>
-          <div className={'absolute top-1/3 right-1/4 w-64 h-64 bg-purple-500 rounded-full mix-blend-soft-light filter blur-3xl opacity-30 animate-blob animation-delay-2000 ' + (introStep >= 1 ? 'animate-blob' : '')}></div>
-          <div className={'absolute bottom-1/4 left-1/2 w-64 h-64 bg-indigo-500 rounded-full mix-blend-soft-light filter blur-3xl opacity-30 animate-blob animation-delay-4000 ' + (introStep >= 1 ? 'animate-blob' : '')}></div>
+          <div className={'absolute top-1/4 left-1/4 w-64 h-64 bg-blue-500 rounded-full mix-blend-soft-light filter blur-3xl opacity-30 ' + (introStep >= 1 ? 'animate-blob' : '')}></div>
+          <div className={'absolute top-1/3 right-1/4 w-64 h-64 bg-purple-500 rounded-full mix-blend-soft-light filter blur-3xl opacity-30 animation-delay-2000 ' + (introStep >= 1 ? 'animate-blob' : '')}></div>
+          <div className={'absolute bottom-1/4 left-1/2 w-64 h-64 bg-indigo-500 rounded-full mix-blend-soft-light filter blur-3xl opacity-30 animation-delay-4000 ' + (introStep >= 1 ? 'animate-blob' : '')}></div>
           
           {/* Indian law decorative elements */}
           <div className={'absolute top-10 left-10 text-amber-200 opacity-20 ' + (introStep >= 2 ? 'animate-fade-in' : 'opacity-0')}>
@@ -1312,8 +1461,8 @@ Badge Number: DI-${(1000 + index * 23).toString()}
                 </svg>
               </div>
             </div>
-            <h1 className="text-5xl font-bold text-white mb-4 tracking-wider">धर्मशिखर</h1>
-            <p className="text-2xl text-amber-200 font-semibold">DHARMASIKHARA</p>
+            <h1 className="text-6xl font-bold text-white mb-4 tracking-wider">धर्मशिखर</h1>
+            <p className="text-3xl text-amber-200 font-semibold">DHARMASIKHARA</p>
           </div>
         )}
         
@@ -1326,9 +1475,9 @@ Badge Number: DI-${(1000 + index * 23).toString()}
                 </svg>
               </div>
             </div>
-            <h1 className="text-5xl font-bold text-white mb-4 tracking-wider animate-pulse">धर्मशिखर</h1>
-            <p className="text-2xl text-amber-200 font-semibold animate-pulse">DHARMASIKHARA</p>
-            <p className="text-xl text-amber-100 mt-4 animate-fade-in">The Pinnacle of Law</p>
+            <h1 className="text-6xl font-bold text-white mb-4 tracking-wider animate-pulse">धर्मशिखर</h1>
+            <p className="text-3xl text-amber-200 font-semibold animate-pulse">DHARMASIKHARA</p>
+            <p className="text-2xl text-amber-100 mt-6 animate-fade-in">The Pinnacle of Law</p>
           </div>
         )}
         
@@ -1344,9 +1493,9 @@ Badge Number: DI-${(1000 + index * 23).toString()}
                 <div className="absolute inset-0 w-32 h-32 rounded-full border-4 border-amber-300 animate-ping opacity-20"></div>
               </div>
             </div>
-            <h1 className="text-5xl font-bold text-white mb-4 tracking-wider">धर्मशिखर</h1>
-            <p className="text-2xl text-amber-200 font-semibold">DHARMASIKHARA</p>
-            <p className="text-xl text-amber-100 mt-4">Legal Practice Simulator</p>
+            <h1 className="text-6xl font-bold text-white mb-4 tracking-wider">धर्मशिखर</h1>
+            <p className="text-3xl text-amber-200 font-semibold">DHARMASIKHARA</p>
+            <p className="text-2xl text-amber-100 mt-6">Legal Practice Simulator</p>
           </div>
         )}
         
@@ -1359,13 +1508,13 @@ Badge Number: DI-${(1000 + index * 23).toString()}
                 </svg>
               </div>
             </div>
-            <h1 className="text-5xl font-bold text-white mb-2 tracking-wider">धर्मशिखर</h1>
-            <p className="text-2xl text-amber-200 font-semibold mb-6">DHARMASIKHARA</p>
-            <div className="border-t border-b border-amber-300 py-3 mb-4 inline-block px-8">
-              <p className="text-amber-100 text-lg font-medium">{advocateName}</p>
-              <p className="text-amber-200 text-sm">B.A. LL.B (Hons.)</p>
+            <h1 className="text-6xl font-bold text-white mb-4 tracking-wider">धर्मशिखर</h1>
+            <p className="text-3xl text-amber-200 font-semibold mb-8">DHARMASIKHARA</p>
+            <div className="border-t border-b border-amber-300 py-4 mb-6 inline-block px-10">
+              <p className="text-amber-100 text-xl font-medium">{advocateName}</p>
+              <p className="text-amber-200 text-lg">B.A. LL.B (Hons.)</p>
             </div>
-            <p className="text-xl text-amber-100 mt-4">Initializing Legal Scenario...</p>
+            <p className="text-2xl text-amber-100 mt-6">Initializing Legal Scenario...</p>
           </div>
         )}
         
@@ -1378,12 +1527,12 @@ Badge Number: DI-${(1000 + index * 23).toString()}
                 </svg>
               </div>
             </div>
-            <h1 className="text-5xl font-bold text-white mb-2 tracking-wider">धर्मशिखर</h1>
-            <p className="text-2xl text-amber-200 font-semibold mb-6">DHARMASIKHARA</p>
-            <p className="text-xl text-amber-100">Ready to Open Case Files</p>
+            <h1 className="text-6xl font-bold text-white mb-4 tracking-wider">धर्मशिखर</h1>
+            <p className="text-3xl text-amber-200 font-semibold mb-8">DHARMASIKHARA</p>
+            <p className="text-2xl text-amber-100">Ready to Open Case Files</p>
             <button 
               onClick={() => setShowIntro(false)}
-              className="mt-8 px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg transition transform hover:scale-105 shadow-lg"
+              className="mt-10 px-8 py-4 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg transition transform hover:scale-105 shadow-lg text-xl"
             >
               ENTER SIMULATION
             </button>
@@ -1554,3 +1703,5 @@ Badge Number: DI-${(1000 + index * 23).toString()}
     </div>
   );
 }
+
+
