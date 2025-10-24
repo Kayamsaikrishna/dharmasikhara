@@ -21,6 +21,7 @@ import SubscriptionPage from './pages/SubscriptionPage';
 import EditProfile from './pages/EditProfile';
 import ScenarioDetail from './components/ScenarioDetail';
 import ScenarioSimulationPage from './pages/ScenarioSimulationPage';
+import ClientInterview from './components/ClientInterview';
 import { UserProvider } from './contexts/UserContext';
 // import Navbar from './components/Navbar';
 // import Footer from './components/Footer';
@@ -37,6 +38,7 @@ function App() {
             <Route path="/scenarios/:id" element={<ScenarioDetail />} />
             <Route path="/courtroom" element={<Courtroom />} />
             <Route path="/scenario-simulation" element={<ScenarioSimulationPage />} />
+            <Route path="/client-interview" element={<ClientInterview />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/multiplayer" element={<MultiplayerPage />} />
             {/* <Route path="/marketplace" element={<MarketplacePage />} /> */}
