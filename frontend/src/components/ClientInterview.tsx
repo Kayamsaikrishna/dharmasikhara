@@ -22,13 +22,54 @@ const ClientInterview: React.FC = () => {
   const [lightsOn, setLightsOn] = useState<boolean>(true);
   const [userInput, setUserInput] = useState<string>('');
   const [isListening, setIsListening] = useState<boolean>(false);
+  const [showHelp, setShowHelp] = useState<boolean>(false);
+  const [recommendation, setRecommendation] = useState<string>('');
+  const [showRecommendation, setShowRecommendation] = useState<boolean>(false);
+  const [interviewCompleted, setInterviewCompleted] = useState<boolean>(false);
+  const [showCompletionMessage, setShowCompletionMessage] = useState<boolean>(false);
+  const [interviewTimer, setInterviewTimer] = useState<number>(900); // 15 minutes in seconds
+  const [isTimerActive, setIsTimerActive] = useState<boolean>(true);
   const conversationEngineRef = useRef<any>(null);
   const recognitionRef = useRef<any>(null);
+  const lawyerRef = useRef<any>(null);
+  const clientRef = useRef<any>(null);
+  const isTextInputFocusedRef = useRef<boolean>(false);
 
   // Initialize the conversation engine
   useEffect(() => {
     conversationEngineRef.current = new RajeshConversationEngine(rajeshTrainingData);
   }, []);
+
+  // Timer effect for interview
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+    
+    if (isTimerActive && interviewTimer > 0 && !interviewCompleted) {
+      interval = setInterval(() => {
+        setInterviewTimer(prev => {
+          if (prev <= 1) {
+            setIsTimerActive(false);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } else if (interviewTimer === 0) {
+      // Time's up, show completion option
+      setShowCompletionMessage(true);
+    }
+    
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isTimerActive, interviewTimer, interviewCompleted]);
+
+  // Format time for display
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
 
   // Initialize speech recognition
   useEffect(() => {
@@ -55,6 +96,55 @@ const ClientInterview: React.FC = () => {
       };
     }
   }, []);
+
+  // Recommendation engine
+  const getRecommendation = (userInput: string, trustLevel: number) => {
+    const lowerInput = userInput.toLowerCase();
+    
+    // Check if user is going in the wrong direction
+    if (trustLevel < 30 && (
+      lowerInput.includes('guilty') || 
+      lowerInput.includes('confess') || 
+      lowerInput.includes('admit') ||
+      lowerInput.includes('why did you') ||
+      lowerInput.includes('you stole')
+    )) {
+      return "Approach with caution. The client seems uncomfortable with direct accusations. Try building more rapport first by asking about his background or family.";
+    }
+    
+    // Suggest next steps based on conversation progress
+    if (trustLevel > 70) {
+      if (!lowerInput.includes('alibi') && !lowerInput.includes('where were you')) {
+        return "You've built good rapport. Now would be a good time to ask about his whereabouts during the incident or if he has any witnesses who can support his story.";
+      }
+    }
+    
+    // General guidance
+    if (lowerInput.includes('help') || lowerInput.includes('what should i do')) {
+      return "Try asking open-ended questions about the timeline of events. Focus on understanding his perspective without making assumptions.";
+    }
+    
+    // Encourage evidence discussion
+    if (trustLevel > 50 && (
+      lowerInput.includes('evidence') || 
+      lowerInput.includes('proof') || 
+      lowerInput.includes('security')
+    )) {
+      return "Good direction. Ask specifically about the CCTV footage and whether there might be other people in the area who saw what happened.";
+    }
+    
+    return "";
+  };
+
+  // Complete interview function
+  const completeInterview = () => {
+    setInterviewCompleted(true);
+    setIsTimerActive(false);
+    setStatus('Interview Completed');
+    setRecommendation('Client interview completed. Proceeding to evidence analysis phase.');
+    setShowRecommendation(true);
+    setTimeout(() => setShowRecommendation(false), 5000);
+  };
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -83,7 +173,7 @@ const ClientInterview: React.FC = () => {
 
     const clock = new THREE.Clock();
     let mouseX = 0, mouseY = 0;
-    let lawyer: any, client: any, documents: any[] = [];
+    let documents: any[] = [];
     let laptop: any, recorder: any;
 
     // Lighting
@@ -621,15 +711,16 @@ const ClientInterview: React.FC = () => {
     createRoom();
     createTable();
 
-    createChair(0, -2.2, 0);
-    createChair(0, 2.2, Math.PI);
+    const chair1 = createChair(0, -2.2, 0);
+    const chair2 = createChair(0, 2.2, Math.PI);
 
-    lawyer = createHuman(0x1a1a2a, [0, 0.6, -1.8], true);
-    client = createHuman(0x3a3a4a, [0, 0.6, 1.8], false);
-    client.rotation.y = Math.PI;
+    lawyerRef.current = createHuman(0x1a1a2a, [0, 0.6, -1.8], true);
+    clientRef.current = createHuman(0x3a3a4a, [0, 0.6, 1.8], false);
+    clientRef.current.rotation.y = Math.PI;
     
-    // Expose client to window for debugging
-    (window as any).clientRef = client;
+    // Expose references to window for debugging
+    (window as any).clientRef = clientRef.current;
+    (window as any).lawyerRef = lawyerRef.current;
 
     laptop = createLaptop(3.5, 1.26, -2);
     recorder = createRecorder(0, 1.27, 0);
@@ -646,14 +737,20 @@ const ClientInterview: React.FC = () => {
     createEvidenceBoard();
 
     const onMouseMove = (event: MouseEvent) => {
-      mouseX = (event.clientX / window.innerWidth) * 2 - 1;
-      mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+      // Only allow mouse movement if text input is not focused
+      if (!isTextInputFocusedRef.current) {
+        mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+        mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+      }
     };
 
     const onWheel = (event: WheelEvent) => {
-      event.preventDefault();
-      cameraDistanceRef.current += event.deltaY * 0.01;
-      cameraDistanceRef.current = Math.max(5, Math.min(20, cameraDistanceRef.current));
+      // Only allow zoom if text input is not focused
+      if (!isTextInputFocusedRef.current) {
+        event.preventDefault();
+        cameraDistanceRef.current += event.deltaY * 0.01;
+        cameraDistanceRef.current = Math.max(5, Math.min(20, cameraDistanceRef.current));
+      }
     };
 
     const onMouseClick = (event: MouseEvent) => {
@@ -706,16 +803,40 @@ const ClientInterview: React.FC = () => {
     window.addEventListener('resize', onWindowResize);
 
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'l' || e.key === 'L') {
-        setLightsOn(prev => { lightsOnRef.current = !prev; return !prev; });
-      } else if (e.key === '+' || e.key === '=') {
-        cameraDistanceRef.current = Math.max(4, cameraDistanceRef.current - 1);
-      } else if (e.key === '-' || e.key === '_') {
-        cameraDistanceRef.current = Math.min(20, cameraDistanceRef.current + 1);
-      } else if (e.key === 'ArrowLeft') {
-        cameraAngleRef.current -= 0.12;
-      } else if (e.key === 'ArrowRight') {
-        cameraAngleRef.current += 0.12;
+      // Prevent default behavior for specific keys
+      if (['l', 'L', 'ArrowLeft', 'ArrowRight', '+', '-', '_', '='].includes(e.key)) {
+        // Only prevent default if text input is not focused
+        if (!isTextInputFocusedRef.current) {
+          e.preventDefault();
+        }
+      }
+      
+      // Only process keyboard controls if text input is not focused
+      if (!isTextInputFocusedRef.current) {
+        if (e.key === 'l' || e.key === 'L') {
+          setLightsOn(prev => { lightsOnRef.current = !prev; return !prev; });
+        } else if (e.key === '+' || e.key === '=') {
+          cameraDistanceRef.current = Math.max(4, cameraDistanceRef.current - 1);
+        } else if (e.key === '-' || e.key === '_') {
+          cameraDistanceRef.current = Math.min(20, cameraDistanceRef.current + 1);
+        } else if (e.key === 'ArrowLeft') {
+          cameraAngleRef.current -= 0.12;
+        } else if (e.key === 'ArrowRight') {
+          cameraAngleRef.current += 0.12;
+        } else if (e.key === 'h' || e.key === 'H') {
+          setShowHelp(prev => !prev);
+        } else if (e.key === 'r' || e.key === 'R') {
+          // Trigger recommendation
+          if (conversationEngineRef.current) {
+            const summary = conversationEngineRef.current.getSummary();
+            const rec = getRecommendation(userInput, summary.trustLevel);
+            if (rec) {
+              setRecommendation(rec);
+              setShowRecommendation(true);
+              setTimeout(() => setShowRecommendation(false), 5000);
+            }
+          }
+        }
       }
     };
     window.addEventListener('keydown', onKeyDown);
@@ -754,12 +875,20 @@ const ClientInterview: React.FC = () => {
       (window as any).currentTrustLevel = response.trustLevel;
       
       // Apply animation to client character based on emotion
-      if (client) {
-        applyEmotionAnimation(client, response.animation);
+      if (clientRef.current) {
+        applyEmotionAnimation(clientRef.current, response.animation);
       }
       
       // Update lighting based on emotion
       updateLightingForEmotion(response.emotion);
+      
+      // Get recommendation
+      const rec = getRecommendation(input, response.trustLevel);
+      if (rec) {
+        setRecommendation(rec);
+        setShowRecommendation(true);
+        setTimeout(() => setShowRecommendation(false), 5000);
+      }
       
       // Hide dialogue after 8 seconds
       setTimeout(() => {
@@ -856,10 +985,6 @@ const ClientInterview: React.FC = () => {
         lightsRef.current.evidenceLight.color.set(colors.evidence);
       }
     };
-    
-    // Expose client and lighting function to window for debugging
-    (window as any).clientRef = client;
-    (window as any).updateLightingForEmotion = updateLightingForEmotion;
     
     // Reset character animations
     const resetCharacterAnimations = (character: any) => {
@@ -1046,16 +1171,16 @@ const ClientInterview: React.FC = () => {
         cameraRef.current.lookAt(0, 1.5, 0);
       }
 
-      if (lawyer) {
+      if (lawyerRef.current) {
         // Animation logic for lawyer
       }
 
-      if (client) {
+      if (clientRef.current) {
         // Apply continuous animations based on current emotion
         const summary = conversationEngineRef.current?.getSummary();
         if (summary && summary.currentEmotion) {
           // Apply subtle continuous animations
-          applyContinuousEmotionAnimation(client, summary.currentEmotion);
+          applyContinuousEmotionAnimation(clientRef.current, summary.currentEmotion);
         }
       }
 
@@ -1174,11 +1299,44 @@ const ClientInterview: React.FC = () => {
     }
   };
   
-  // Expose debug functions to window
+  // Character stand/sit functions
+  const toggleLawyerStand = () => {
+    if (lawyerRef.current) {
+      // Toggle between standing (y=0.6) and sitting (y=0)
+      lawyerRef.current.position.y = lawyerRef.current.position.y === 0.6 ? 0 : 0.6;
+      setStatus(lawyerRef.current.position.y === 0.6 ? 'Lawyer Standing' : 'Lawyer Sitting');
+    }
+  };
+  
+  const toggleClientStand = () => {
+    if (clientRef.current) {
+      // Toggle between standing (y=0.6) and sitting (y=0)
+      clientRef.current.position.y = clientRef.current.position.y === 0.6 ? 0 : 0.6;
+      setStatus(clientRef.current.position.y === 0.6 ? 'Client Standing' : 'Client Sitting');
+    }
+  };
+  
+  // View control functions
+  const showAllDocuments = () => {
+    setStatus('Showing all documents');
+    // This would implement document display logic
+  };
+  
+  const resetCamera = () => {
+    cameraAngleRef.current = 0;
+    cameraDistanceRef.current = 8;
+    setStatus('Camera reset');
+  };
+  
+  // Expose functions to window
   useEffect(() => {
     (window as any).testEmotion = testEmotion;
     (window as any).showConversationSummary = showConversationSummary;
     (window as any).resetConversation = resetConversation;
+    (window as any).lawyerStands = toggleLawyerStand;
+    (window as any).clientStands = toggleClientStand;
+    (window as any).showAllDocuments = showAllDocuments;
+    (window as any).resetCamera = resetCamera;
   }, []);
 
   return (
@@ -1211,12 +1369,161 @@ const ClientInterview: React.FC = () => {
         </div>
       )}
       
+      {/* Help Panel */}
+      {showHelp && (
+        <div className="help-panel absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-br from-gray-900 to-gray-800 text-white p-6 rounded-2xl shadow-2xl w-11/12 max-w-2xl z-20 border border-blue-500 animate-slide-up">
+          <h2 className="text-2xl font-bold mb-4 text-center text-blue-400">Keyboard Controls</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div className="bg-gray-800 p-4 rounded-lg">
+              <h3 className="font-bold text-amber-400 mb-2">Camera Controls</h3>
+              <ul className="space-y-2">
+                <li className="flex justify-between">
+                  <span>Rotate Left</span>
+                  <kbd className="bg-gray-700 px-2 py-1 rounded">← Arrow</kbd>
+                </li>
+                <li className="flex justify-between">
+                  <span>Rotate Right</span>
+                  <kbd className="bg-gray-700 px-2 py-1 rounded">→ Arrow</kbd>
+                </li>
+                <li className="flex justify-between">
+                  <span>Zoom In</span>
+                  <kbd className="bg-gray-700 px-2 py-1 rounded">+</kbd>
+                </li>
+                <li className="flex justify-between">
+                  <span>Zoom Out</span>
+                  <kbd className="bg-gray-700 px-2 py-1 rounded">-</kbd>
+                </li>
+              </ul>
+            </div>
+            <div className="bg-gray-800 p-4 rounded-lg">
+              <h3 className="font-bold text-amber-400 mb-2">Lighting & Other</h3>
+              <ul className="space-y-2">
+                <li className="flex justify-between">
+                  <span>Toggle Lights</span>
+                  <kbd className="bg-gray-700 px-2 py-1 rounded">L</kbd>
+                </li>
+                <li className="flex justify-between">
+                  <span>Show Help</span>
+                  <kbd className="bg-gray-700 px-2 py-1 rounded">H</kbd>
+                </li>
+                <li className="flex justify-between">
+                  <span>Get Recommendation</span>
+                  <kbd className="bg-gray-700 px-2 py-1 rounded">R</kbd>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="bg-blue-900 p-4 rounded-lg mb-6">
+            <h3 className="font-bold text-blue-300 mb-2">Interview Tips</h3>
+            <ul className="list-disc pl-5 space-y-1 text-sm">
+              <li>Press 'R' at any time to get a recommendation on what to ask next</li>
+              <li>Watch Rajesh's body language for emotional cues</li>
+              <li>Build trust before asking sensitive questions</li>
+              <li>Use the recommendation engine when you're unsure what to ask</li>
+            </ul>
+          </div>
+          <div className="text-center">
+            <button 
+              onClick={() => setShowHelp(false)}
+              className="px-6 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold rounded-full hover:from-blue-600 hover:to-indigo-700 transition-all"
+            >
+              Close Help
+            </button>
+          </div>
+        </div>
+      )}
+      
+      {/* Recommendation Panel */}
+      {showRecommendation && (
+        <div className="recommendation-panel absolute top-20 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-amber-900 to-orange-900 text-white p-4 rounded-xl shadow-lg w-11/12 max-w-2xl z-15 animate-slide-up">
+          <div className="flex items-start">
+            <div className="text-2xl mr-3">💡</div>
+            <div>
+              <h3 className="font-bold text-amber-300 mb-1">Recommendation Engine</h3>
+              <p className="text-sm">{recommendation}</p>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Completion Message */}
+      {showCompletionMessage && !interviewCompleted && (
+        <div className="completion-message absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-br from-green-900 to-emerald-900 text-white p-8 rounded-2xl shadow-2xl w-11/12 max-w-2xl z-20 border border-green-500 animate-slide-up">
+          <h2 className="text-3xl font-bold mb-4 text-center text-green-300">Interview Time Completed</h2>
+          <p className="text-lg mb-6 text-center">You've completed the 15-minute client interview. Are you satisfied with the information gathered?</p>
+          <div className="flex justify-center gap-4">
+            <button 
+              onClick={() => {
+                setShowCompletionMessage(false);
+                setIsTimerActive(true);
+                setInterviewTimer(300); // Add 5 more minutes
+                setStatus('Additional Time Granted');
+              }}
+              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold rounded-full hover:from-blue-600 hover:to-indigo-700 transition-all"
+            >
+              Need 5 More Minutes
+            </button>
+            <button 
+              onClick={completeInterview}
+              className="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-full hover:from-green-600 hover:to-emerald-700 transition-all"
+            >
+              Complete Interview
+            </button>
+          </div>
+        </div>
+      )}
+      
+      {/* Interview Completed Message */}
+      {interviewCompleted && (
+        <div className="interview-completed absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-br from-purple-900 to-indigo-900 text-white p-8 rounded-2xl shadow-2xl w-11/12 max-w-2xl z-20 border border-purple-500 animate-slide-up">
+          <h2 className="text-3xl font-bold mb-4 text-center text-purple-300">Interview Completed</h2>
+          <p className="text-lg mb-6 text-center">Client interview has been successfully completed. Proceeding to evidence analysis phase.</p>
+          <div className="text-center">
+            <div className="inline-block bg-gray-800 px-4 py-2 rounded-lg mb-4">
+              <p className="text-sm">Evidence Analysis in Progress</p>
+              <div className="flex items-center justify-center mt-2">
+                <div className="w-3 h-3 bg-purple-500 rounded-full mr-2 animate-pulse"></div>
+                <span className="text-xs">Analyzing collected evidence...</span>
+              </div>
+            </div>
+          </div>
+          <div className="text-center mt-6">
+            <button 
+              onClick={() => {
+                setInterviewCompleted(false);
+                resetConversation();
+                setShowWelcome(true);
+              }}
+              className="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-bold rounded-full hover:from-amber-600 hover:to-orange-700 transition-all"
+            >
+              Restart Interview
+            </button>
+          </div>
+        </div>
+      )}
+      
       {/* Control Panel */}
       <div className="control-panel absolute top-4 right-4 bg-gradient-to-b from-gray-900 to-gray-800 bg-opacity-90 text-white p-5 rounded-2xl shadow-xl w-80 border border-gray-700 animate-subtle-bounce">
         <h3 className="text-2xl font-bold mb-4 flex items-center">
           <span className="mr-2">⚖️</span> Client Interview
           <span className="ml-auto text-amber-400 text-sm animate-pulse-glow px-2 py-1 rounded bg-gray-800">LIVE</span>
         </h3>
+        
+        {/* Timer Display */}
+        <div className="mb-4 p-3 bg-gray-800 rounded-lg">
+          <div className="flex justify-between items-center">
+            <span className="font-semibold">Time Remaining:</span>
+            <span className={`font-mono text-lg ${interviewTimer < 300 ? 'text-red-400' : 'text-green-400'}`}>
+              {formatTime(interviewTimer)}
+            </span>
+          </div>
+          <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
+            <div 
+              className="bg-gradient-to-r from-green-500 to-red-500 h-2 rounded-full transition-all duration-1000" 
+              style={{ width: `${((900 - interviewTimer) / 900) * 100}%` }}
+            ></div>
+          </div>
+        </div>
         
         <div className="control-section mb-4">
           <h4 className="font-semibold mb-2">💬 Interview Controls</h4>
@@ -1225,6 +1532,8 @@ const ClientInterview: React.FC = () => {
               type="text"
               value={userInput}
               onChange={(e) => setUserInput(e.target.value)}
+              onFocus={() => isTextInputFocusedRef.current = true}
+              onBlur={() => isTextInputFocusedRef.current = false}
               placeholder="Ask Rajesh about the case..."
               className="flex-1 px-3 py-2 bg-gray-800 text-white rounded border border-gray-700 focus:outline-none focus:border-blue-500"
             />
@@ -1252,13 +1561,13 @@ const ClientInterview: React.FC = () => {
           <h4 className="font-semibold mb-2">👤 Character Actions</h4>
           <div className="grid grid-cols-2 gap-2">
             <button 
-              onClick={() => (window as any).lawyerStands?.()}
+              onClick={toggleLawyerStand}
               className="px-3 py-2 bg-purple-600 hover:bg-purple-700 rounded text-sm"
             >
               Lawyer Stand/Sit
             </button>
             <button 
-              onClick={() => (window as any).clientStands?.()}
+              onClick={toggleClientStand}
               className="px-3 py-2 bg-purple-600 hover:bg-purple-700 rounded text-sm"
             >
               Client Stand/Sit
@@ -1270,13 +1579,13 @@ const ClientInterview: React.FC = () => {
           <h4 className="font-semibold mb-2">🔍 View Controls</h4>
           <div className="grid grid-cols-2 gap-2">
             <button 
-              onClick={() => (window as any).showAllDocuments?.()}
+              onClick={showAllDocuments}
               className="px-3 py-2 bg-teal-600 hover:bg-teal-700 rounded text-sm"
             >
               Show All Docs
             </button>
             <button 
-              onClick={() => (window as any).resetCamera?.()}
+              onClick={resetCamera}
               className="px-3 py-2 bg-teal-600 hover:bg-teal-700 rounded text-sm"
             >
               Reset View
@@ -1288,25 +1597,25 @@ const ClientInterview: React.FC = () => {
           <h4 className="font-semibold mb-2">📷 Camera Controls</h4>
           <div className="grid grid-cols-4 gap-2">
             <button 
-              onClick={() => (window as any)._investigationRoom?.zoomIn()}
+              onClick={() => cameraDistanceRef.current = Math.max(4, cameraDistanceRef.current - 1)}
               className="px-2 py-1 bg-gray-700 hover:bg-gray-600 rounded text-xs"
             >
               Zoom In
             </button>
             <button 
-              onClick={() => (window as any)._investigationRoom?.zoomOut()}
+              onClick={() => cameraDistanceRef.current = Math.min(20, cameraDistanceRef.current + 1)}
               className="px-2 py-1 bg-gray-700 hover:bg-gray-600 rounded text-xs"
             >
               Zoom Out
             </button>
             <button 
-              onClick={() => (window as any)._investigationRoom?.rotateLeft()}
+              onClick={() => cameraAngleRef.current -= 0.12}
               className="px-2 py-1 bg-gray-700 hover:bg-gray-600 rounded text-xs"
             >
               ◀️
             </button>
             <button 
-              onClick={() => (window as any)._investigationRoom?.rotateRight()}
+              onClick={() => cameraAngleRef.current += 0.12}
               className="px-2 py-1 bg-gray-700 hover:bg-gray-600 rounded text-xs"
             >
               ▶️
@@ -1319,7 +1628,7 @@ const ClientInterview: React.FC = () => {
           <button 
             onClick={() => { 
               setLightsOn(prev => !prev);
-              (window as any)._investigationRoom?.toggleLights();
+              lightsOnRef.current = !lightsOnRef.current;
             }}
             className="w-full py-2 bg-yellow-600 hover:bg-yellow-700 rounded"
           >
@@ -1328,10 +1637,46 @@ const ClientInterview: React.FC = () => {
         </div>
         
         <div className="mt-4 pt-3 border-t border-gray-700">
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center mb-2">
             <strong>Status:</strong>
             <span className="text-blue-400 ml-2 font-mono">{status}</span>
           </div>
+          
+          {/* Help Button */}
+          <button 
+            onClick={() => setShowHelp(prev => !prev)}
+            className="w-full py-2 bg-blue-700 hover:bg-blue-600 rounded mb-3 flex items-center justify-center"
+          >
+            <span className="mr-2">❓</span> Help & Controls
+          </button>
+          
+          {/* Recommendation Button */}
+          <button 
+            onClick={() => {
+              if (conversationEngineRef.current) {
+                const summary = conversationEngineRef.current.getSummary();
+                const rec = getRecommendation(userInput, summary.trustLevel);
+                if (rec) {
+                  setRecommendation(rec);
+                  setShowRecommendation(true);
+                  setTimeout(() => setShowRecommendation(false), 5000);
+                }
+              }
+            }}
+            className="w-full py-2 bg-amber-700 hover:bg-amber-600 rounded mb-3 flex items-center justify-center"
+          >
+            <span className="mr-2">🤖</span> Get Recommendation
+          </button>
+          
+          {/* Complete Interview Button */}
+          {!interviewCompleted && (
+            <button 
+              onClick={completeInterview}
+              className="w-full py-2 bg-green-700 hover:bg-green-600 rounded mb-3 flex items-center justify-center"
+            >
+              <span className="mr-2">✅</span> Complete Interview
+            </button>
+          )}
           
           {/* Trust Level Indicator */}
           <div className="mt-3">
