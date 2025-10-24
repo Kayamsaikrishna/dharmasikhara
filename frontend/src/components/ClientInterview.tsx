@@ -14,6 +14,7 @@ const ClientInterview: React.FC = () => {
   const lightsOnRef = useRef<boolean>(true);
   const zoomedDocRef = useRef<any>(null);
   const [status, setStatus] = useState<string>('Ready');
+  const [showWelcome, setShowWelcome] = useState<boolean>(true);
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
   const [currentDialogue, setCurrentDialogue] = useState<{ speaker: string; text: string }>({ speaker: '', text: '' });
   const [showDialogue, setShowDialogue] = useState<boolean>(false);
@@ -626,6 +627,9 @@ const ClientInterview: React.FC = () => {
     lawyer = createHuman(0x1a1a2a, [0, 0.6, -1.8], true);
     client = createHuman(0x3a3a4a, [0, 0.6, 1.8], false);
     client.rotation.y = Math.PI;
+    
+    // Expose client to window for debugging
+    (window as any).clientRef = client;
 
     laptop = createLaptop(3.5, 1.26, -2);
     recorder = createRecorder(0, 1.27, 0);
@@ -745,10 +749,285 @@ const ClientInterview: React.FC = () => {
       
       // Update status
       setStatus(`Trust Level: ${response.trustLevel}%`);
+      
+      // Store trust level for UI updates
+      (window as any).currentTrustLevel = response.trustLevel;
+      
+      // Apply animation to client character based on emotion
+      if (client) {
+        applyEmotionAnimation(client, response.animation);
+      }
+      
+      // Update lighting based on emotion
+      updateLightingForEmotion(response.emotion);
+      
+      // Hide dialogue after 8 seconds
+      setTimeout(() => {
+        setShowDialogue(false);
+      }, 8000);
     };
+    
+    // Apply emotion-based animations to the client character
+    const applyEmotionAnimation = (character: any, animation: string) => {
+      if (!character) return;
+      
+      // Reset all animations
+      resetCharacterAnimations(character);
+      
+      // Apply specific animation based on emotion
+      switch (animation) {
+        case 'slight_smile':
+          animateSlightSmile(character);
+          break;
+        case 'look_down_emotional':
+          animateLookDown(character);
+          break;
+        case 'direct_eye_contact':
+          animateDirectEyeContact(character);
+          break;
+        case 'steady_gaze':
+          animateSteadyGaze(character);
+          break;
+        case 'slight_smile_forward_lean':
+          animateSmileAndLean(character);
+          break;
+        case 'nodding':
+          animateNodding(character);
+          break;
+        case 'fidget_hands':
+          animateFidgeting(character);
+          break;
+        case 'slight_head_tilt':
+          animateHeadTilt(character);
+          break;
+        case 'forward_lean':
+          animateForwardLean(character);
+          break;
+        case 'slight_shrug':
+          animateShrug(character);
+          break;
+        case 'mixed_expression':
+          animateMixedExpression(character);
+          break;
+        case 'explaining_gesture':
+          animateExplaining(character);
+          break;
+        case 'look_down_briefly':
+          animateBriefLookDown(character);
+          break;
+        default:
+          // Default idle animation
+          break;
+      }
+    };
+    
+    // Update lighting based on emotion
+    const updateLightingForEmotion = (emotion: string) => {
+      if (!lightsRef.current) return;
+      
+      // Define color schemes for different emotions
+      const emotionColors: Record<string, { main: number, desk: number, evidence: number }> = {
+        'grateful': { main: 0xfff4e6, desk: 0xffe4b5, evidence: 0xff9966 },
+        'vulnerable': { main: 0xffe4e1, desk: 0xffdab9, evidence: 0xffb6c1 },
+        'defensive': { main: 0xfff8dc, desk: 0xffefd5, evidence: 0xffa500 },
+        'defensive_but_calm': { main: 0xf5f5dc, desk: 0xffffe0, evidence: 0xdda0dd },
+        'hopeful': { main: 0xe0ffff, desk: 0xe6e6fa, evidence: 0xb0e0e6 },
+        'cooperative': { main: 0xf0fff0, desk: 0xf5fffa, evidence: 0x98fb98 },
+        'anxious': { main: 0xfff5ee, desk: 0xffefd5, evidence: 0xffa07a },
+        'confused': { main: 0xf5f5f5, desk: 0xdcdcdc, evidence: 0xc0c0c0 },
+        'neutral': { main: 0xffffff, desk: 0xf5f5f5, evidence: 0xe0e0e0 },
+        'earnest': { main: 0xfffff0, desk: 0xfffacd, evidence: 0xffec8b },
+        'resigned': { main: 0xf0f8ff, desk: 0xe6e6fa, evidence: 0xc6e2ff },
+        'proud_but_worried': { main: 0xffefd5, desk: 0xffe4c4, evidence: 0xffa54f },
+        'logical': { main: 0xf8f8ff, desk: 0xe6e6fa, evidence: 0xb0c4de },
+        'apologetic': { main: 0xf5deb3, desk: 0xf4a460, evidence: 0xcd853f }
+      };
+      
+      const colors = emotionColors[emotion] || emotionColors.neutral;
+      
+      // Apply colors to lights
+      if (lightsRef.current.mainLight) {
+        lightsRef.current.mainLight.color.set(colors.main);
+      }
+      if (lightsRef.current.deskLamp) {
+        lightsRef.current.deskLamp.color.set(colors.desk);
+      }
+      if (lightsRef.current.evidenceLight) {
+        lightsRef.current.evidenceLight.color.set(colors.evidence);
+      }
+    };
+    
+    // Expose client and lighting function to window for debugging
+    (window as any).clientRef = client;
+    (window as any).updateLightingForEmotion = updateLightingForEmotion;
+    
+    // Reset character animations
+    const resetCharacterAnimations = (character: any) => {
+      // Reset head position
+      if (character.children[0]) { // head
+        character.children[0].rotation.set(0, 0, 0);
+      }
+      
+      // Reset arms
+      const torso = character.children[4]; // torso
+      if (torso && torso.children[0]) { // left arm
+        torso.children[0].rotation.set(0, 0, 0.2);
+      }
+      if (torso && torso.children[1]) { // right arm
+        torso.children[1].rotation.set(0, 0, -0.2);
+      }
+    };
+    
+    // Animation functions for different emotions
+    const animateSlightSmile = (character: any) => {
+      const head = character.children[0];
+      if (head) {
+        // Slight head tilt up
+        head.rotation.x = -0.1;
+      }
+    };
+    
+    const animateLookDown = (character: any) => {
+      const head = character.children[0];
+      if (head) {
+        // Look down
+        head.rotation.x = 0.3;
+      }
+    };
+    
+    const animateDirectEyeContact = (character: any) => {
+      const head = character.children[0];
+      if (head) {
+        // Direct eye contact
+        head.rotation.y = 0;
+        head.rotation.x = 0;
+      }
+    };
+    
+    const animateSteadyGaze = (character: any) => {
+      const head = character.children[0];
+      if (head) {
+        // Steady gaze
+        head.rotation.x = 0;
+      }
+    };
+    
+    const animateSmileAndLean = (character: any) => {
+      const head = character.children[0];
+      if (head) {
+        // Slight smile and lean forward
+        head.rotation.x = -0.1;
+      }
+      
+      // Lean forward slightly
+      character.position.z = 1.7;
+    };
+    
+    const animateNodding = (character: any) => {
+      const head = character.children[0];
+      if (head) {
+        // Animate nodding
+        head.rotation.x = Math.sin(Date.now() * 0.005) * 0.1;
+      }
+    };
+    
+    const animateFidgeting = (character: any) => {
+      const torso = character.children[4];
+      if (torso) {
+        // Fidget hands
+        torso.rotation.z = Math.sin(Date.now() * 0.01) * 0.05;
+      }
+    };
+    
+    const animateHeadTilt = (character: any) => {
+      const head = character.children[0];
+      if (head) {
+        // Slight head tilt
+        head.rotation.y = 0.1;
+        head.rotation.x = 0.05;
+      }
+    };
+    
+    const animateForwardLean = (character: any) => {
+      // Lean forward
+      character.position.z = 1.7;
+    };
+    
+    const animateShrug = (character: any) => {
+      const torso = character.children[4];
+      if (torso) {
+        // Slight shrug
+        torso.position.y = 0.87;
+      }
+    };
+    
+    const animateMixedExpression = (character: any) => {
+      const head = character.children[0];
+      if (head) {
+        // Mixed expression - slight up and down movement
+        head.rotation.x = Math.sin(Date.now() * 0.003) * 0.05;
+      }
+    };
+    
+    const animateExplaining = (character: any) => {
+      const torso = character.children[4];
+      if (torso && torso.children[0]) { // left arm
+        // Gesture with left hand
+        torso.children[0].rotation.z = Math.sin(Date.now() * 0.008) * 0.3 + 0.2;
+      }
+    };
+    
+    const animateBriefLookDown = (character: any) => {
+      const head = character.children[0];
+      if (head) {
+        // Brief look down
+        head.rotation.x = 0.2;
+        
+        // Reset after brief moment
+        setTimeout(() => {
+          if (head) head.rotation.x = 0;
+        }, 1000);
+      }
+    };
+    
+    // Expose animation functions to window for testing
+    (window as any).applyEmotionAnimation = applyEmotionAnimation;
 
     // Expose functions to window for testing
     (window as any).handleUserInput = handleUserInput;
+    
+    // Apply continuous emotion-based animations
+    const applyContinuousEmotionAnimation = (character: any, emotion: string) => {
+      if (!character) return;
+      
+      const head = character.children[0];
+      const torso = character.children[4];
+      
+      switch (emotion) {
+        case 'anxious':
+          // Subtle fidgeting
+          if (head) head.rotation.z = Math.sin(Date.now() * 0.005) * 0.02;
+          break;
+        case 'vulnerable':
+          // Subtle head movements
+          if (head) {
+            head.rotation.x = 0.05 + Math.sin(Date.now() * 0.003) * 0.03;
+          }
+          break;
+        case 'hopeful':
+          // Subtle positive movements
+          if (head) head.position.y = 1.65 + Math.sin(Date.now() * 0.004) * 0.01;
+          break;
+        case 'defensive':
+          // Slight tension
+          if (torso) torso.scale.y = 1 + Math.sin(Date.now() * 0.006) * 0.01;
+          break;
+        default:
+          // Neutral breathing effect
+          if (torso) torso.scale.y = 1 + Math.sin(Date.now() * 0.002) * 0.005;
+          break;
+      }
+    };
 
     const animate = () => {
       requestAnimationFrame(animate);
@@ -772,7 +1051,12 @@ const ClientInterview: React.FC = () => {
       }
 
       if (client) {
-        // Animation logic for client
+        // Apply continuous animations based on current emotion
+        const summary = conversationEngineRef.current?.getSummary();
+        if (summary && summary.currentEmotion) {
+          // Apply subtle continuous animations
+          applyContinuousEmotionAnimation(client, summary.currentEmotion);
+        }
       }
 
       if (recorder) {
@@ -834,14 +1118,105 @@ const ClientInterview: React.FC = () => {
       setUserInput('');
     }
   };
+  
+  // Debug function to test different emotions
+  const testEmotion = (emotion: string) => {
+    const animations: Record<string, string> = {
+      'grateful': 'slight_smile',
+      'vulnerable': 'look_down_emotional',
+      'defensive': 'direct_eye_contact',
+      'defensive_but_calm': 'steady_gaze',
+      'hopeful': 'slight_smile_forward_lean',
+      'cooperative': 'nodding',
+      'anxious': 'fidget_hands',
+      'confused': 'slight_head_tilt',
+      'neutral': 'idle',
+      'earnest': 'forward_lean',
+      'resigned': 'slight_shrug',
+      'proud_but_worried': 'mixed_expression',
+      'logical': 'explaining_gesture',
+      'apologetic': 'look_down_briefly'
+    };
+    
+    // Access client from window object
+    const clientRef = (window as any).clientRef;
+    if (clientRef) {
+      (window as any).applyEmotionAnimation(clientRef, animations[emotion] || 'idle');
+      (window as any).updateLightingForEmotion(emotion);
+      setStatus(`Testing emotion: ${emotion}`);
+      (window as any).currentTrustLevel = Math.floor(Math.random() * 100);
+    }
+  };
+  
+  // Debug function to test conversation summary
+  const showConversationSummary = () => {
+    if (conversationEngineRef.current) {
+      const summary = conversationEngineRef.current.getSummary();
+      console.log('Conversation Summary:', summary);
+      alert(`Trust Level: ${summary.trustLevel}%\nEmotion: ${summary.currentEmotion}\nTopics: ${summary.topicsCovered.join(', ')}`);
+    }
+  };
+  
+  // Debug function to reset conversation
+  const resetConversation = () => {
+    if (conversationEngineRef.current) {
+      conversationEngineRef.current.reset();
+      setStatus('Ready');
+      (window as any).currentTrustLevel = 0;
+      setUserInput('');
+      setShowDialogue(false);
+      // Access client from window object
+      const clientRef = (window as any).clientRef;
+      if (clientRef) {
+        (window as any).applyEmotionAnimation(clientRef, 'idle');
+        (window as any).updateLightingForEmotion('neutral');
+      }
+    }
+  };
+  
+  // Expose debug functions to window
+  useEffect(() => {
+    (window as any).testEmotion = testEmotion;
+    (window as any).showConversationSummary = showConversationSummary;
+    (window as any).resetConversation = resetConversation;
+  }, []);
 
   return (
     <div className="investigation-root h-screen w-screen relative">
       <canvas ref={canvasRef} className="investigation-canvas absolute inset-0" />
       
+      {/* Welcome Message */}
+      {showWelcome && (
+        <div className="welcome-message absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-br from-indigo-900 to-purple-900 text-white p-8 rounded-2xl shadow-2xl w-11/12 max-w-2xl z-10 border border-indigo-500 animate-slide-up">
+          <h2 className="text-3xl font-bold mb-4 text-center text-amber-300">Welcome to the Client Interview</h2>
+          <p className="text-lg mb-6 text-center">You are now meeting with Rajesh Kumar in custody. Ask him questions about his case to gather information for the bail application.</p>
+          <div className="bg-gray-800 p-4 rounded-lg mb-6">
+            <h3 className="font-bold text-amber-400 mb-2">Tips for the Interview:</h3>
+            <ul className="list-disc pl-5 space-y-1 text-sm">
+              <li>Start with open-ended questions to build rapport</li>
+              <li>Ask about the timeline of events</li>
+              <li>Inquire about potential witnesses</li>
+              <li>Discuss family situation and sureties for bail</li>
+              <li>Listen carefully for inconsistencies or important details</li>
+            </ul>
+          </div>
+          <div className="text-center">
+            <button 
+              onClick={() => setShowWelcome(false)}
+              className="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-bold rounded-full hover:from-amber-600 hover:to-orange-700 transition-all transform hover:scale-105"
+            >
+              Begin Interview
+            </button>
+          </div>
+        </div>
+      )}
+      
       {/* Control Panel */}
-      <div className="control-panel absolute top-4 right-4 bg-gray-900 bg-opacity-80 text-white p-4 rounded-lg w-80">
-        <h3 className="text-xl font-bold mb-3">⚖️ Client Interview</h3>
+      <div className="control-panel absolute top-4 right-4 bg-gradient-to-b from-gray-900 to-gray-800 bg-opacity-90 text-white p-5 rounded-2xl shadow-xl w-80 border border-gray-700 animate-subtle-bounce">
+        <h3 className="text-2xl font-bold mb-4 flex items-center">
+          <span className="mr-2">⚖️</span> Client Interview
+          <span className="ml-auto text-amber-400 text-sm animate-pulse-glow px-2 py-1 rounded bg-gray-800">LIVE</span>
+        </h3>
         
         <div className="control-section mb-4">
           <h4 className="font-semibold mb-2">💬 Interview Controls</h4>
@@ -953,19 +1328,45 @@ const ClientInterview: React.FC = () => {
         </div>
         
         <div className="mt-4 pt-3 border-t border-gray-700">
-          <strong>Status:</strong> <span className="text-blue-400 ml-2">{status}</span>
+          <div className="flex justify-between items-center">
+            <strong>Status:</strong>
+            <span className="text-blue-400 ml-2 font-mono">{status}</span>
+          </div>
+          
+          {/* Trust Level Indicator */}
+          <div className="mt-3">
+            <div className="flex justify-between text-sm mb-1">
+              <span>Trust Level</span>
+              <span>{(window as any).currentTrustLevel || 0}%</span>
+            </div>
+            <div className="w-full bg-gray-700 rounded-full h-2.5">
+              <div 
+                className="bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 h-2.5 rounded-full transition-all duration-500" 
+                style={{ width: `${(window as any).currentTrustLevel || 0}%` }}
+              ></div>
+            </div>
+          </div>
+          
+          <div className="mt-2 flex items-center text-sm text-gray-400">
+            <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+            <span>Connected to Rajesh Kumar</span>
+          </div>
         </div>
       </div>
 
       {/* Dialogue Box */}
       {showDialogue && (
-        <div className="dialogue-box absolute bottom-24 left-1/2 transform -translate-x-1/2 bg-gray-900 bg-opacity-90 text-white p-4 rounded-lg w-11/12 max-w-2xl animate-slide-up">
-          <div className="speaker font-bold text-blue-400">{currentDialogue.speaker}:</div>
-          <div className="text mt-2">{currentDialogue.text}</div>
-          <div className="recording-indicator mt-3 flex items-center text-gray-400">
-            <div className="record-dot w-3 h-3 bg-red-500 rounded-full mr-2"></div>
-            <span>Recording in progress</span>
+        <div className="dialogue-box absolute bottom-24 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-gray-900 to-gray-800 bg-opacity-95 text-white p-6 rounded-2xl shadow-2xl w-11/12 max-w-3xl animate-slide-up border border-gray-700">
+          <div className="speaker font-bold text-amber-400 text-xl mb-3 flex items-center">
+            <div className="w-3 h-3 bg-amber-500 rounded-full mr-3 animate-pulse"></div>
+            {currentDialogue.speaker}
           </div>
+          <div className="text-lg leading-relaxed mb-4">{currentDialogue.text}</div>
+          <div className="recording-indicator flex items-center text-gray-300 text-sm">
+            <div className="record-dot w-3 h-3 bg-red-500 rounded-full mr-3 animate-pulse"></div>
+            <span>Speaking...</span>
+          </div>
+          <div className="absolute -top-2 left-10 w-4 h-4 bg-gray-800 transform rotate-45"></div>
         </div>
       )}
 
@@ -1053,8 +1454,19 @@ const ClientInterview: React.FC = () => {
           from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
           to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         }
+        @keyframes pulse-glow {
+          0% { box-shadow: 0 0 5px rgba(255, 255, 255, 0.5); }
+          50% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.8); }
+          100% { box-shadow: 0 0 5px rgba(255, 255, 255, 0.5); }
+        }
+        @keyframes subtle-bounce {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-5px); }
+        }
         .animate-slide-up { animation: slide-up 0.4s ease-out; }
         .animate-zoom-in { animation: zoom-in 0.3s ease-out; }
+        .animate-pulse-glow { animation: pulse-glow 2s infinite; }
+        .animate-subtle-bounce { animation: subtle-bounce 3s infinite; }
       `}</style>
     </div>
   );
