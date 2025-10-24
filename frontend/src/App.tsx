@@ -22,6 +22,8 @@ import EditProfile from './pages/EditProfile';
 import ScenarioDetail from './components/ScenarioDetail';
 import ScenarioSimulationPage from './pages/ScenarioSimulationPage';
 import ClientInterview from './components/ClientInterview';
+import EvidenceAnalysis from './components/EvidenceAnalysis';
+import DigitalEvidence from './components/DigitalEvidence';
 import SimulationEntrance from './components/SimulationEntrance';
 import { UserProvider } from './contexts/UserContext';
 // import Navbar from './components/Navbar';
@@ -41,6 +43,8 @@ function App() {
             <Route path="/scenario-simulation" element={<ScenarioSimulationPage />} />
             <Route path="/simulation-entrance" element={<SimulationEntrance />} />
             <Route path="/client-interview" element={<ClientInterview />} />
+            <Route path="/evidence-analysis" element={<EvidenceAnalysis />} />
+            <Route path="/digital-evidence" element={<DigitalEvidence />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/multiplayer" element={<MultiplayerPage />} />
             {/* <Route path="/marketplace" element={<MarketplacePage />} /> */}

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import RajeshConversationEngine from '../utils/RajeshConversationEngine';
 import rajeshTrainingData from '../utils/rajeshTrainingData';
+import { useNavigate } from 'react-router-dom';
 
 const ClientInterview: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -29,6 +30,7 @@ const ClientInterview: React.FC = () => {
   const [showCompletionMessage, setShowCompletionMessage] = useState<boolean>(false);
   const [interviewTimer, setInterviewTimer] = useState<number>(900); // 15 minutes in seconds
   const [isTimerActive, setIsTimerActive] = useState<boolean>(true);
+  const navigate = useNavigate();
   const conversationEngineRef = useRef<any>(null);
   const recognitionRef = useRef<any>(null);
   const lawyerRef = useRef<any>(null);
@@ -143,7 +145,11 @@ const ClientInterview: React.FC = () => {
     setStatus('Interview Completed');
     setRecommendation('Client interview completed. Proceeding to evidence analysis phase.');
     setShowRecommendation(true);
-    setTimeout(() => setShowRecommendation(false), 5000);
+    setTimeout(() => {
+      setShowRecommendation(false);
+      // Navigate to evidence analysis page
+      navigate('/evidence-analysis');
+    }, 3000);
   };
 
   useEffect(() => {
@@ -737,20 +743,13 @@ const ClientInterview: React.FC = () => {
     createEvidenceBoard();
 
     const onMouseMove = (event: MouseEvent) => {
-      // Only allow mouse movement if text input is not focused
-      if (!isTextInputFocusedRef.current) {
-        mouseX = (event.clientX / window.innerWidth) * 2 - 1;
-        mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
-      }
+      // Completely disable mouse movement control
+      return;
     };
 
     const onWheel = (event: WheelEvent) => {
-      // Only allow zoom if text input is not focused
-      if (!isTextInputFocusedRef.current) {
-        event.preventDefault();
-        cameraDistanceRef.current += event.deltaY * 0.01;
-        cameraDistanceRef.current = Math.max(5, Math.min(20, cameraDistanceRef.current));
-      }
+      // Completely disable mouse wheel control
+      return;
     };
 
     const onMouseClick = (event: MouseEvent) => {
@@ -1160,14 +1159,7 @@ const ClientInterview: React.FC = () => {
       const time = clock.getElapsedTime();
 
       if (!zoomedDoc && cameraRef.current) {
-        const baseAngle = cameraAngleRef.current + mouseX * 0.4;
-        const angle = baseAngle;
-        const targetY = 2.5 + mouseY * 2;
-        const desiredX = Math.sin(angle) * cameraDistanceRef.current;
-        const desiredZ = Math.cos(angle) * cameraDistanceRef.current;
-        cameraRef.current.position.x += (desiredX - cameraRef.current.position.x) * 0.08;
-        cameraRef.current.position.z += (desiredZ - cameraRef.current.position.z) * 0.08;
-        cameraRef.current.position.y += (targetY - cameraRef.current.position.y) * 0.08;
+        // Camera is now fixed, no mouse movement
         cameraRef.current.lookAt(0, 1.5, 0);
       }
 
