@@ -256,12 +256,7 @@ const EnhancedScenarioDetail = () => {
   };
 
   const handleStartSimulation = () => {
-    navigate('/courtroom', { 
-      state: { 
-        scenarioId: '1',
-        scenarioTitle: scenario.title 
-      } 
-    });
+    navigate('/simulation-entrance');
   };
 
   return (
