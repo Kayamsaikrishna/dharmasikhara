@@ -89,6 +89,54 @@ app.post('/api/analyze-document', async (req, res) => {
     }
 });
 
+// AI Legal Assistant Endpoint
+app.post('/api/ai/legal-assistant', async (req, res) => {
+    try {
+        const { query, documentContext, documentAnalysis } = req.body;
+        
+        if (!query) {
+            return res.status(400).json({
+                success: false,
+                message: 'Query is required'
+            });
+        }
+        
+        // If we have document context, include it in the query
+        let fullQuery = query;
+        if (documentContext) {
+            fullQuery = `Document Context: ${documentContext}\n\nQuestion: ${query}`;
+        }
+        
+        // Get response from the AI model
+        const aiResponse = await aiController.getLegalAssistantResponse(fullQuery);
+        
+        if (aiResponse.error) {
+            return res.status(500).json({
+                success: false,
+                message: 'AI response failed',
+                error: aiResponse.error
+            });
+        }
+        
+        res.json({
+            success: true,
+            data: {
+                response: aiResponse,
+                legalCategory: 'general', // This would be determined by the AI model in a real implementation
+                relatedConcepts: [], // This would be determined by the AI model in a real implementation
+                confidence: 0.95 // This would be determined by the AI model in a real implementation
+            }
+        });
+    } catch (error) {
+        console.error('Legal assistant error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred during legal assistance',
+            error: error.message
+        });
+    }
+});
+
 // Courtroom Endpoints
 app.get('/api/courtroom/documents', (req, res) => {
     courtroomController.getCourtroomDocuments(req, res);

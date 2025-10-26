@@ -5,7 +5,9 @@ import Layout from '../components/Layout';
 const LegalNewsPage: React.FC = () => {
   return (
     <Layout>
-      <LegalNews />
+      <div className="min-h-screen bg-gray-50">
+        <LegalNews />
+      </div>
     </Layout>
   );
 };

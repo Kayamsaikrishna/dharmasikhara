@@ -9,11 +9,14 @@ class LegalResearchController {
         this.searchIndianKanoon = this.searchIndianKanoon.bind(this);
         this.searchSCCOnline = this.searchSCCOnline.bind(this);
         this.searchGoogleScholar = this.searchGoogleScholar.bind(this);
+        this.searchNews = this.searchNews.bind(this);
+        this.searchAcademicSources = this.searchAcademicSources.bind(this);
         this.combineSearchResults = this.combineSearchResults.bind(this);
         this.getCaseDetails = this.getCaseDetails.bind(this);
         this.getIndianKanoonCaseDetails = this.getIndianKanoonCaseDetails.bind(this);
         this.getSCCOnlineCaseDetails = this.getSCCOnlineCaseDetails.bind(this);
         this.getGoogleScholarCaseDetails = this.getGoogleScholarCaseDetails.bind(this);
+        this.generateReport = this.generateReport.bind(this);
     }
 
     /**
@@ -23,7 +26,7 @@ class LegalResearchController {
      */
     async searchSimilarCases(req, res) {
         try {
-            const { query, jurisdiction = 'india', limit = 20 } = req.body;
+            const { query, searchType = 'keywords', jurisdiction = 'all-courts', limit = 50 } = req.body;
             
             if (!query) {
                 return res.status(400).json({
@@ -32,11 +35,20 @@ class LegalResearchController {
                 });
             }
             
+            // In a real implementation, you would integrate with actual legal databases
+            // This would involve:
+            // 1. Using official APIs where available (e.g., SCC Online API)
+            // 2. Web scraping where APIs are not available (e.g., Indian Kanoon, Google Scholar)
+            // 3. Using specialized legal research services
+            // 4. Implementing proper rate limiting and error handling
+            
             // Search in multiple legal databases
             const results = await Promise.allSettled([
-                this.searchIndianKanoon(query, jurisdiction, limit),
-                this.searchSCCOnline(query, jurisdiction, limit),
-                this.searchGoogleScholar(query, jurisdiction, limit)
+                this.searchIndianKanoon(query, searchType, jurisdiction, limit),
+                this.searchSCCOnline(query, searchType, jurisdiction, limit),
+                this.searchGoogleScholar(query, searchType, jurisdiction, limit),
+                this.searchNews(query, jurisdiction, Math.floor(limit/3)),
+                this.searchAcademicSources(query, jurisdiction, Math.floor(limit/3))
             ]);
             
             // Combine and deduplicate results
@@ -46,8 +58,11 @@ class LegalResearchController {
                 success: true,
                 data: {
                     query,
+                    searchType,
+                    jurisdiction,
                     results: combinedResults,
-                    totalResults: combinedResults.length
+                    totalResults: combinedResults.length,
+                    sources: ['Indian Kanoon', 'SCC Online', 'Google Scholar', 'News Sources', 'Academic Sources']
                 }
             });
         } catch (error) {
@@ -63,13 +78,17 @@ class LegalResearchController {
     /**
      * Search Indian Kanoon database
      * @param {string} query - Search query
+     * @param {string} searchType - Type of search (case-name, party-name, citation, keywords)
      * @param {string} jurisdiction - Jurisdiction to search in
      * @param {number} limit - Maximum number of results
      * @returns {Promise<Array>} - Search results
      */
-    async searchIndianKanoon(query, jurisdiction, limit) {
+    async searchIndianKanoon(query, searchType, jurisdiction, limit) {
         try {
-            // In a real implementation, you would integrate with the Indian Kanoon API
+            // For a real implementation, you would integrate with the Indian Kanoon API or perform web scraping
+            // Since Indian Kanoon doesn't have a public API, we'll simulate a web scraping approach
+            
+            // In a production environment, you would use a library like puppeteer or cheerio to scrape data
             // For now, we'll return more comprehensive mock data to demonstrate the concept
             
             // Mock data with more realistic cases
@@ -94,7 +113,11 @@ class LegalResearchController {
                         'Procedures for client interviews in custody',
                         'Bail application considerations',
                         'Cross-examination protocols'
-                    ]
+                    ],
+                    status: 'Disposed',
+                    category: 'Criminal Law',
+                    citationCount: 12,
+                    judges: ['Justice A.K. Patnaik', 'Justice R.S. Deshpande']
                 },
                 {
                     id: 'ik-002',
@@ -116,7 +139,11 @@ class LegalResearchController {
                         'Client confidentiality',
                         'Witness intimidation',
                         'Legal representation rights'
-                    ]
+                    ],
+                    status: 'Pending',
+                    category: 'Criminal Procedure',
+                    citationCount: 8,
+                    judges: ['Justice S.K. Verma', 'Justice P.R. Shah']
                 },
                 {
                     id: 'ik-003',
@@ -138,7 +165,11 @@ class LegalResearchController {
                         'Economic abuse',
                         'Protection orders',
                         'Victim rights'
-                    ]
+                    ],
+                    status: 'Disposed',
+                    category: 'Family Law',
+                    citationCount: 24,
+                    judges: ['Justice M.K. Singh', 'Justice R.P. Gupta']
                 },
                 {
                     id: 'ik-004',
@@ -160,7 +191,11 @@ class LegalResearchController {
                         'Data protection laws',
                         'Digital evidence handling',
                         'Right to privacy'
-                    ]
+                    ],
+                    status: 'Admitted',
+                    category: 'Cyber Law',
+                    citationCount: 15,
+                    judges: ['Justice A.K. Sikri', 'Justice R.K. Gauba']
                 },
                 {
                     id: 'ik-005',
@@ -182,7 +217,11 @@ class LegalResearchController {
                         'Maintenance obligations',
                         'Guardian rights',
                         'Child welfare'
-                    ]
+                    ],
+                    status: 'Disposed',
+                    category: 'Family Law',
+                    citationCount: 7,
+                    judges: ['Justice S.K. Sharma', 'Justice P.K. Jain']
                 }
             ];
             
@@ -205,13 +244,17 @@ class LegalResearchController {
     /**
      * Search SCC Online database
      * @param {string} query - Search query
+     * @param {string} searchType - Type of search (case-name, party-name, citation, keywords)
      * @param {string} jurisdiction - Jurisdiction to search in
      * @param {number} limit - Maximum number of results
      * @returns {Promise<Array>} - Search results
      */
-    async searchSCCOnline(query, jurisdiction, limit) {
+    async searchSCCOnline(query, searchType, jurisdiction, limit) {
         try {
-            // In a real implementation, you would integrate with the SCC Online API
+            // For a real implementation, you would integrate with the SCC Online API or perform web scraping
+            // SCC Online provides an API for legal research, but it requires authentication and subscription
+            
+            // In a production environment, you would use their API or perform web scraping
             // For now, we'll return more comprehensive mock data
             
             const mockCases = [
@@ -235,7 +278,11 @@ class LegalResearchController {
                         'Courtroom procedure guidelines',
                         'Judicial discretion in criminal cases',
                         'Digital evidence authentication'
-                    ]
+                    ],
+                    status: 'Disposed',
+                    category: 'Constitutional Law',
+                    citationCount: 42,
+                    judges: ['Justice D.Y. Chandrachud', 'Justice A.S. Bopanna']
                 },
                 {
                     id: 'scc-002',
@@ -257,7 +304,11 @@ class LegalResearchController {
                         'Fundamental rights',
                         'Personal liberty',
                         'State accountability'
-                    ]
+                    ],
+                    status: 'Disposed',
+                    category: 'Constitutional Law',
+                    citationCount: 38,
+                    judges: ['Justice A.M. Khanwilkar', 'Justice Dinesh Maheshwari']
                 },
                 {
                     id: 'scc-003',
@@ -279,7 +330,11 @@ class LegalResearchController {
                         'Public sector governance',
                         'Commercial disputes',
                         'Arbitration law'
-                    ]
+                    ],
+                    status: 'Pending',
+                    category: 'Corporate Law',
+                    citationCount: 19,
+                    judges: ['Justice L. Nageswara Rao', 'Justice B.R. Gavai']
                 }
             ];
             
@@ -302,13 +357,17 @@ class LegalResearchController {
     /**
      * Search Google Scholar for legal cases
      * @param {string} query - Search query
+     * @param {string} searchType - Type of search (case-name, party-name, citation, keywords)
      * @param {string} jurisdiction - Jurisdiction to search in
      * @param {number} limit - Maximum number of results
      * @returns {Promise<Array>} - Search results
      */
-    async searchGoogleScholar(query, jurisdiction, limit) {
+    async searchGoogleScholar(query, searchType, jurisdiction, limit) {
         try {
-            // In a real implementation, you would integrate with the Google Scholar API
+            // For a real implementation, you would integrate with the Google Scholar API or perform web scraping
+            // Google Scholar doesn't have a public API, so web scraping would be required
+            
+            // In a production environment, you would use a library like puppeteer or cheerio to scrape data
             // For now, we'll return more comprehensive mock data
             
             const mockCases = [
@@ -332,7 +391,11 @@ class LegalResearchController {
                         'Chain of custody procedures',
                         'Expert witness testimony',
                         'Authentication of electronic records'
-                    ]
+                    ],
+                    status: 'Disposed',
+                    category: 'Evidence Law',
+                    citationCount: 14,
+                    judges: ['Justice S.K. Sharma', 'Justice P.K. Jain']
                 },
                 {
                     id: 'gs-002',
@@ -354,7 +417,11 @@ class LegalResearchController {
                         'Hindu Succession Act',
                         'Joint family property',
                         'Gender equality in inheritance'
-                    ]
+                    ],
+                    status: 'Admitted',
+                    category: 'Property Law',
+                    citationCount: 11,
+                    judges: ['Justice R.K. Malik', 'Justice S.P. Singh']
                 },
                 {
                     id: 'gs-003',
@@ -376,7 +443,11 @@ class LegalResearchController {
                         'Pollution control',
                         'Public health',
                         'Regulatory compliance'
-                    ]
+                    ],
+                    status: 'Disposed',
+                    category: 'Environmental Law',
+                    citationCount: 9,
+                    judges: ['Justice A.K. Sikri', 'Justice R.K. Gauba']
                 }
             ];
             
@@ -392,6 +463,129 @@ class LegalResearchController {
             return relevantCases.slice(0, limit);
         } catch (error) {
             console.error('Google Scholar search error:', error);
+            return [];
+        }
+    }
+
+    /**
+     * Search news sources for legal cases
+     * @param {string} query - Search query
+     * @param {string} jurisdiction - Jurisdiction to search in
+     * @param {number} limit - Maximum number of results
+     * @returns {Promise<Array>} - Search results
+     */
+    async searchNews(query, jurisdiction, limit) {
+        try {
+            // For a real implementation, you would integrate with news APIs like NewsAPI.org or perform web scraping
+            // Many legal news sources have APIs that can be used for this purpose
+            
+            // In a production environment, you would use these APIs or perform web scraping
+            // For now, we'll return mock data
+            
+            const mockNews = [
+                {
+                    id: 'news-001',
+                    title: 'Supreme Court Ruling on Digital Evidence Admissibility',
+                    source: 'LiveLaw',
+                    date: '2023-11-06',
+                    url: 'https://www.livelaw.in/supreme-court-digital-evidence-12345',
+                    snippet: 'The Supreme Court\'s recent ruling in Pritam Singh vs. State of Punjab has significant implications for digital evidence handling in criminal cases...',
+                    relevanceScore: 0.91
+                },
+                {
+                    id: 'news-002',
+                    title: 'Bombay High Court Decision on Client Interview Protocols',
+                    source: 'Bar & Bench',
+                    date: '2023-10-16',
+                    url: 'https://www.barandbench.com/bombay-high-court-client-interview-protocols-67890',
+                    snippet: 'The Bombay High Court\'s decision in State of Maharashtra vs. Bharat Standard provides important guidance on conducting client interviews in custody...',
+                    relevanceScore: 0.88
+                },
+                {
+                    id: 'news-003',
+                    title: 'Patna High Court Expands Domestic Violence Definition',
+                    source: 'The Hindu',
+                    date: '2023-11-11',
+                    url: 'https://www.thehindu.com/patna-high-court-domestic-violence-54321',
+                    snippet: 'In a landmark judgment, the Patna High Court has expanded the definition of domestic violence to include economic abuse...',
+                    relevanceScore: 0.85
+                }
+            ];
+            
+            // Filter news based on query relevance (simplified)
+            const relevantNews = mockNews.filter(newsItem => {
+                const queryLower = query.toLowerCase();
+                return newsItem.title.toLowerCase().includes(queryLower) ||
+                       newsItem.snippet.toLowerCase().includes(queryLower);
+            });
+            
+            // Return up to limit news items
+            return relevantNews.slice(0, limit);
+        } catch (error) {
+            console.error('News search error:', error);
+            return [];
+        }
+    }
+
+    /**
+     * Search academic sources for legal research
+     * @param {string} query - Search query
+     * @param {string} jurisdiction - Jurisdiction to search in
+     * @param {number} limit - Maximum number of results
+     * @returns {Promise<Array>} - Search results
+     */
+    async searchAcademicSources(query, jurisdiction, limit) {
+        try {
+            // For a real implementation, you would integrate with academic databases like JSTOR, HeinOnline, or Westlaw
+            // Many academic databases have APIs that can be used for legal research
+            
+            // In a production environment, you would use these APIs or perform web scraping
+            // For now, we'll return mock data
+            
+            const mockAcademic = [
+                {
+                    id: 'acad-001',
+                    title: 'Digital Evidence in Indian Courts: A Comprehensive Analysis',
+                    author: 'Dr. R.K. Sharma',
+                    source: 'Indian Law Review',
+                    date: '2023-10-01',
+                    url: 'https://www.indianlawreview.org/digital-evidence-analysis-98765',
+                    snippet: 'This paper examines the admissibility of digital evidence in Indian courts, with particular reference to recent judgments from the Supreme Court and High Courts...',
+                    relevanceScore: 0.90
+                },
+                {
+                    id: 'acad-002',
+                    title: 'Client Confidentiality in Custodial Settings: Legal and Ethical Considerations',
+                    author: 'Prof. S.K. Verma',
+                    source: 'NUJS Law Review',
+                    date: '2023-09-15',
+                    url: 'https://www.nujslawreview.org/client-confidentiality-45678',
+                    snippet: 'This article explores the challenges of maintaining client confidentiality when conducting interviews in custodial settings, with reference to recent case law...',
+                    relevanceScore: 0.87
+                },
+                {
+                    id: 'acad-003',
+                    title: 'Domestic Violence Jurisprudence in India: Evolution and Challenges',
+                    author: 'Dr. P.K. Jain',
+                    source: 'NLSIU Law Review',
+                    date: '2023-11-01',
+                    url: 'https://www.nlsiu.ac.in/domestic-violence-jurisprudence-32109',
+                    snippet: 'This study traces the evolution of domestic violence jurisprudence in India, from the Protection of Women from Domestic Violence Act to recent judicial pronouncements...',
+                    relevanceScore: 0.84
+                }
+            ];
+            
+            // Filter academic sources based on query relevance (simplified)
+            const relevantAcademic = mockAcademic.filter(academicItem => {
+                const queryLower = query.toLowerCase();
+                return academicItem.title.toLowerCase().includes(queryLower) ||
+                       academicItem.snippet.toLowerCase().includes(queryLower);
+            });
+            
+            // Return up to limit academic items
+            return relevantAcademic.slice(0, limit);
+        } catch (error) {
+            console.error('Academic sources search error:', error);
             return [];
         }
     }
@@ -557,7 +751,116 @@ class LegalResearchController {
                 'Circumstantial evidence must form a complete chain pointing to the accused',
                 'Forensic evidence should be corroborated with other evidence'
             ],
-            courtDecision: 'The Bombay High Court upheld the conviction of the appellant based on circumstantial evidence and digital evidence. The court found that the prosecution had successfully established the guilt beyond reasonable doubt.'
+            courtDecision: 'The Bombay High Court upheld the conviction of the appellant based on circumstantial evidence and digital evidence. The court found that the prosecution had successfully established the guilt beyond reasonable doubt.',
+            status: 'Disposed',
+            category: 'Criminal Law',
+            citationCount: 12,
+            timeline: [
+                {
+                    date: '2022-01-10',
+                    event: 'Crime Committed',
+                    type: 'filing',
+                    description: 'The deceased was found murdered in his house at Andheri, Mumbai.'
+                },
+                {
+                    date: '2022-01-11',
+                    event: 'FIR Filed',
+                    type: 'filing',
+                    description: 'First Information Report was filed at Andheri Police Station.'
+                },
+                {
+                    date: '2022-01-15',
+                    event: 'Investigation Begins',
+                    type: 'hearing',
+                    description: 'Police investigation team assigned to the case.'
+                },
+                {
+                    date: '2022-03-15',
+                    event: 'Charge Sheet Filed',
+                    type: 'filing',
+                    description: 'Charge sheet submitted to the Magistrate Court.'
+                },
+                {
+                    date: '2022-06-20',
+                    event: 'Trial Begins',
+                    type: 'hearing',
+                    description: 'Sessions trial commenced at Mumbai Sessions Court.'
+                },
+                {
+                    date: '2023-03-15',
+                    event: 'Conviction & Sentence',
+                    type: 'judgment',
+                    description: 'Appellant convicted under Section 302 IPC and sentenced to life imprisonment.'
+                },
+                {
+                    date: '2023-04-20',
+                    event: 'Appeal Filed',
+                    type: 'filing',
+                    description: 'Appeal filed in Bombay High Court.'
+                },
+                {
+                    date: '2023-10-15',
+                    event: 'Judgment Delivered',
+                    type: 'judgment',
+                    description: 'Bombay High Court dismissed the appeal and confirmed the conviction.'
+                }
+            ],
+            documents: [
+                {
+                    type: 'Judgment',
+                    title: 'Full Judgment Text',
+                    date: '2023-10-15',
+                    url: 'https://indiankanoon.org/doc/123456789/judgment.pdf',
+                    pageCount: 45
+                },
+                {
+                    type: 'Order',
+                    title: 'Interim Order',
+                    date: '2023-03-20',
+                    url: 'https://indiankanoon.org/doc/123456789/interim-order.pdf',
+                    pageCount: 8
+                },
+                {
+                    type: 'Affidavit',
+                    title: 'Counter Affidavit',
+                    date: '2023-04-10',
+                    url: 'https://indiankanoon.org/doc/123456789/counter-affidavit.pdf',
+                    pageCount: 22
+                },
+                {
+                    type: 'Written Submission',
+                    title: 'Appellant\'s Written Submissions',
+                    date: '2023-05-15',
+                    url: 'https://indiankanoon.org/doc/123456789/written-submissions.pdf',
+                    pageCount: 35
+                }
+            ],
+            newsCoverage: [
+                {
+                    title: 'Bombay High Court Upholds Murder Conviction in Business Dispute Case',
+                    source: 'LiveLaw',
+                    date: '2023-10-16',
+                    url: 'https://www.livelaw.in/bombay-high-court-murder-conviction-12345',
+                    snippet: 'The Bombay High Court has dismissed an appeal challenging a murder conviction, upholding the trial court\'s decision based on digital and circumstantial evidence...'
+                },
+                {
+                    title: 'Digital Evidence Proves Crucial in Mumbai Murder Case',
+                    source: 'Bar & Bench',
+                    date: '2023-10-17',
+                    url: 'https://www.barandbench.com/digital-evidence-mumbai-murder-67890',
+                    snippet: 'CCTV footage and forensic evidence played a pivotal role in securing a conviction in a recent Mumbai murder case...'
+                }
+            ],
+            legalAnalysis: [
+                {
+                    title: 'Admissibility of Digital Evidence in Criminal Cases',
+                    author: 'Dr. A.K. Sharma',
+                    source: 'Indian Law Review',
+                    date: '2023-10-20',
+                    url: 'https://www.indianlawreview.org/digital-evidence-admissibility-98765',
+                    summary: 'This analysis examines the legal framework for admitting digital evidence in Indian courts, with reference to the Bombay High Court\'s judgment...'
+                }
+            ]
         };
         
         return mockCaseDetails;
@@ -636,7 +939,131 @@ class LegalResearchController {
                 'Lack of proper authentication renders electronic evidence inadmissible',
                 'The court must ensure compliance with procedural requirements even in the absence of objections'
             ],
-            courtDecision: 'The Supreme Court allowed the appeal and quashed the conviction, holding that the digital evidence was not properly authenticated as required under Section 65B of the Indian Evidence Act.'
+            courtDecision: 'The Supreme Court allowed the appeal and quashed the conviction, holding that the digital evidence was not properly authenticated as required under Section 65B of the Indian Evidence Act.',
+            status: 'Disposed',
+            category: 'Constitutional Law',
+            citationCount: 42,
+            timeline: [
+                {
+                    date: '2022-05-15',
+                    event: 'Crime Committed',
+                    type: 'filing',
+                    description: 'The incident leading to the criminal case occurred.'
+                },
+                {
+                    date: '2022-05-16',
+                    event: 'FIR Filed',
+                    type: 'filing',
+                    description: 'First Information Report filed with local police.'
+                },
+                {
+                    date: '2022-08-20',
+                    event: 'Charge Sheet Filed',
+                    type: 'filing',
+                    description: 'Charge sheet submitted to the Magistrate Court.'
+                },
+                {
+                    date: '2022-11-10',
+                    event: 'Trial Begins',
+                    type: 'hearing',
+                    description: 'Sessions trial commenced at the trial court.'
+                },
+                {
+                    date: '2023-03-20',
+                    event: 'Conviction & Sentence',
+                    type: 'judgment',
+                    description: 'Appellant convicted and sentenced by the trial court.'
+                },
+                {
+                    date: '2023-04-05',
+                    event: 'Appeal Filed',
+                    type: 'filing',
+                    description: 'Appeal filed in Punjab and Haryana High Court.'
+                },
+                {
+                    date: '2023-06-20',
+                    event: 'High Court Judgment',
+                    type: 'judgment',
+                    description: 'Punjab and Haryana High Court upheld the conviction.'
+                },
+                {
+                    date: '2023-07-15',
+                    event: 'SLP Filed',
+                    type: 'filing',
+                    description: 'Special Leave Petition filed in Supreme Court of India.'
+                },
+                {
+                    date: '2023-11-05',
+                    event: 'Supreme Court Judgment',
+                    type: 'judgment',
+                    description: 'Supreme Court allowed the appeal and quashed the conviction.'
+                }
+            ],
+            documents: [
+                {
+                    type: 'Judgment',
+                    title: 'Full Supreme Court Judgment',
+                    date: '2023-11-05',
+                    url: 'https://www.scconline.com/document/2023/10/12345/judgment.pdf',
+                    pageCount: 38
+                },
+                {
+                    type: 'Order',
+                    title: 'Interim Order',
+                    date: '2023-08-10',
+                    url: 'https://www.scconline.com/document/2023/10/12345/interim-order.pdf',
+                    pageCount: 12
+                },
+                {
+                    type: 'Affidavit',
+                    title: 'Appellant\'s Affidavit',
+                    date: '2023-07-25',
+                    url: 'https://www.scconline.com/document/2023/10/12345/appellant-affidavit.pdf',
+                    pageCount: 18
+                },
+                {
+                    type: 'Written Submission',
+                    title: 'Counsel\'s Written Submissions',
+                    date: '2023-09-30',
+                    url: 'https://www.scconline.com/document/2023/10/12345/written-submissions.pdf',
+                    pageCount: 42
+                }
+            ],
+            newsCoverage: [
+                {
+                    title: 'Supreme Court Quashes Conviction Due to Improper Digital Evidence Authentication',
+                    source: 'LiveLaw',
+                    date: '2023-11-06',
+                    url: 'https://www.livelaw.in/supreme-court-digital-evidence-12345',
+                    snippet: 'The Supreme Court has set aside a conviction due to improper authentication of digital evidence, emphasizing the mandatory nature of Section 65B...'
+                },
+                {
+                    id: 'news-002',
+                    title: 'SC Clarifies Requirements for Electronic Evidence Admissibility',
+                    source: 'Bar & Bench',
+                    date: '2023-11-07',
+                    url: 'https://www.barandbench.com/sc-electronic-evidence-67890',
+                    snippet: 'The Supreme Court\'s judgment in Pritam Singh case provides clear guidelines on the admissibility of electronic evidence in criminal trials...'
+                }
+            ],
+            legalAnalysis: [
+                {
+                    title: 'Section 65B of Indian Evidence Act: Mandatory Compliance for Electronic Evidence',
+                    author: 'Prof. D.Y. Chandrachud',
+                    source: 'Supreme Court Review',
+                    date: '2023-11-10',
+                    url: 'https://www.supremecourtreview.org/section-65b-analysis-98765',
+                    summary: 'This analysis examines the Supreme Court\'s interpretation of Section 65B and its implications for future cases involving electronic evidence...'
+                },
+                {
+                    title: 'Digital Evidence Authentication: Legal Standards and Best Practices',
+                    author: 'Dr. A.S. Bopanna',
+                    source: 'Indian Journal of Legal Technology',
+                    date: '2023-11-12',
+                    url: 'https://www.ijlt.org/digital-evidence-authentication-45678',
+                    summary: 'This article discusses best practices for authenticating digital evidence in compliance with Section 65B of the Indian Evidence Act...'
+                }
+            ]
         };
         
         return mockCaseDetails;
@@ -716,10 +1143,171 @@ class LegalResearchController {
                 'Expert testimony is essential for complex digital evidence',
                 'Chain of custody must be properly maintained for evidence'
             ],
-            courtDecision: 'The Rajasthan High Court allowed the appeal and set aside the conviction, finding that the prosecution had failed to establish the guilt beyond reasonable doubt due to contradictory witness statements and lack of supporting medical evidence.'
+            courtDecision: 'The Rajasthan High Court allowed the appeal and set aside the conviction, finding that the prosecution had failed to establish the guilt beyond reasonable doubt due to contradictory witness statements and lack of supporting medical evidence.',
+            status: 'Disposed',
+            category: 'Family Law',
+            citationCount: 14,
+            timeline: [
+                {
+                    date: '2021-03-15',
+                    event: 'Marriage',
+                    type: 'filing',
+                    description: 'The appellant and complainant were married.'
+                },
+                {
+                    date: '2022-08-20',
+                    event: 'Complaint Filed',
+                    type: 'filing',
+                    description: 'Complaint under Section 498A IPC filed by the complainant.'
+                },
+                {
+                    date: '2022-09-05',
+                    event: 'FIR Registered',
+                    type: 'filing',
+                    description: 'First Information Report registered by the police.'
+                },
+                {
+                    date: '2022-12-10',
+                    event: 'Charge Sheet Filed',
+                    type: 'filing',
+                    description: 'Charge sheet submitted to the Magistrate Court.'
+                },
+                {
+                    date: '2023-02-15',
+                    event: 'Trial Begins',
+                    type: 'hearing',
+                    description: 'Sessions trial commenced at Jaipur Sessions Court.'
+                },
+                {
+                    date: '2023-04-15',
+                    event: 'Conviction & Sentence',
+                    type: 'judgment',
+                    description: 'Appellant convicted under Section 498A IPC and sentenced.'
+                },
+                {
+                    date: '2023-05-01',
+                    event: 'Appeal Filed',
+                    type: 'filing',
+                    description: 'Criminal appeal filed in Rajasthan High Court.'
+                },
+                {
+                    date: '2023-08-30',
+                    event: 'Judgment Delivered',
+                    type: 'judgment',
+                    description: 'Rajasthan High Court allowed the appeal and set aside the conviction.'
+                }
+            ],
+            documents: [
+                {
+                    type: 'Judgment',
+                    title: 'Full High Court Judgment',
+                    date: '2023-08-30',
+                    url: 'https://scholar.google.com/citations?view_op=view_citation&hl=en&user=ABC123&citation_for_view=ABC123:1234567890/judgment.pdf',
+                    pageCount: 28
+                },
+                {
+                    type: 'Order',
+                    title: 'Interim Bail Order',
+                    date: '2022-10-15',
+                    url: 'https://scholar.google.com/citations?view_op=view_citation&hl=en&user=ABC123&citation_for_view=ABC123:1234567890/bail-order.pdf',
+                    pageCount: 6
+                },
+                {
+                    type: 'Affidavit',
+                    title: 'Complainant\'s Affidavit',
+                    date: '2023-01-20',
+                    url: 'https://scholar.google.com/citations?view_op=view_citation&hl=en&user=ABC123&citation_for_view=ABC123:1234567890/complainant-affidavit.pdf',
+                    pageCount: 15
+                },
+                {
+                    type: 'Medical Report',
+                    title: 'Medical Examination Report',
+                    date: '2022-09-10',
+                    url: 'https://scholar.google.com/citations?view_op=view_citation&hl=en&user=ABC123&citation_for_view=ABC123:1234567890/medical-report.pdf',
+                    pageCount: 8
+                }
+            ],
+            newsCoverage: [
+                {
+                    title: 'Rajasthan High Court Acquits Husband in Dowry Harassment Case',
+                    source: 'The Hindu',
+                    date: '2023-08-31',
+                    url: 'https://www.thehindu.com/rajasthan-high-court-dowry-case-12345',
+                    snippet: 'The Rajasthan High Court has acquitted a husband in a dowry harassment case, finding insufficient evidence to establish guilt beyond reasonable doubt...'
+                },
+                {
+                    title: 'Medical Evidence Crucial in 498A Cases: Rajasthan High Court',
+                    source: 'Bar & Bench',
+                    date: '2023-09-01',
+                    url: 'https://www.barandbench.com/medical-evidence-498a-67890',
+                    snippet: 'The court emphasized the importance of medical evidence in Section 498A cases, setting aside a conviction due to lack of supporting medical documentation...'
+                }
+            ],
+            legalAnalysis: [
+                {
+                    title: 'Section 498A IPC: Balancing Protection and Prevention of Misuse',
+                    author: 'Dr. S.K. Sharma',
+                    source: 'Rajasthan Law Journal',
+                    date: '2023-09-05',
+                    url: 'https://www.rajasthanlawjournal.org/section-498a-analysis-98765',
+                    summary: 'This analysis examines the Rajasthan High Court\'s approach to Section 498A cases and the importance of proper evidence evaluation...'
+                }
+            ]
         };
         
         return mockCaseDetails;
+    }
+
+    /**
+     * Generate a comprehensive legal research report
+     * @param {Object} req - Express request object
+     * @param {Object} res - Express response object
+     */
+    async generateReport(req, res) {
+        try {
+            const { query, searchType, jurisdiction, results } = req.body;
+            
+            if (!query || !results) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Query and results are required to generate report'
+                });
+            }
+            
+            // In a real implementation, you would generate a comprehensive report
+            // For now, we'll return a mock report structure
+            
+            const report = {
+                executiveSummary: {
+                    query: query,
+                    searchType: searchType,
+                    jurisdiction: jurisdiction,
+                    totalResults: results.length,
+                    generatedAt: new Date().toISOString(),
+                    sources: ['Indian Kanoon', 'SCC Online', 'Google Scholar', 'News Sources', 'Academic Sources']
+                },
+                primaryCases: results.filter(result => result.court).slice(0, 10),
+                relatedDocuments: [], // Would be populated in a real implementation
+                citationsAndPrecedents: [], // Would be populated in a real implementation
+                newsCoverage: [], // Would be populated in a real implementation
+                legalAnalysis: [], // Would be populated in a real implementation
+                caseTimeline: [], // Would be populated in a real implementation
+                webReferences: [] // Would be populated in a real implementation
+            };
+            
+            res.json({
+                success: true,
+                data: report,
+                message: 'Report generated successfully'
+            });
+        } catch (error) {
+            console.error('Generate report error:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Failed to generate report',
+                error: error.message
+            });
+        }
     }
 }
 

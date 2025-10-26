@@ -127,191 +127,63 @@ class LegalAIController {
     }
 
     /**
-     * Get legal assistant response using the AI model
-     * @param {string} query - The user's legal question
-     * @returns {Promise<Object>} - The response from the AI model
+     * Get legal assistant response using the AI model (Express route handler)
+     * @param {Object} req - Express request object
+     * @param {Object} res - Express response object
      */
-    /**
-     * Enhance analysis result with additional legal context
-     * @param {Object} result - The original analysis result
-     * @param {string} documentText - The original document text
-     * @returns {Object} - The enhanced analysis result
-     */
-    enhanceAnalysisResult(result, documentText) {
-        // Add legal category classification
-        const category = this.classifyLegalCategory(documentText);
-        
-        // Add related legal concepts
-        const relatedConcepts = this.extractRelatedConcepts(documentText);
-        
-        // Add suggested actions
-        const suggestedActions = this.generateSuggestedActions(category, result);
-        
-        // Add similar cases (mock data for now)
-        const similarCases = this.getSimilarCases(category);
-        
-        return {
-            ...result,
-            legalCategory: category,
-            relatedConcepts,
-            suggestedActions,
-            similarCases
-        };
-    }
-    
-    /**
-     * Classify legal category based on document content
-     * @param {string} documentText - The document text
-     * @returns {string} - The legal category
-     */
-    classifyLegalCategory(documentText) {
-        const text = documentText.toLowerCase();
-        
-        // Simple keyword-based classification (in a real system, this would use ML)
-        if (text.includes('murder') || text.includes('theft') || text.includes('assault')) {
-            return 'Criminal Law';
-        } else if (text.includes('contract') || text.includes('tort') || text.includes('property')) {
-            return 'Civil Law';
-        } else if (text.includes('constitution') || text.includes('fundamental rights')) {
-            return 'Constitutional Law';
-        } else if (text.includes('company') || text.includes('corporate') || text.includes('merger')) {
-            return 'Corporate Law';
-        } else if (text.includes('divorce') || text.includes('custody') || text.includes('marriage')) {
-            return 'Family Law';
-        } else if (text.includes('tax') || text.includes('income tax') || text.includes('gst')) {
-            return 'Tax Law';
-        } else if (text.includes('copyright') || text.includes('patent') || text.includes('trademark')) {
-            return 'Intellectual Property';
-        } else {
-            return 'General Legal';
-        }
-    }
-    
-    /**
-     * Extract related legal concepts from document
-     * @param {string} documentText - The document text
-     * @returns {Array} - Array of related concepts
-     */
-    extractRelatedConcepts(documentText) {
-        // Simple keyword extraction (in a real system, this would use NLP)
-        const concepts = [];
-        const text = documentText.toLowerCase();
-        
-        // Common legal concepts
-        const legalConcepts = [
-            'jurisdiction', 'precedent', 'statute', 'regulation', 'ordinance',
-            'plaintiff', 'defendant', 'petitioner', 'respondent', 'witness',
-            'evidence', 'testimony', 'affidavit', 'deposition', 'cross-examination',
-            'appeal', 'review', 'revision', 'bail', 'bond',
-            'liability', 'damages', 'injunction', 'restraining order', 'contempt'
-        ];
-        
-        legalConcepts.forEach(concept => {
-            if (text.includes(concept)) {
-                concepts.push(concept);
+    async getLegalAssistantResponse(req, res) {
+        try {
+            const { query, documentContext, documentAnalysis } = req.body;
+            
+            if (!query) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Query is required'
+                });
             }
-        });
-        
-        return concepts;
-    }
-    
-    /**
-     * Generate suggested actions based on analysis
-     * @param {string} category - Legal category
-     * @param {Object} analysis - Analysis result
-     * @returns {Array} - Array of suggested actions
-     */
-    generateSuggestedActions(category, analysis) {
-        const actions = [];
-        
-        // General actions
-        actions.push('Review relevant case law');
-        actions.push('Consult legal precedents');
-        
-        // Category-specific actions
-        switch (category) {
-            case 'Criminal Law':
-                actions.push('Examine evidence admissibility');
-                actions.push('Review bail application procedures');
-                actions.push('Assess witness credibility');
-                break;
-            case 'Civil Law':
-                actions.push('Evaluate contract terms');
-                actions.push('Assess damages calculation');
-                actions.push('Review limitation periods');
-                break;
-            case 'Constitutional Law':
-                actions.push('Analyze fundamental rights violations');
-                actions.push('Review government action legality');
-                break;
-            case 'Corporate Law':
-                actions.push('Examine corporate governance compliance');
-                actions.push('Review shareholder rights');
-                break;
-            case 'Family Law':
-                actions.push('Assess child custody factors');
-                actions.push('Review maintenance obligations');
-                break;
-            case 'Tax Law':
-                actions.push('Verify tax compliance');
-                actions.push('Review assessment orders');
-                break;
-            case 'Intellectual Property':
-                actions.push('Examine IP registration status');
-                actions.push('Assess infringement claims');
-                break;
-        }
-        
-        // Risk-based actions
-        if (analysis.risk_assessment && analysis.risk_assessment.level === 'high') {
-            actions.push('Seek immediate legal counsel');
-            actions.push('Consider alternative dispute resolution');
-        }
-        
-        return actions;
-    }
-    
-    /**
-     * Get similar cases based on legal category
-     * @param {string} category - Legal category
-     * @returns {Array} - Array of similar cases
-     */
-    getSimilarCases(category) {
-        // Mock data - in a real system, this would query a legal database
-        const cases = {
-            'Criminal Law': [
-                {
-                    title: 'State vs. John Doe',
-                    citation: '2023 SCC OnLine SC 123',
-                    court: 'Supreme Court of India',
-                    summary: 'Landmark case on evidence admissibility in criminal proceedings.'
-                },
-                {
-                    title: 'Ramesh vs. State of Maharashtra',
-                    citation: '2022 SCC OnLine Bom 456',
-                    court: 'Bombay High Court',
-                    summary: 'Important precedent on bail applications in serious crimes.'
+            
+            // If we have document context, include it in the query
+            let fullQuery = query;
+            if (documentContext) {
+                fullQuery = `Document Context: ${documentContext}\n\nQuestion: ${query}`;
+            }
+            
+            // Get response from the AI model method
+            const aiResponse = await this.getLegalAssistantResponseMethod(fullQuery);
+            
+            if (aiResponse.error) {
+                return res.status(500).json({
+                    success: false,
+                    message: 'AI response failed',
+                    error: aiResponse.error
+                });
+            }
+            
+            res.json({
+                success: true,
+                data: {
+                    response: aiResponse,
+                    legalCategory: 'general', // This would be determined by the AI model in a real implementation
+                    relatedConcepts: [], // This would be determined by the AI model in a real implementation
+                    confidence: 0.95 // This would be determined by the AI model in a real implementation
                 }
-            ],
-            'Civil Law': [
-                {
-                    title: 'ABC Corp vs. XYZ Ltd',
-                    citation: '(2023) 5 SCC 789',
-                    court: 'Supreme Court of India',
-                    summary: 'Significant judgment on contract interpretation and damages.'
-                }
-            ]
-        };
-        
-        return cases[category] || [];
+            });
+        } catch (error) {
+            console.error('Legal assistant error:', error);
+            res.status(500).json({
+                success: false,
+                message: 'An error occurred during legal assistance',
+                error: error.message
+            });
+        }
     }
-    
+
     /**
      * Get legal assistant response using the AI model
      * @param {string} query - The user's legal question
      * @returns {Promise<Object>} - The response from the AI model
      */
-    async getLegalAssistantResponse(query) {
+    async getLegalAssistantResponseMethod(query) {
         return new Promise((resolve, reject) => {
             // Prepare the input data
             const inputData = {
@@ -380,12 +252,22 @@ class LegalAIController {
         // Add confidence level
         const confidence = result.confidence || 0.8;
         
+        // Add sources
+        const sources = [
+            'InCaseLawBERT Model',
+            'Indian Penal Code (IPC)',
+            'Code of Criminal Procedure (CrPC)',
+            'Code of Civil Procedure (CPC)',
+            'Indian Evidence Act'
+        ];
+        
         return {
             ...result,
             legalCategory: category,
             relatedConcepts,
             legalDatabases,
-            confidence
+            confidence,
+            sources
         };
     }
 

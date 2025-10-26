@@ -1,0 +1,14 @@
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ0ZXN0LXVzZXItaWQtMTIzIiwidXNlcm5hbWUiOiJ0ZXN0dXNlciIsImVtYWlsIjoidGVzdEBleGFtcGxlLmNvbSIsInJvbGUiOiJjbGllbnQiLCJmaXJzdE5hbWUiOiJUZXN0IiwibGFzdE5hbWUiOiJVc2VyIiwiaW5zdGl0dXRpb24iOiJUZXN0IExhdyBTY2hvb2wiLCJ5ZWFyIjoiM3JkIFllYXIiLCJzcGVjaWFsaXphdGlvbiI6IkNyaW1pbmFsIExhdyIsImlhdCI6MTc2MTQ3MjIwMSwiZXhwIjoxNzYxNTU4NjAxfQ.0XLnC-0xmPRHLHSM8pajN2oTCoSNxGkoImjrzwtA-lY",
+  "user": {
+    "userId": "test-user-id-123",
+    "username": "testuser",
+    "email": "test@example.com",
+    "role": "client",
+    "firstName": "Test",
+    "lastName": "User",
+    "institution": "Test Law School",
+    "year": "3rd Year",
+    "specialization": "Criminal Law"
+  }
+}

@@ -14,4 +14,10 @@ router.get('/search', legalNewsController.searchLegalNews);
 // Get legal news categories
 router.get('/categories', legalNewsController.getLegalNewsCategories);
 
+// Get bills and amendments
+router.get('/bills', legalNewsController.getBillsAndAmendments);
+
+// Get bill by ID
+router.get('/bills/:id', legalNewsController.getBillById);
+
 module.exports = router;

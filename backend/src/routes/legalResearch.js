@@ -9,4 +9,7 @@ router.post('/search', authenticateToken, legalResearchController.searchSimilarC
 // Get case details by ID and source (protected route)
 router.get('/case/:caseId/:source', authenticateToken, legalResearchController.getCaseDetails);
 
+// Generate comprehensive legal research report (protected route)
+router.post('/report', authenticateToken, legalResearchController.generateReport);
+
 module.exports = router;

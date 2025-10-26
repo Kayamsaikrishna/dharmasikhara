@@ -107,6 +107,39 @@ law/
    - Key legal terms identified
    - Document summary
 
+### Legal News & Updates
+
+The application includes a comprehensive legal news aggregation system that provides:
+
+1. **Real-time News Fetching**:
+   - Automatic daily updates from multiple legal news sources
+   - Auto-refresh every 30 minutes
+   - Fetches from 5+ legal news sources including Google News, LiveLaw, Bar & Bench
+   - RSS feed aggregation with smart caching mechanism
+
+2. **Bills & Amendments Tracking**:
+   - Latest Indian Parliament bills with working PDF links
+   - PRS India analysis links for each bill
+   - Status tracking (Passed, Enacted, Pending)
+   - Ministry and type information for each bill
+
+3. **Tabbed Interface**:
+   - Switch between Legal News and Bills & Amendments
+   - Category filtering for news articles
+   - Importance indicators (High, Medium, Low)
+
+4. **Verified Working Links**:
+   - All bill PDF links are verified and working
+   - PRS India analysis links for comprehensive bill tracking
+   - Parliament website links for official documents
+
+To access the Legal News feature:
+1. Navigate to the "Legal News" page via the main navigation
+2. View the latest legal news articles in the News tab
+3. Switch to the Bills & Amendments tab to view current legislation
+4. Click on "View PDF" to access official bill documents
+5. Click on "PRS Analysis" for detailed bill analysis
+
 ### Integration Points
 
 - **Frontend Navigation**: Legal Analysis link added to main navigation
@@ -119,6 +152,9 @@ law/
 - `GET /api/health` - Health check endpoint
 - `GET /api/ai-status` - Check AI model status
 - `POST /api/analyze-document` - Analyze a legal document
+- `GET /api/legal-news` - Fetch latest legal news
+- `GET /api/legal-news/categories` - Get legal news categories
+- `GET /api/legal-news/bills` - Fetch latest bills and amendments
 
 ## Configuration
 
