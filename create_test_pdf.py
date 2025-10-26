@@ -1,0 +1,97 @@
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
+
+def create_test_pdf():
+    # Create a PDF file
+    c = canvas.Canvas("test_legal_document.pdf", pagesize=letter)
+    width, height = letter
+    
+    # Add title
+    c.setFont("Helvetica-Bold", 16)
+    c.drawString(1 * inch, height - 1 * inch, "CONTRACT FOR SALE OF PROPERTY")
+    
+    # Add content
+    c.setFont("Helvetica", 12)
+    text = c.beginText(1 * inch, height - 1.5 * inch)
+    text.textLines("""
+This Agreement for Sale is made on this 15th day of June, 2023
+
+BETWEEN
+
+MR. RAJESH KUMAR, S/o Shri Ramesh Kumar,
+Residing at 123, Park Street, Mumbai, Maharashtra - 400001
+(hereinafter referred to as the "Vendor", which expression shall, unless repugnant to the context, include his heirs, executors, administrators and assigns)
+
+OF THE ONE PART
+
+AND
+
+MRS. PRIYA SHARMA, D/o Shri Suresh Sharma,
+Residing at 456, Marine Drive, Chennai, Tamil Nadu - 600002
+(hereinafter referred to as the "Purchaser", which expression shall, unless repugnant to the context, include her heirs, executors, administrators and assigns)
+
+OF THE OTHER PART
+
+WHEREAS the Vendor is the absolute and indefeasible owner of the property described in Schedule A hereunder and is desirous of selling the same to the Purchaser and the Purchaser is desirous of purchasing the same from the Vendor;
+
+NOW THIS AGREEMENT WITNESSETH AS FOLLOWS:
+
+1. INTERPRETATION
+In this Agreement, unless the context otherwise requires:
+(a) words importing the masculine gender shall include the feminine and neuter and vice versa;
+(b) words importing the singular shall include the plural and vice versa;
+(c) references to any statute or statutory provision shall be construed as references to such statute or statutory provision as from time to time amended, modified, consolidated or re-enacted;
+
+2. SALE AND PURCHASE
+The Vendor shall sell and the Purchaser shall purchase the property described in Schedule A hereunder for a total consideration of Rupees Fifty Lakhs (₹50,00,000/-) only.
+
+3. PAYMENT OF CONSIDERATION
+The Purchaser shall pay the consideration as follows:
+(a) Rupees Ten Lakhs (₹10,00,000/-) as earnest money on the date of this Agreement;
+(b) Rupees Twenty Lakhs (₹20,00,000/-) within 30 days from the date of this Agreement;
+(c) Balance Rupees Twenty Lakhs (₹20,00,000/-) on registration of the sale deed.
+
+4. VENDOR'S WARRANTIES
+The Vendor warrants that:
+(a) He is the absolute owner of the property;
+(b) He has clear and marketable title to the property;
+(c) The property is free from all encumbrances;
+(d) He has the right to sell the property.
+
+5. COMPLETION
+The completion of the sale shall take place within 90 days from the date of this Agreement upon execution of the sale deed.
+
+IN WITNESS WHEREOF the parties hereto have hereunto set their hands the day and year first above written.
+
+SIGNED by the within-named Vendor
+RAJESH KUMAR
+
+SIGNED by the within-named Purchaser
+PRIYA SHARMA
+
+WITNESSES:
+1. [Witness Name] [Signature]
+2. [Witness Name] [Signature]
+
+SCHEDULE A
+Property Description:
+Flat No. 101, 1st Floor,
+"Sunshine Apartments",
+123, Main Road,
+Andheri (West),
+Mumbai - 400053
+Maharashtra, India
+
+Area: 1200 sq. ft.
+Registered Owner: Rajesh Kumar
+Property ID: MH-MUM-ANDH-12345
+    """)
+    c.drawText(text)
+    
+    # Save the PDF
+    c.save()
+    print("Test PDF created successfully!")
+
+if __name__ == "__main__":
+    create_test_pdf()

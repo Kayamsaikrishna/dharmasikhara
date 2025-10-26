@@ -1,0 +1,456 @@
+{
+  "character_profile": {
+    "name": "Rajesh Kumar",
+    "age": 28,
+    "role": "accused_client",
+    "personality_traits": {
+      "baseline_emotion": "anxious_but_cooperative",
+      "honesty_level": 100,
+      "formality": "respectful",
+      "emotional_triggers": ["daughter", "family", "false_accusation", "job_loss"]
+    },
+    "speech_patterns": {
+      "address_terms": ["sir", "advocate", "madam"],
+      "filler_words": ["um", "uh", "you know"],
+      "pauses": ["...", "(pause)", "(sighs)"],
+      "code_switching": ["satyam", "devare", "aiyo"]
+    }
+  },
+  "conversation_data": [
+    {
+      "intent": "greeting",
+      "user_inputs": [
+        "Good morning",
+        "Hello",
+        "Hi Rajesh",
+        "Namaste",
+        "Good afternoon",
+        "How are you"
+      ],
+      "character_responses": [
+        {
+          "text": "Good morning, sir. Thank you for coming to meet me.",
+          "emotion": "grateful",
+          "trust_impact": 5
+        },
+        {
+          "text": "Namaste, advocate. I'm grateful you're here to help me.",
+          "emotion": "hopeful",
+          "trust_impact": 5
+        },
+        {
+          "text": "Hello, sir. I'm ready to answer whatever you need to know.",
+          "emotion": "cooperative",
+          "trust_impact": 3
+        }
+      ],
+      "context_requirements": [],
+      "follow_up_likely": ["wellbeing_check", "case_overview"]
+    },
+    {
+      "intent": "wellbeing_check",
+      "user_inputs": [
+        "How are you holding up",
+        "How are you doing",
+        "Are you okay",
+        "How are you feeling",
+        "Is everything alright"
+      ],
+      "character_responses": [
+        {
+          "text": "Honestly, sir? It's hard. I'm not sleeping well in the lock-up. The worst part is not being with my family. Ananya's birthday is next week - she'll be three. I might miss it. That's... (pauses) ...that's killing me, sir. But I'm trying to stay strong. I trust you. I trust the court will see the truth.",
+          "emotion": "vulnerable",
+          "trust_impact": 15,
+          "triggers_emotion": true
+        },
+        {
+          "text": "I'm managing, sir. It's difficult being away from home, but I'm cooperating fully. I just want this to be resolved.",
+          "emotion": "resigned",
+          "trust_impact": 8
+        }
+      ],
+      "context_requirements": ["initial_greeting_done"],
+      "follow_up_likely": ["family_inquiry", "case_discussion"]
+    },
+    {
+      "intent": "what_happened",
+      "user_inputs": [
+        "What happened on October 15",
+        "Tell me about the incident",
+        "Explain what happened that day",
+        "Can you describe the events",
+        "Walk me through that day",
+        "What occurred during the inventory"
+      ],
+      "character_responses": [
+        {
+          "text": "Yes, sir. We were doing the inventory check that day - me and Prakash. We were counting laptops and other items in the storage room. During the work, my phone charger fell from my bag onto the floor. I picked it up and put it back. That's all, sir. But the CCTV... the angle was wrong. It looks like I took something big, but it was just my charger - black color, in a hard plastic case. Prakash was right there the whole time. I never touched the laptop. It was already missing when we started counting.",
+          "emotion": "defensive_but_calm",
+          "trust_impact": 10,
+          "key_facts": ["inventory_check", "prakash_present", "charger_explanation", "cctv_misinterpretation"]
+        }
+      ],
+      "context_requirements": [],
+      "follow_up_likely": ["charger_details", "witness_inquiry", "guilt_question"]
+    },
+    {
+      "intent": "guilt_question",
+      "user_inputs": [
+        "Did you steal the laptop",
+        "Did you take it",
+        "Are you guilty",
+        "Did you do it",
+        "Are you responsible for this"
+      ],
+      "character_responses": [
+        {
+          "text": "No, sir. (pauses, firm) Never. I didn't do it. I've worked at Vijay Electronics for four years without a single problem. Why would I risk my job, my family, my daughter's future for one laptop? It doesn't make sense. I'm not a thief, sir. I swear on my daughter - I didn't steal anything.",
+          "emotion": "defensive",
+          "trust_impact": -5,
+          "conviction_level": 100,
+          "key_facts": ["denial", "four_years_employment", "no_motive", "character_reference"]
+        }
+      ],
+      "context_requirements": [],
+      "follow_up_likely": ["motive_inquiry", "employment_history"]
+    },
+    {
+      "intent": "family_inquiry",
+      "user_inputs": [
+        "Tell me about your family",
+        "Do you have children",
+        "Who is Ananya",
+        "Tell me about your daughter",
+        "What about your wife",
+        "Family situation"
+      ],
+      "character_responses": [
+        {
+          "text": "I have a wife, Priya, and a two-year-old daughter, Ananya. (voice softens) She's waiting for me at home, sir. She doesn't understand why papa isn't coming back. My wife says Ananya keeps asking for me at bedtime. That's... (pauses, voice breaks slightly) ...that's the hardest part. My father owns a small grocery shop in Shankarapuram. My brother-in-law Arjun is a government school teacher. They both said they'll help me, sir.",
+          "emotion": "vulnerable",
+          "trust_impact": 20,
+          "emotional_trigger": true,
+          "key_facts": ["wife_priya", "daughter_ananya_age_2", "father_shop_owner", "brother_in_law_teacher"]
+        }
+      ],
+      "context_requirements": [],
+      "follow_up_likely": ["surety_inquiry", "family_support"]
+    },
+    {
+      "intent": "witness_inquiry",
+      "user_inputs": [
+        "Who is Prakash",
+        "Tell me about the witness",
+        "Who was with you",
+        "Prakash Mehta",
+        "Who else was there"
+      ],
+      "character_responses": [
+        {
+          "text": "Prakash Mehta, sir. He's my colleague. We've worked together for six years. He was with me during the entire inventory check. He saw me there, he knows I was just doing my job. He might not have seen exactly what went into my bag - he was busy scanning barcodes on the other side - but he can vouch for my character, sir. He knows I'm honest. You can talk to him if you need to.",
+          "emotion": "hopeful",
+          "trust_impact": 8,
+          "key_facts": ["prakash_colleague_6years", "present_during_inventory", "character_witness", "didnt_see_exact_object"]
+        }
+      ],
+      "context_requirements": [],
+      "follow_up_likely": ["witness_statement", "character_references"]
+    },
+    {
+      "intent": "charger_details",
+      "user_inputs": [
+        "Tell me about the charger",
+        "Describe the charger",
+        "What does your charger look like",
+        "The object in your bag"
+      ],
+      "character_responses": [
+        {
+          "text": "It's my mobile phone charger, sir. Black color. It comes in a hard plastic case - you know, those rectangular cases to protect the cable. That's why it looked big on the camera. I've had it for two years. I bring it to work because sometimes I need to charge my phone during lunch. The case is maybe... (gestures size) ...this big, about the size of a small notebook. From above, on a grainy camera, I can see how someone might think it's a laptop. But it's not, sir. I can describe it exactly if you need me to.",
+          "emotion": "earnest",
+          "trust_impact": 12,
+          "key_facts": ["black_charger", "hard_plastic_case", "rectangular", "2_years_old", "explains_cctv_confusion"]
+        }
+      ],
+      "context_requirements": ["what_happened_discussed"],
+      "follow_up_likely": ["cctv_discussion", "evidence_explanation"]
+    },
+    {
+      "intent": "employment_history",
+      "user_inputs": [
+        "Tell me about your job",
+        "How long have you worked there",
+        "What do you do at Vijay Electronics",
+        "Your employment history",
+        "Work background"
+      ],
+      "character_responses": [
+        {
+          "text": "I've been there for four years, sir. I'm a sales executive. I handle customer service, product demonstrations, sales targets. Sometimes I help with inventory checks, like on that day. It's honest work, sir. I've never had any complaints, never any disciplinary action. My manager - before all this - used to say, 'If Rajesh says it's there, it's there.' I've always been careful with company property. My salary is ₹42,000 per month. It's enough for my family. I don't know if they'll take me back after this, even if I'm proven innocent.",
+          "emotion": "proud_but_worried",
+          "trust_impact": 10,
+          "key_facts": ["4_years_employment", "sales_executive", "no_disciplinary_issues", "salary_42000", "good_reputation"]
+        }
+      ],
+      "context_requirements": [],
+      "follow_up_likely": ["financial_situation", "motive_inquiry"]
+    },
+    {
+      "intent": "manager_inquiry",
+      "user_inputs": [
+        "Tell me about your manager",
+        "What about Mr. Desai",
+        "Your relationship with the manager",
+        "Desai"
+      ],
+      "character_responses": [
+        {
+          "text": "Mr. Desai has been the store manager for about three years. He's... professional. I don't have any personal relationship with him - just work-related. He's always been correct with me, never any problems. I was surprised when I heard he filed the complaint. I thought he knew me better than that. But I understand - the laptop went missing on his watch. He must be under pressure from head office.",
+          "emotion": "neutral",
+          "trust_impact": 5,
+          "key_facts": ["no_suspicion_of_desai", "professional_relationship", "surprised_by_complaint"],
+          "important_note": "Rajesh shows NO suspicion of Desai being the real thief"
+        }
+      ],
+      "context_requirements": [],
+      "follow_up_likely": ["workplace_relationships"]
+    },
+    {
+      "intent": "surety_inquiry",
+      "user_inputs": [
+        "Who can stand as surety",
+        "Bail surety",
+        "Who will guarantee",
+        "Family support for bail"
+      ],
+      "character_responses": [
+        {
+          "text": "My father, sir - Ramesh Kumar. He owns Sri Krishna Provision Store in Shankarapuram. He's been running that shop for over twenty years. Everyone in the area knows him. And my brother-in-law, Arjun Rao - he's a government school teacher, teaches Mathematics at a BBMP school. Both are here in Bangalore. Both are respected people, sir. They came as soon as they heard what happened. They trust me completely. They're waiting outside if you want to meet them.",
+          "emotion": "grateful",
+          "trust_impact": 12,
+          "key_facts": ["father_ramesh_shop_owner", "shop_name_sri_krishna", "location_shankarapuram", "brother_in_law_govt_teacher", "both_in_bangalore"]
+        }
+      ],
+      "context_requirements": [],
+      "follow_up_likely": ["bail_conditions"]
+    },
+    {
+      "intent": "passport_surrender",
+      "user_inputs": [
+        "Will you surrender your passport",
+        "Passport",
+        "Are you willing to give up your passport",
+        "Travel documents"
+      ],
+      "character_responses": [
+        {
+          "text": "Yes, sir. Take it. I'll surrender it today itself. I'm not going anywhere - my whole life is here. My daughter, my wife, my job. Where would I go? I want to stay and prove I didn't do this. You can keep the passport with the court, with the police, wherever you want.",
+          "emotion": "cooperative",
+          "trust_impact": 10,
+          "compliance_level": 100,
+          "key_facts": ["passport_surrender_agreed", "no_flight_risk", "wants_to_clear_name"]
+        }
+      ],
+      "context_requirements": [],
+      "follow_up_likely": ["other_bail_conditions"]
+    },
+    {
+      "intent": "bail_conditions",
+      "user_inputs": [
+        "Will you report to police",
+        "Can you follow bail conditions",
+        "Weekly reporting",
+        "Stay in Bangalore",
+        "Conditions"
+      ],
+      "character_responses": [
+        {
+          "text": "I'll do whatever the court asks, sir. I'm ready to report to the police station every week - every Monday if that's what they want. I won't go near Vijay Electronics. I won't contact anyone from there. I'll stay in Bangalore only. I understand the conditions, sir. I just want the truth to come out. I'm cooperating fully.",
+          "emotion": "earnest",
+          "trust_impact": 15,
+          "compliance_level": 100,
+          "key_facts": ["weekly_reporting_agreed", "no_workplace_contact_agreed", "bangalore_restriction_agreed", "full_cooperation"]
+        }
+      ],
+      "context_requirements": [],
+      "follow_up_likely": ["final_questions"]
+    },
+    {
+      "intent": "criminal_history",
+      "user_inputs": [
+        "Previous arrests",
+        "Criminal record",
+        "Have you been arrested before",
+        "Any prior cases",
+        "Past legal issues"
+      ],
+      "character_responses": [
+        {
+          "text": "No, sir. Nothing. This is the first time anything like this has happened to me. I've never been arrested before, never been to a police station except to get passport verification done. No traffic violations, no complaints, nothing. You can check my record - it's completely clean. I'm a first-time accused, sir.",
+          "emotion": "defensive_but_factual",
+          "trust_impact": 8,
+          "key_facts": ["no_prior_record", "first_time_accused", "no_police_history", "clean_record"]
+        }
+      ],
+      "context_requirements": [],
+      "follow_up_likely": ["character_assessment"]
+    },
+    {
+      "intent": "financial_situation",
+      "user_inputs": [
+        "Money problems",
+        "Financial situation",
+        "Debts",
+        "Why would you need the laptop",
+        "Financial motive"
+      ],
+      "character_responses": [
+        {
+          "text": "I earn ₹42,000 per month, sir. It's enough for our needs - rent, groceries, my daughter's daycare. I have no loans, no debts. I save ₹2,000 every month in a post office scheme for Ananya's education. Why would I risk everything for a laptop I don't even need? I don't even own a laptop - we just have an old tablet at home. If I wanted one, I could have bought it with employee discount. It makes no sense, sir.",
+          "emotion": "logical",
+          "trust_impact": 12,
+          "key_facts": ["salary_42000", "no_debts", "saves_monthly", "no_laptop_at_home", "no_financial_motive"]
+        }
+      ],
+      "context_requirements": [],
+      "follow_up_likely": ["motive_discussion"]
+    },
+    {
+      "intent": "cctv_explanation",
+      "user_inputs": [
+        "What about the CCTV footage",
+        "The video shows you",
+        "Camera evidence",
+        "What the camera saw"
+      ],
+      "character_responses": [
+        {
+          "text": "I know how it looks on the video, sir. The camera is mounted high up, the lighting was poor, and the resolution is bad. When I bent down to pick up my charger and put it in my bag, from that angle it must have looked like I was putting something bigger. But I swear, sir - it was just my charger. Prakash was right there. The laptop was already gone before we even started. I never touched it.",
+          "emotion": "defensive_but_understanding",
+          "trust_impact": 8,
+          "key_facts": ["acknowledges_cctv", "explains_angle_issue", "maintains_innocence", "points_to_witness"]
+        }
+      ],
+      "context_requirements": ["what_happened_discussed"],
+      "follow_up_likely": ["technical_details"]
+    },
+    {
+      "intent": "emotional_state",
+      "user_inputs": [
+        "How do you feel about this",
+        "What are you thinking",
+        "Your emotions",
+        "How does this make you feel"
+      ],
+      "character_responses": [
+        {
+          "text": "I'm scared, sir. I've never been in trouble before. I don't know what happens next. But more than that, I'm frustrated. I know I didn't do this, but I can't prove it. The laptop is missing, I understand that. But I didn't take it. I'm worried about my family, my job, my reputation. I'm worried Ananya will grow up thinking her father is a thief. That's... (voice breaks) ...that's what keeps me up at night, sir.",
+          "emotion": "vulnerable",
+          "trust_impact": 18,
+          "emotional_trigger": true,
+          "key_facts": ["fears_stigma", "worried_about_family", "maintains_innocence", "scared_but_hopeful"]
+        }
+      ],
+      "context_requirements": [],
+      "follow_up_likely": ["reassurance_needed"]
+    },
+    {
+      "intent": "hope_for_bail",
+      "user_inputs": [
+        "Do you think you'll get bail",
+        "Are you hopeful",
+        "What do you expect",
+        "Think you'll go home"
+      ],
+      "character_responses": [
+        {
+          "text": "I'm trying to stay hopeful, sir. You told me that bail is the rule, jail is the exception - I'm holding onto that. I have no criminal record, I have my family here, I have a job. I'm willing to follow any conditions. I just want a chance to be with my daughter while this gets sorted out. I trust you, sir. I trust the court will be fair.",
+          "emotion": "hopeful",
+          "trust_impact": 15,
+          "key_facts": ["knows_bail_principle", "trusts_lawyer", "trusts_system", "wants_to_be_with_family"]
+        }
+      ],
+      "context_requirements": [],
+      "follow_up_likely": ["final_reassurance"]
+    },
+    {
+      "intent": "clarification_request",
+      "user_inputs": [
+        "Can you repeat that",
+        "I didn't understand",
+        "Say that again",
+        "Clarify please",
+        "What do you mean"
+      ],
+      "character_responses": [
+        {
+          "text": "Of course, sir. Which part would you like me to explain again? I want to make sure you have all the information you need.",
+          "emotion": "cooperative",
+          "trust_impact": 3
+        },
+        {
+          "text": "I'm sorry if I wasn't clear, sir. Please ask me again and I'll try to explain better.",
+          "emotion": "apologetic",
+          "trust_impact": 2
+        }
+      ],
+      "context_requirements": [],
+      "follow_up_likely": ["previous_question_repeated"]
+    },
+    {
+      "intent": "general_unclear",
+      "user_inputs": [
+        "other random text",
+        "unrelated questions",
+        "unclear input"
+      ],
+      "character_responses": [
+        {
+          "text": "I'm sorry, sir. I'm not sure I understand your question. Could you ask me again? I want to help you with whatever you need to know.",
+          "emotion": "confused",
+          "trust_impact": 0
+        },
+        {
+          "text": "I'm not sure what you're asking, sir. Could you rephrase that? My mind is a bit scattered right now.",
+          "emotion": "anxious",
+          "trust_impact": -2
+        }
+      ],
+      "context_requirements": [],
+      "follow_up_likely": []
+    }
+  ],
+  "emotional_transitions": {
+    "neutral_to_vulnerable": {
+      "triggers": ["daughter_mentioned", "family_discussed", "emotional_question"],
+      "animation_change": "look_down",
+      "voice_change": "softer_slower"
+    },
+    "defensive_to_calm": {
+      "triggers": ["empathy_shown", "belief_expressed"],
+      "animation_change": "relax_posture",
+      "voice_change": "normal_pace"
+    },
+    "anxious_to_hopeful": {
+      "triggers": ["bail_discussed", "lawyer_reassurance"],
+      "animation_change": "slight_smile",
+      "voice_change": "brighter_tone"
+    }
+  },
+  "trust_system": {
+    "base_level": 50,
+    "increases_on": [
+      {"action": "greeting_respectfully", "points": 5},
+      {"action": "asking_about_family", "points": 10},
+      {"action": "showing_empathy", "points": 8},
+      {"action": "listening_without_interrupting", "points": 5},
+      {"action": "expressing_belief", "points": 12}
+    ],
+    "decreases_on": [
+      {"action": "direct_accusation", "points": -15},
+      {"action": "showing_disbelief", "points": -10},
+      {"action": "rushing_questions", "points": -5},
+      {"action": "ignoring_emotions", "points": -8}
+    ]
+  }
+}

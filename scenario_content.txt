@@ -1,0 +1,135 @@
+# Extracted Content from Scenario PDF Files
+
+## The Inventory That Changed Everything.pdf
+
+"“The Inventory That Changed Everything”
+A Complete Narrative of the Rajesh Kumar Theft Case
+
+Chapter 1: A Routine Morning
+October 15, 2025, began like any other for Rajesh Kumar. He woke at 6:00 a.m. in his small but 
+tidy apartment in Basavanagudi, Bangalore. His two-year-old daughter, Ananya, was already babbling in 
+her crib. His wife, Priya, handed him a steaming cup of tea and reminded him: “Don’t forget—   
+inventory day today.”
+Rajesh smiled. “I’ve done it a dozen times. Nothing to worry about.”
+
+Rajesh worked as a warehouse supervisor at a mid-sized electronics distributor. His job required him to conduct a monthly inventory check of all items in the warehouse. It was a tedious but necessary task that ensured accurate stock levels and prevented losses. 
+
+As he arrived at work, Rajesh greeted his team of four assistants. “Alright team, let’s get started. We need to finish by noon so we can update the system before the manager arrives.”
+
+The inventory process involved scanning barcodes of each item and cross-referencing them with the digital records. Rajesh took his role seriously, knowing that discrepancies could lead to financial losses for the company.
+
+By 11:30 a.m., they had completed the scan. Rajesh began cross-checking the physical count with the digital records. To his horror, he noticed a significant discrepancy—50 high-end smartphones worth ₹2,50,000 were missing from the records.
+
+He immediately informed his manager, Mr. Suresh, who arrived shortly after. Mr. Suresh was visibly agitated. “This is serious, Rajesh. These phones are worth a lot. Security cameras show you were the last person in the warehouse yesterday evening. What do you have to say about this?”
+
+Rajesh was stunned. “Sir, I locked up properly. I don’t know how this happened.”
+
+Mr. Suresh called the police. Within an hour, officers arrived and took Rajesh into custody on suspicion of theft. His protests of innocence fell on deaf ears.
+
+Chapter 2: Legal Proceedings Begin
+
+Rajesh found himself in a police cell, confused and frightened. His wife, Priya, was beside herself with worry. She immediately contacted a criminal defense attorney, Ms. Aditi Rao, who agreed to take the case.
+
+Ms. Rao visited Rajesh in custody the next morning. “Tell me everything that happened,” she said, taking notes.
+
+Rajesh recounted the events in detail. “I followed all procedures. I locked the warehouse properly. Someone must have accessed it after I left.”
+
+Ms. Rao knew that proving innocence would be challenging. The burden of proof lay with the prosecution, but circumstantial evidence was strong. She needed to find alternative explanations for the missing phones.
+
+“I’ll file for bail,” she told Rajesh. “In the meantime, think of anyone who might have had access to the warehouse or a motive to frame you.”
+
+Chapter 3: Investigation and Evidence
+
+Ms. Rao began her investigation. She requested access to the warehouse security footage from the previous evening. The footage showed Rajesh leaving the warehouse at 7:30 p.m. as claimed. However, there was a gap in the recording from 9:00 p.m. to 11:00 p.m.
+
+She also discovered that the warehouse had two keys—one held by Rajesh and another by Mr. Suresh. When she questioned Mr. Suresh about his key, he became defensive. “I don’t need to explain my movements to anyone,” he snapped.
+
+Ms. Rao also learned that one of Rajesh’s assistants, Ravi, had been recently reprimanded for repeated tardiness. Could he have had a motive?
+
+During a client interview, Rajesh mentioned that he had noticed Ravi acting suspiciously in recent weeks. “He was always staying late, saying he needed to organize things. I thought he was just being diligent.”
+
+Ms. Rao decided to investigate Ravi further. She discovered that he had significant gambling debts and had been seen at a casino the previous week.
+
+Chapter 4: Court Proceedings
+
+The bail hearing was scheduled for the following week. Ms. Rao prepared a strong argument, highlighting the lack of direct evidence and Rajesh’s clean record. She also pointed out the gaps in the security footage and the existence of other potential suspects.
+
+The prosecutor, Mr. Vikram Singh, argued that Rajesh had the means, motive, and opportunity. “The accused was the last person seen in the warehouse. The missing inventory is substantial. Bail should be denied to prevent tampering with evidence.”
+
+The judge, after hearing both sides, granted conditional bail. Rajesh was required to surrender his passport and report to the police station weekly.
+
+The trial began a month later. Ms. Rao presented evidence of the security footage gaps and Ravi’s gambling debts. She also called a forensic expert who testified that there were signs of forced entry that had been overlooked initially.
+
+Mr. Suresh’s defensive behavior when questioned about his key raised suspicions. Why was he so reluctant to discuss his movements?
+
+Chapter 5: The Truth Revealed
+
+As the trial progressed, pressure mounted on Ravi. Eventually, he confessed to the theft. He had used Mr. Suresh’s key, which he had stolen earlier, to access the warehouse. He had been selling electronics to pay off his gambling debts.
+
+Mr. Suresh’s reluctance to discuss his key was because he had lost it months ago but never reported it, fearing repercussions. His negligence had enabled Ravi’s actions.
+
+Rajesh was acquitted of all charges. The real perpetrator was sentenced to three years in prison. Mr. Suresh was fined for his negligence.
+
+Epilogue
+
+Rajesh returned to his job, but things were never quite the same. The experience had changed him. He became more vigilant about security procedures and ensured that all keys were properly accounted for.
+
+Ms. Aditi Rao’s thorough investigation and preparation had saved an innocent man. Her reputation as a skilled defense attorney was further enhanced.
+
+The case highlighted the importance of proper evidence collection, the dangers of circumstantial evidence, and the critical role of a competent defense attorney in ensuring justice."
+
+## scenario.pdf
+
+"Title: First-Time Bail Application – Theft Offense
+Duration: 20–30 minutes
+Skill Focus: Client Interviewing, Legal Research, Oral Advocacy
+
+Part 1: Scenario Setup & Introduction
+You are a junior defense attorney at a criminal law firm. Your supervising partner assigns you a new case: your client, Rajesh Kumar, has been arrested for alleged theft and is currently in police custody. A bail hearing is scheduled for tomorrow morning. You must prepare and argue his bail application today.
+
+Key Objectives:
+- Conduct an effective client interview to gather facts
+- Research relevant bail laws and precedents
+- Prepare compelling arguments for bail grant
+- Present oral arguments in a mock bail hearing
+
+Part 2: Client Interview (10 minutes)
+Rajesh Kumar, 32, works as a warehouse supervisor at an electronics distributor. He was arrested yesterday evening after a discrepancy of 50 smartphones (valued at ₹2,50,000) was discovered during a routine inventory check. Security footage shows him as the last person in the warehouse, but he insists he locked up properly and knows nothing about the missing items.
+
+Key Information from Client:
+- Clean criminal record
+- Stable employment and family ties
+- No prior incidents at workplace
+- Mentions a suspicious assistant named Ravi
+- Claims he noticed gaps in security cameras
+
+Part 3: Legal Research (10 minutes)
+Research the following:
+- Relevant sections of the Criminal Procedure Code (CrPC) regarding bail
+- Key precedents for bail in theft cases
+- Factors courts consider when granting bail
+- Any recent judgments that support your client's case
+
+Part 4: Preparation and Argument (10 minutes)
+Prepare arguments addressing:
+- Presumption of innocence
+- Strength of evidence against client
+- Client's ties to community
+- Risk of evidence tampering or flight risk
+- Relevant precedents supporting bail grant
+
+Part 5: Mock Bail Hearing (10 minutes)
+Present your arguments to a judge (played by instructor or peer). Be prepared to respond to prosecutor's counterarguments.
+
+Learning Outcomes:
+- Develop client interviewing skills
+- Apply legal research to practical scenarios
+- Construct persuasive legal arguments
+- Practice oral advocacy in courtroom setting
+
+Assessment Criteria:
+- Thoroughness of client interview
+- Quality of legal research
+- Strength of arguments presented
+- Oral advocacy skills
+- Professional courtroom demeanor"

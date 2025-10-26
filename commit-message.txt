@@ -1,0 +1,26 @@
+Initial commit: Complete DharmaSikhara Legal Practice Simulator
+
+This commit includes the complete integration of the AI backend functionality with the existing frontend for the DharmaSikhara legal practice simulator.
+
+Features included:
+- Frontend React application with TypeScript
+- Backend Node.js service with Express
+- Python AI model integration (InCaseLawBERT)
+- Legal document analysis capabilities
+- Legal research functionality with mock data
+- Multi-container Docker orchestration
+- Comprehensive legal scenario simulations
+- Client interview simulations
+- Digital evidence analysis
+- Courtroom simulations
+- Certification center
+- Legal news and updates
+- Multiplayer functionality
+- Performance dashboard
+- Test scenarios and progress tracking
+
+Key components:
+- Frontend: React application (port 3000)
+- AI Backend: Node.js service (port 5000)
+- Python AI Model: InCaseLawBERT model integration
+- Docker configuration for easy deployment

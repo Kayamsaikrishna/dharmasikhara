@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal Assistant Feature Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #333;
+        }
+        textarea, input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            background-color: #f9f9f9;
+            border-left: 4px solid #4CAF50;
+            padding: 10px;
+            margin: 10px 0;
+            white-space: pre-wrap;
+        }
+        .error {
+            background-color: #ffebee;
+            border-left: 4px solid #f44336;
+            padding: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Legal Assistant Feature Test</h1>
+        
+        <h2>Login</h2>
+        <input type="email" id="email" placeholder="Email" value="kayamsaikrishna@gmail.com">
+        <input type="password" id="password" placeholder="Password" value="Sai@1234@">
+        <button onclick="login()">Login</button>
+        <div id="loginResult"></div>
+        
+        <h2>Legal Assistant</h2>
+        <input type="text" id="legalQuery" placeholder="Enter your legal question" value="What are my rights if I am arrested for a criminal offense?">
+        <button onclick="askLegalAssistant()">Ask Legal Assistant</button>
+        <div id="legalAssistantResult"></div>
+        
+        <h2>Document Analysis</h2>
+        <textarea id="documentText" placeholder="Enter document text for analysis" rows="5">This is a test legal document for analysis. The document contains information about a contractual agreement between two parties. The parties agree to certain terms and conditions regarding the provision of services. This contract is governed by the Indian Contract Act, 1872. Both parties have signed this agreement on this day.</textarea>
+        <button onclick="analyzeDocument()">Analyze Document</button>
+        <div id="documentAnalysisResult"></div>
+        
+        <h2>Document Classification</h2>
+        <textarea id="classificationText" placeholder="Enter document text for classification" rows="5">This is a test legal document for analysis. The document contains information about a contractual agreement between two parties. The parties agree to certain terms and conditions regarding the provision of services. This contract is governed by the Indian Contract Act, 1872. Both parties have signed this agreement on this day.</textarea>
+        <button onclick="classifyDocument()">Classify Document</button>
+        <div id="documentClassificationResult"></div>
+    </div>
+
+    <script>
+        let authToken = '';
+        
+        async function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch('http://localhost:5001/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    authToken = data.data.token;
+                    document.getElementById('loginResult').innerHTML = '<div class="result">Login successful! Token received.</div>';
+                } else {
+                    document.getElementById('loginResult').innerHTML = '<div class="error">Login failed: ' + data.message + '</div>';
+                }
+            } catch (error) {
+                document.getElementById('loginResult').innerHTML = '<div class="error">Login error: ' + error.message + '</div>';
+            }
+        }
+        
+        async function askLegalAssistant() {
+            if (!authToken) {
+                document.getElementById('legalAssistantResult').innerHTML = '<div class="error">Please login first!</div>';
+                return;
+            }
+            
+            const query = document.getElementById('legalQuery').value;
+            
+            try {
+                const response = await fetch('http://localhost:5001/api/ai/npc-response', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ 
+                        query: query,
+                        context: 'legal assistance'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('legalAssistantResult').innerHTML = '<div class="result"><strong>Legal Assistant Response:</strong><br>' + 
+                        JSON.stringify(data.data, null, 2) + '</div>';
+                } else {
+                    document.getElementById('legalAssistantResult').innerHTML = '<div class="error">Legal Assistant failed: ' + data.message + '</div>';
+                }
+            } catch (error) {
+                document.getElementById('legalAssistantResult').innerHTML = '<div class="error">Legal Assistant error: ' + error.message + '</div>';
+            }
+        }
+        
+        async function analyzeDocument() {
+            if (!authToken) {
+                document.getElementById('documentAnalysisResult').innerHTML = '<div class="error">Please login first!</div>';
+                return;
+            }
+            
+            const documentText = document.getElementById('documentText').value;
+            
+            try {
+                const response = await fetch('http://localhost:5001/api/ai/analyze-document', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ documentText })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('documentAnalysisResult').innerHTML = '<div class="result"><strong>Document Analysis Result:</strong><br>' + 
+                        JSON.stringify(data.data, null, 2) + '</div>';
+                } else {
+                    document.getElementById('documentAnalysisResult').innerHTML = '<div class="error">Document Analysis failed: ' + data.message + '</div>';
+                }
+            } catch (error) {
+                document.getElementById('documentAnalysisResult').innerHTML = '<div class="error">Document Analysis error: ' + error.message + '</div>';
+            }
+        }
+        
+        async function classifyDocument() {
+            if (!authToken) {
+                document.getElementById('documentClassificationResult').innerHTML = '<div class="error">Please login first!</div>';
+                return;
+            }
+            
+            const documentText = document.getElementById('classificationText').value;
+            
+            try {
+                const response = await fetch('http://localhost:5001/api/ai/classify-document', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ documentText })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('documentClassificationResult').innerHTML = '<div class="result"><strong>Document Classification Result:</strong><br>' + 
+                        JSON.stringify(data.data, null, 2) + '</div>';
+                } else {
+                    document.getElementById('documentClassificationResult').innerHTML = '<div class="error">Document Classification failed: ' + data.message + '</div>';
+                }
+            } catch (error) {
+                document.getElementById('documentClassificationResult').innerHTML = '<div class="error">Document Classification error: ' + error.message + '</div>';
+            }
+        }
+    </script>
+</body>
+</html>

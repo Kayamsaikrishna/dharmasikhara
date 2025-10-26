@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jarvis-Style Conversational AI - Voice & Text</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #fff;
+        }
+        #container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+        #info {
+            position: absolute;
+            top: 10px;
+            width: 100%;
+            text-align: center;
+            color: #4cc9f0;
+            font-size: 18px;
+            text-shadow: 0 0 10px rgba(76, 201, 240, 0.7);
+            z-index: 100;
+            pointer-events: none;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+        /* Hidden elements for voice-only interface */
+        #chat-container, #status-panel, #quick-actions, #key-facts, #conversation-log {
+            display: none;
+        }
+        /* Visual feedback for voice interaction */
+        #voice-feedback {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 18px;
+            z-index: 100;
+            display: none;
+            box-shadow: 0 0 20px rgba(76, 201, 240, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(76, 201, 240, 0.3);
+            transition: all 0.3s ease;
+        }
+        .listening {
+            background: rgba(76, 175, 80, 0.8);
+            animation: pulse 1.5s infinite;
+            box-shadow: 0 0 30px rgba(76, 175, 80, 0.7);
+        }
+        .speaking {
+            background: rgba(33, 150, 243, 0.8);
+            box-shadow: 0 0 30px rgba(33, 150, 243, 0.7);
+        }
+        .processing {
+            background: rgba(156, 39, 176, 0.8);
+            box-shadow: 0 0 30px rgba(156, 39, 176, 0.7);
+        }
+        @keyframes pulse {
+            0% { opacity: 0.7; transform: translateX(-50%) scale(1); }
+            50% { opacity: 1; transform: translateX(-50%) scale(1.05); }
+            100% { opacity: 0.7; transform: translateX(-50%) scale(1); }
+        }
+        /* Jarvis-style visual elements */
+        #jarvis-hud {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            border: 2px solid rgba(76, 201, 240, 0.3);
+            box-shadow: 0 0 50px rgba(76, 201, 240, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+        }
+        #jarvis-inner-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 1px solid rgba(76, 201, 240, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: rotate 20s linear infinite;
+        }
+        #jarvis-core {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(76, 201, 240, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #4cc9f0;
+            text-shadow: 0 0 10px rgba(76, 201, 240, 0.7);
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        /* Waveform visualization */
+        #waveform {
+            position: absolute;
+            bottom: 150px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+        }
+        .bar {
+            width: 4px;
+            height: 20px;
+            background: rgba(76, 201, 240, 0.7);
+            border-radius: 2px;
+            animation: wave 1.5s infinite ease-in-out;
+            animation-delay: calc(var(--i) * 0.1s);
+        }
+        @keyframes wave {
+            0%, 100% { height: 10px; }
+            50% { height: 40px; }
+        }
+        /* Status indicators */
+        #status-indicators {
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 100;
+        }
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #6c757d;
+        }
+        .indicator.active {
+            background: #4cc9f0;
+            box-shadow: 0 0 10px #4cc9f0;
+        }
+        /* Microphone toggle */
+        #mic-toggle {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(76, 201, 240, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+        #mic-toggle:hover {
+            background: rgba(76, 201, 240, 0.2);
+            transform: scale(1.1);
+        }
+        #mic-toggle.active {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: #4caf50;
+        }
+        #mic-icon {
+            width: 30px;
+            height: 30px;
+            fill: #4cc9f0;
+        }
+        #mic-toggle.active #mic-icon {
+            fill: #4caf50;
+        }
+        /* Text input area */
+        #input-area {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            max-width: 600px;
+            display: flex;
+            z-index: 100;
+        }
+        #text-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 30px 0 0 30px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(76, 201, 240, 0.3);
+            outline: none;
+        }
+        #text-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        #send-button {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 0 30px 30px 0;
+            background: rgba(76, 201, 240, 0.3);
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(76, 201, 240, 0.3);
+        }
+        #send-button:hover {
+            background: rgba(76, 201, 240, 0.5);
+        }
+        /* Mode toggle */
+        #mode-toggle {
+            position: absolute;
+            top: 60px;
+            left: 20px;
+            padding: 10px 15px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(76, 201, 240, 0.3);
+            cursor: pointer;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+            font-size: 14px;
+        }
+        #mode-toggle:hover {
+            background: rgba(76, 201, 240, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="info">JARVIS-STYLE CONVERSATIONAL AI INTERFACE</div>
+        
+        <!-- Mode toggle -->
+        <button id="mode-toggle">Switch to Voice Mode</button>
+        
+        <!-- Jarvis-style HUD -->
+        <div id="jarvis-hud">
+            <div id="jarvis-inner-circle">
+                <div id="jarvis-core">AI</div>
+            </div>
+        </div>
+        
+        <!-- Status indicators -->
+        <div id="status-indicators">
+            <div class="indicator" id="mic-status"></div>
+            <div class="indicator" id="ai-status"></div>
+            <div class="indicator" id="connection-status"></div>
+        </div>
+        
+        <!-- Waveform visualization -->
+        <div id="waveform">
+            <!-- Generated by JavaScript -->
+        </div>
+        
+        <!-- Visual feedback for voice interaction -->
+        <div id="voice-feedback">Initializing...</div>
+        
+        <!-- Text input area -->
+        <div id="input-area">
+            <input type="text" id="text-input" placeholder="Type your message here...">
+            <button id="send-button">Send</button>
+        </div>
+        
+        <!-- Microphone toggle -->
+        <div id="mic-toggle">
+            <svg id="mic-icon" viewBox="0 0 24 24">
+                <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+            </svg>
+        </div>
+        
+        <!-- Hidden elements -->
+        <div id="chat-container"></div>
+        <div id="status-panel"></div>
+    </div>
+
+    <!-- Include Three.js from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="RajeshConversationEngine.js"></script>
+    <script>
+        // Initialize Three.js scene
+        let scene, camera, renderer;
+        let rajeshCharacter;
+        let conversationEngine;
+        let raycaster, mouse;
+        let courtroomObjects = {};
+
+        // Voice recognition variables
+        let recognition;
+        let isListening = false;
+        let isSpeaking = false;
+        let voiceFeedback = null;
+        let micToggle = null;
+
+        // Text input variables
+        let textInput = null;
+        let sendButton = null;
+        let inputArea = null;
+        let modeToggle = null;
+        let isTextMode = false;
+
+        // Audio visualization
+        let waveformBars = [];
+        let audioContext;
+        let analyser;
+        let microphone;
+
+        // Status indicators
+        let micStatus, aiStatus, connectionStatus;
+
+        // Load training data and initialize engine
+        fetch('rajesh_kumar_processed.json')
+            .then(response => response.json())
+            .then(data => {
+                conversationEngine = new RajeshConversationEngine(data);
+                console.log('✅ Conversation engine initialized');
+                
+                // Initialize UI elements
+                initUI();
+                
+                // Start continuous voice recognition
+                initVoiceRecognition();
+                
+                // Show initial feedback
+                showVoiceFeedback("System ready. Speak to begin.");
+                
+                // Update status indicators
+                updateStatusIndicators();
+            })
+            .catch(error => {
+                console.error('❌ Error loading training data:', error);
+                showVoiceFeedback("Error loading AI data. Please check console.");
+            });
+
+        function initUI() {
+            // Get UI elements
+            voiceFeedback = document.getElementById('voice-feedback');
+            micToggle = document.getElementById('mic-toggle');
+            micStatus = document.getElementById('mic-status');
+            aiStatus = document.getElementById('ai-status');
+            connectionStatus = document.getElementById('connection-status');
+            
+            // Text input elements
+            textInput = document.getElementById('text-input');
+            sendButton = document.getElementById('send-button');
+            inputArea = document.getElementById('input-area');
+            modeToggle = document.getElementById('mode-toggle');
+            
+            // Create waveform visualization
+            createWaveform();
+            
+            // Set AI status as active
+            aiStatus.classList.add('active');
+            connectionStatus.classList.add('active');
+            
+            // Add event listeners
+            micToggle.addEventListener('click', toggleMicrophone);
+            sendButton.addEventListener('click', sendTextMessage);
+            textInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendTextMessage();
+                }
+            });
+            modeToggle.addEventListener('click', toggleInputMode);
+            
+            // Initially hide text input in voice mode
+            inputArea.style.display = 'none';
+        }
+
+        function createWaveform() {
+            const waveform = document.getElementById('waveform');
+            for (let i = 0; i < 20; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.style.setProperty('--i', i);
+                waveform.appendChild(bar);
+                waveformBars.push(bar);
+            }
+        }
+
+        function toggleInputMode() {
+            isTextMode = !isTextMode;
+            
+            if (isTextMode) {
+                // Switch to text mode
+                modeToggle.textContent = 'Switch to Voice Mode';
+                inputArea.style.display = 'flex';
+                micToggle.style.display = 'none';
+                waveform.style.display = 'none';
+                
+                // Stop voice recognition
+                if (isListening) {
+                    stopListening();
+                }
+                
+                // Focus on text input
+                textInput.focus();
+            } else {
+                // Switch to voice mode
+                modeToggle.textContent = 'Switch to Text Mode';
+                inputArea.style.display = 'none';
+                micToggle.style.display = 'flex';
+                waveform.style.display = 'flex';
+                
+                // Start voice recognition
+                startListening();
+            }
+        }
+
+        function toggleMicrophone() {
+            if (isListening) {
+                stopListening();
+            } else {
+                startListening();
+            }
+        }
+
+        function startListening() {
+            if (recognition && !isListening) {
+                try {
+                    recognition.start();
+                    isListening = true;
+                    micToggle.classList.add('active');
+                    micStatus.classList.add('active');
+                    showVoiceFeedback("Listening...");
+                    updateVoiceFeedback();
+                } catch (error) {
+                    console.error('Error starting recognition:', error);
+                }
+            }
+        }
+
+        function stopListening() {
+            if (recognition && isListening) {
+                try {
+                    recognition.stop();
+                    isListening = false;
+                    micToggle.classList.remove('active');
+                    micStatus.classList.remove('active');
+                    showVoiceFeedback("Microphone off");
+                    updateVoiceFeedback();
+                } catch (error) {
+                    console.error('Error stopping recognition:', error);
+                }
+            }
+        }
+
+        function sendTextMessage() {
+            const message = textInput.value.trim();
+            if (message) {
+                textInput.value = '';
+                processTextInput(message);
+            }
+        }
+
+        function updateStatusIndicators() {
+            // Mic status is updated in start/stop functions
+            // AI status is always active in this implementation
+            // Connection status is always active (local app)
+        }
+
+        function init() {
+            // Create scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0c0c20);
+            scene.fog = new THREE.Fog(0x0c0c20, 10, 15);
+
+            // Create camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 2, 5);
+
+            // Create renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            document.getElementById('container').appendChild(renderer.domElement);
+
+            // Add raycaster for object interaction
+            raycaster = new THREE.Raycaster();
+            mouse = new THREE.Vector2();
+
+            // Add lighting
+            const ambientLight = new THREE.AmbientLight(0x404040, 2);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0x4cc9f0, 1);
+            directionalLight.position.set(5, 10, 7);
+            directionalLight.castShadow = true;
+            scene.add(directionalLight);
+
+            // Create courtroom environment
+            createCourtroom();
+
+            // Create Rajesh character
+            createRajeshCharacter();
+
+            // Add event listeners
+            window.addEventListener('resize', onWindowResize);
+
+            // Add mouse click event for 3D interaction
+            renderer.domElement.addEventListener('click', onMouseClick, false);
+
+            // Start animation loop
+            animate();
+        }
+
+        function createCourtroom() {
+            // Create floor
+            const floorGeometry = new THREE.PlaneGeometry(20, 20);
+            const floorMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x1e1e3c,
+                roughness: 0.8,
+                metalness: 0.2
+            });
+            const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+            floor.rotation.x = -Math.PI / 2;
+            floor.receiveShadow = true;
+            floor.name = 'floor';
+            scene.add(floor);
+            courtroomObjects.floor = floor;
+
+            // Create walls
+            const wallMaterial = new THREE.MeshStandardMaterial({ color: 0x2a2a4a });
+            
+            // Back wall
+            const backWall = new THREE.Mesh(
+                new THREE.BoxGeometry(20, 10, 1),
+                wallMaterial
+            );
+            backWall.position.z = -10;
+            backWall.position.y = 5;
+            backWall.receiveShadow = true;
+            backWall.name = 'backWall';
+            scene.add(backWall);
+            courtroomObjects.backWall = backWall;
+
+            // Side walls
+            const leftWall = new THREE.Mesh(
+                new THREE.BoxGeometry(1, 10, 20),
+                wallMaterial
+            );
+            leftWall.position.x = -10;
+            leftWall.position.y = 5;
+            leftWall.receiveShadow = true;
+            leftWall.name = 'leftWall';
+            scene.add(leftWall);
+            courtroomObjects.leftWall = leftWall;
+
+            const rightWall = new THREE.Mesh(
+                new THREE.BoxGeometry(1, 10, 20),
+                wallMaterial
+            );
+            rightWall.position.x = 10;
+            rightWall.position.y = 5;
+            rightWall.receiveShadow = true;
+            rightWall.name = 'rightWall';
+            scene.add(rightWall);
+            courtroomObjects.rightWall = rightWall;
+
+            // Create bench for Rajesh
+            const benchGeometry = new THREE.BoxGeometry(3, 0.5, 1.5);
+            const benchMaterial = new THREE.MeshStandardMaterial({ color: 0x3a3a6a });
+            const bench = new THREE.Mesh(benchGeometry, benchMaterial);
+            bench.position.set(0, 0.25, -5);
+            bench.castShadow = true;
+            bench.receiveShadow = true;
+            bench.name = 'rajeshBench';
+            scene.add(bench);
+            courtroomObjects.rajeshBench = bench;
+
+            // Add courtroom details (simplified)
+            // Judge's bench
+            const judgesBench = new THREE.Mesh(
+                new THREE.BoxGeometry(4, 1, 2),
+                new THREE.MeshStandardMaterial({ color: 0x2c3e50 })
+            );
+            judgesBench.position.set(0, 0.5, 7);
+            judgesBench.castShadow = true;
+            judgesBench.receiveShadow = true;
+            judgesBench.name = 'judgesBench';
+            scene.add(judgesBench);
+            courtroomObjects.judgesBench = judgesBench;
+
+            // Jury box
+            const juryBox = new THREE.Mesh(
+                new THREE.BoxGeometry(6, 2, 2),
+                new THREE.MeshStandardMaterial({ color: 0x34495e })
+            );
+            juryBox.position.set(-7, 1, 3);
+            juryBox.castShadow = true;
+            juryBox.receiveShadow = true;
+            juryBox.name = 'juryBox';
+            scene.add(juryBox);
+            courtroomObjects.juryBox = juryBox;
+
+            // Evidence table
+            const evidenceTable = new THREE.Mesh(
+                new THREE.BoxGeometry(2, 0.8, 1),
+                new THREE.MeshStandardMaterial({ color: 0x3a3a6a })
+            );
+            evidenceTable.position.set(3, 0.4, -3);
+            evidenceTable.castShadow = true;
+            evidenceTable.receiveShadow = true;
+            evidenceTable.name = 'evidenceTable';
+            scene.add(evidenceTable);
+            courtroomObjects.evidenceTable = evidenceTable;
+        }
+
+        function createRajeshCharacter() {
+            // Create a simple representation of Rajesh
+            const bodyGroup = new THREE.Group();
+            
+            // Body
+            const bodyGeometry = new THREE.CylinderGeometry(0.5, 0.5, 1.5, 16);
+            const bodyMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x3498db,
+                emissive: 0x0a2a4a,
+                emissiveIntensity: 0.2
+            });
+            const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+            body.position.y = 1.5;
+            body.castShadow = true;
+            body.receiveShadow = true;
+            body.name = 'rajeshBody';
+            bodyGroup.add(body);
+            
+            // Head
+            const headGeometry = new THREE.SphereGeometry(0.4, 32, 32);
+            const headMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0xf1c40f,
+                emissive: 0x4a3a0a,
+                emissiveIntensity: 0.1
+            });
+            const head = new THREE.Mesh(headGeometry, headMaterial);
+            head.position.y = 2.6;
+            head.castShadow = true;
+            head.receiveShadow = true;
+            head.name = 'rajeshHead';
+            bodyGroup.add(head);
+            
+            // Position Rajesh on the bench
+            bodyGroup.position.set(0, 0, -5);
+            bodyGroup.name = 'rajeshCharacter';
+            scene.add(bodyGroup);
+            
+            rajeshCharacter = bodyGroup;
+            courtroomObjects.rajeshCharacter = bodyGroup;
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function onMouseClick(event) {
+            // Calculate mouse position in normalized device coordinates
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            // Update the picking ray with the camera and mouse position
+            raycaster.setFromCamera(mouse, camera);
+
+            // Calculate objects intersecting the picking ray
+            const intersects = raycaster.intersectObjects(Object.values(courtroomObjects));
+
+            if (intersects.length > 0) {
+                const objectName = intersects[0].object.name;
+                handleObjectInteraction(objectName);
+            }
+        }
+
+        function handleObjectInteraction(objectName) {
+            // In voice-only mode, we don't trigger specific questions on click
+            // But we can use this for other interactions if needed
+            console.log("Clicked on:", objectName);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Simple animation for Rajesh
+            if (rajeshCharacter) {
+                // Subtle breathing animation when not speaking
+                if (!isSpeaking) {
+                    rajeshCharacter.position.y = -5 + Math.sin(Date.now() * 0.002) * 0.02;
+                }
+                // Gentle head movement when listening
+                if (isListening && !isSpeaking) {
+                    rajeshCharacter.rotation.y = Math.sin(Date.now() * 0.003) * 0.05;
+                }
+            }
+            
+            renderer.render(scene, camera);
+        }
+
+        // Show visual feedback for voice interaction
+        function showVoiceFeedback(message) {
+            if (voiceFeedback) {
+                voiceFeedback.textContent = message;
+                voiceFeedback.style.display = 'block';
+            }
+        }
+
+        // Hide visual feedback
+        function hideVoiceFeedback() {
+            if (voiceFeedback) {
+                voiceFeedback.style.display = 'none';
+            }
+        }
+
+        // Update visual feedback based on state
+        function updateVoiceFeedback() {
+            if (!voiceFeedback) return;
+            
+            if (isSpeaking) {
+                voiceFeedback.textContent = "Speaking...";
+                voiceFeedback.className = "speaking";
+            } else if (isListening) {
+                voiceFeedback.textContent = "Listening...";
+                voiceFeedback.className = "listening";
+            } else {
+                voiceFeedback.textContent = "Ready";
+                voiceFeedback.className = "processing";
+            }
+        }
+
+        // Text input message processing
+        function processTextInput(message) {
+            console.log("User typed:", message);
+            
+            // Hide feedback while processing
+            showVoiceFeedback("Processing...");
+            updateVoiceFeedback();
+            
+            // Process with AI
+            if (conversationEngine) {
+                // Add a slight delay to make interaction feel more natural
+                setTimeout(() => {
+                    const response = conversationEngine.processInput(message);
+                    processAIResponse(response);
+                }, 800);
+            } else {
+                // Fallback if AI engine not ready
+                setTimeout(() => {
+                    processAIResponse({
+                        text: "I'm sorry, I'm not ready to talk yet. Please wait a moment.",
+                        emotion: "confused"
+                    });
+                }, 800);
+            }
+        }
+
+        // Voice-only message processing
+        function processVoiceInput(message) {
+            console.log("User said:", message);
+            
+            // Hide feedback while processing
+            showVoiceFeedback("Processing...");
+            updateVoiceFeedback();
+            
+            // Process with AI
+            if (conversationEngine) {
+                // Add a slight delay to make interaction feel more natural
+                setTimeout(() => {
+                    const response = conversationEngine.processInput(message);
+                    processAIResponse(response);
+                }, 800);
+            } else {
+                // Fallback if AI engine not ready
+                setTimeout(() => {
+                    processAIResponse({
+                        text: "I'm sorry, I'm not ready to talk yet. Please wait a moment.",
+                        emotion: "confused"
+                    });
+                }, 800);
+            }
+        }
+
+        function processAIResponse(response) {
+            console.log("Rajesh says:", response.text);
+            
+            // Apply character animation based on emotion
+            if (rajeshCharacter) {
+                applyEmotionAnimation(response.emotion);
+            }
+            
+            // Text-to-speech with enhanced features
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(response.text);
+                
+                // Set voice parameters based on emotion
+                utterance.rate = response.voiceParams.rate || 0.9;
+                utterance.pitch = response.voiceParams.pitch || 0.9;
+                utterance.volume = response.voiceParams.volume || 1.0;
+                utterance.lang = 'en-US';
+                
+                // Try to select an appropriate voice with better quality
+                const voices = speechSynthesis.getVoices();
+                let preferredVoice = null;
+                
+                // Try to find a high quality English (US) voice
+                for (let voice of voices) {
+                    if (voice.lang === 'en-US' && voice.quality === 'high') {
+                        preferredVoice = voice;
+                        break;
+                    }
+                }
+                
+                // Fallback to any English (US) voice
+                if (!preferredVoice) {
+                    preferredVoice = voices.find(voice => voice.lang.includes('en-US'));
+                }
+                
+                // Further fallback to any English voice
+                if (!preferredVoice) {
+                    preferredVoice = voices.find(voice => voice.lang.includes('en'));
+                }
+                
+                if (preferredVoice) {
+                    utterance.voice = preferredVoice;
+                }
+                
+                // Set speaking state
+                isSpeaking = true;
+                updateVoiceFeedback();
+                
+                // Add event listeners for better control
+                utterance.onstart = function() {
+                    console.log('Speech started');
+                    isSpeaking = true;
+                    updateVoiceFeedback();
+                };
+                
+                utterance.onend = function() {
+                    console.log('Speech ended');
+                    isSpeaking = false;
+                    updateVoiceFeedback();
+                    // Resume listening after Rajesh finishes speaking (only in voice mode)
+                    if (isListening && !isTextMode) {
+                        try {
+                            recognition.start();
+                            updateVoiceFeedback();
+                        } catch (error) {
+                            console.error('Error restarting recognition:', error);
+                        }
+                    }
+                };
+                
+                utterance.onerror = function(event) {
+                    console.error('Speech error:', event);
+                    isSpeaking = false;
+                    updateVoiceFeedback();
+                    // Resume listening even if there's a speech error (only in voice mode)
+                    if (isListening && !isTextMode) {
+                        try {
+                            recognition.start();
+                            updateVoiceFeedback();
+                        } catch (error) {
+                            console.error('Error restarting recognition:', error);
+                        }
+                    }
+                };
+                
+                // Stop recognition while speaking to avoid feedback (only in voice mode)
+                if (!isTextMode) {
+                    try {
+                        recognition.stop();
+                    } catch (error) {
+                        console.error('Error stopping recognition:', error);
+                    }
+                }
+                
+                speechSynthesis.speak(utterance);
+            } else {
+                console.log('Speech synthesis not supported in this browser');
+                // Even if speech synthesis fails, we should resume listening
+                isSpeaking = false;
+                updateVoiceFeedback();
+                if (isListening && !isTextMode) {
+                    try {
+                        recognition.start();
+                        updateVoiceFeedback();
+                    } catch (error) {
+                        console.error('Error restarting recognition:', error);
+                    }
+                }
+            }
+        }
+
+        function applyEmotionAnimation(emotion) {
+            if (!rajeshCharacter) return;
+            
+            // Reset any previous animations
+            rajeshCharacter.rotation.x = 0;
+            rajeshCharacter.rotation.z = 0;
+            rajeshCharacter.position.y = -5; // Reset to base position
+            
+            // Apply animation based on emotion
+            switch(emotion) {
+                case 'vulnerable':
+                    // Head down slightly with subtle shaking
+                    rajeshCharacter.rotation.x = -0.2;
+                    break;
+                case 'hopeful':
+                    // Slight forward lean with gentle nodding
+                    rajeshCharacter.rotation.z = 0.1;
+                    break;
+                case 'defensive':
+                    // Upright and alert with slight forward tilt
+                    rajeshCharacter.rotation.x = 0.1;
+                    break;
+                case 'grateful':
+                    // Gentle nod
+                    rajeshCharacter.position.y = -5 + Math.abs(Math.sin(Date.now() * 0.01) * 0.05);
+                    break;
+                case 'anxious':
+                    // Fidgeting motion
+                    rajeshCharacter.rotation.z = Math.sin(Date.now() * 0.02) * 0.05;
+                    break;
+                case 'cooperative':
+                    // Neutral, slight forward tilt
+                    rajeshCharacter.rotation.x = 0.05;
+                    break;
+                default:
+                    // Neutral position
+                    break;
+            }
+        }
+
+        // Add continuous voice recognition functionality
+        function initVoiceRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                recognition.continuous = true; // Continuous listening
+                recognition.interimResults = false;
+                recognition.lang = 'en-US';
+
+                recognition.onresult = (event) => {
+                    // Get the most confident result
+                    let transcript = '';
+                    let confidence = 0;
+                    
+                    for (let result of event.results) {
+                        if (result[0].confidence > confidence) {
+                            transcript = result[0].transcript;
+                            confidence = result[0].confidence;
+                        }
+                    }
+                    
+                    console.log("Recognized:", transcript, "(confidence:", confidence + ")");
+                    processVoiceInput(transcript);
+                };
+
+                recognition.onerror = (event) => {
+                    console.error('Speech recognition error:', event.error);
+                    isListening = false;
+                    updateVoiceFeedback();
+                    // Try to restart recognition if it was active
+                    if (isListening) {
+                        setTimeout(() => {
+                            try {
+                                recognition.start();
+                                isListening = true;
+                                updateVoiceFeedback();
+                            } catch (error) {
+                                console.error('Error restarting recognition:', error);
+                            }
+                        }, 1500);
+                    }
+                };
+                
+                recognition.onend = () => {
+                    console.log('Speech recognition ended');
+                    isListening = false;
+                    updateVoiceFeedback();
+                    // Automatically restart if we were listening
+                    if (isListening && !isTextMode) {
+                        setTimeout(() => {
+                            try {
+                                recognition.start();
+                                isListening = true;
+                                updateVoiceFeedback();
+                            } catch (error) {
+                                console.error('Error restarting recognition:', error);
+                            }
+                        }, 1000);
+                    }
+                };
+                
+                recognition.onstart = () => {
+                    console.log('Speech recognition started');
+                    isListening = true;
+                    updateVoiceFeedback();
+                };
+                
+                // Start continuous listening
+                isListening = true;
+                try {
+                    recognition.start();
+                    console.log("🎤 Voice recognition started - speak to Rajesh!");
+                    updateVoiceFeedback();
+                } catch (error) {
+                    console.error('Voice recognition error:', error);
+                }
+            } else {
+                console.error('Speech recognition not supported in this browser');
+                showVoiceFeedback("Speech recognition not supported. Use Chrome or Edge.");
+            }
+        }
+
+        // Initialize the simulation
+        init();
+    </script>
+</body>
+</html>
