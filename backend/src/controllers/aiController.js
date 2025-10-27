@@ -68,7 +68,7 @@ class LegalAIController {
             // Configure PythonShell options
             const options = {
                 mode: 'text',
-                pythonPath: process.env.PYTHON_PATH || 'python',
+                pythonPath: process.env.PYTHON_PATH || 'C:\\ProgramData\\anaconda3\\python.exe',
                 pythonOptions: ['-u'],
                 scriptPath: path.dirname(this.pythonScriptPath),
                 args: []
@@ -133,6 +133,8 @@ class LegalAIController {
      */
     async getLegalAssistantResponse(req, res) {
         try {
+            console.log('Received request body:', JSON.stringify(req.body, null, 2));
+            
             const { query, documentContext, documentAnalysis } = req.body;
             
             if (!query) {
@@ -159,13 +161,17 @@ class LegalAIController {
                 });
             }
             
+            // Extract the actual response text from the AI response
+            const responseText = aiResponse.response || aiResponse.answer || 'I apologize, but I could not generate a response.';
+            
             res.json({
                 success: true,
                 data: {
-                    response: aiResponse,
-                    legalCategory: 'general', // This would be determined by the AI model in a real implementation
-                    relatedConcepts: [], // This would be determined by the AI model in a real implementation
-                    confidence: 0.95 // This would be determined by the AI model in a real implementation
+                    response: responseText,
+                    legalCategory: aiResponse.legalCategory || 'general',
+                    relatedConcepts: aiResponse.relatedConcepts || [],
+                    confidence: aiResponse.confidence || 0.95,
+                    sources: aiResponse.sources || []
                 }
             });
         } catch (error) {
@@ -194,7 +200,7 @@ class LegalAIController {
             // Configure PythonShell options
             const options = {
                 mode: 'text',
-                pythonPath: process.env.PYTHON_PATH || 'python',
+                pythonPath: process.env.PYTHON_PATH || 'C:\\ProgramData\\anaconda3\\python.exe',
                 pythonOptions: ['-u'],
                 scriptPath: path.dirname(this.pythonScriptPath),
                 args: []
@@ -240,34 +246,21 @@ class LegalAIController {
      * @returns {Object} - The enhanced response
      */
     enhanceAssistantResponse(result, query) {
-        // Add legal category classification
-        const category = this.classifyLegalCategory(query);
-        
-        // Add related legal concepts
-        const relatedConcepts = this.extractRelatedConcepts(query);
-        
-        // Add relevant legal databases
-        const legalDatabases = Object.keys(this.legalDatabases);
-        
-        // Add confidence level
-        const confidence = result.confidence || 0.8;
-        
-        // Add sources
-        const sources = [
-            'InCaseLawBERT Model',
-            'Indian Penal Code (IPC)',
-            'Code of Criminal Procedure (CrPC)',
-            'Code of Civil Procedure (CPC)',
-            'Indian Evidence Act'
-        ];
-        
+        // For now, return the result as-is since we don't have the missing methods
+        // TODO: Implement classifyLegalCategory and extractRelatedConcepts methods
         return {
             ...result,
-            legalCategory: category,
-            relatedConcepts,
-            legalDatabases,
-            confidence,
-            sources
+            legalCategory: 'general',
+            relatedConcepts: [],
+            legalDatabases: Object.keys(this.legalDatabases),
+            confidence: result.confidence || 0.8,
+            sources: [
+                'InCaseLawBERT Model',
+                'Indian Penal Code (IPC)',
+                'Code of Criminal Procedure (CrPC)',
+                'Code of Civil Procedure (CPC)',
+                'Indian Evidence Act'
+            ]
         };
     }
 

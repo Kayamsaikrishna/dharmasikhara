@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const path = require('path');
 
 // Import controllers
 const EvidenceController = require('../controllers/evidenceController');
@@ -18,5 +19,8 @@ router.post('/:id/analyze', evidenceController.analyzeEvidence.bind(evidenceCont
 // Paperwork Endpoints
 router.get('/paperwork/templates', evidenceController.getPaperworkTemplates.bind(evidenceController));
 router.post('/paperwork/generate', evidenceController.generatePaperwork.bind(evidenceController));
+
+// Evidence image serving endpoint
+router.get('/images/:filename', evidenceController.getEvidenceImage.bind(evidenceController));
 
 module.exports = router;

@@ -312,6 +312,38 @@ This document serves as official record of evidence submission for the above cas
             });
         }
     }
+
+    /**
+     * Serve evidence image files
+     * @param {Object} req - Express request object
+     * @param {Object} res - Express response object
+     */
+    async getEvidenceImage(req, res) {
+        try {
+            const { filename } = req.params;
+            // Path to the scenario 1 evidences folder
+            const imagePath = path.join(__dirname, '../../../scenario 1/evidences folder', filename);
+            
+            // Check if file exists
+            try {
+                await fs.access(imagePath);
+                // Serve the image file
+                res.sendFile(imagePath);
+            } catch (error) {
+                // File not found, send a 404 response
+                res.status(404).json({
+                    success: false,
+                    message: 'Evidence image not found'
+                });
+            }
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                message: 'Failed to serve evidence image',
+                error: error.message
+            });
+        }
+    }
 }
 
 module.exports = EvidenceController;

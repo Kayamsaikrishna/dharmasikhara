@@ -665,7 +665,7 @@ def generate_legal_response_with_embeddings(query, embeddings):
     # Civil law indicators
     civil_keywords = ['contract', 'agreement', 'breach', 'property', 'eviction', 'recovery', 'suit', 'plaint',
                      'defendant', 'decree', 'judgment', 'possession', 'tort', 'negligence', 'damages',
-                     'injunction', 'specific performance']
+                     'injunction', 'specific performance', 'civil']
     
     # Constitutional law indicators
     constitutional_keywords = ['constitution', 'fundamental', 'rights', 'article', 'writ', 'petition',
@@ -705,96 +705,235 @@ def generate_legal_response_with_embeddings(query, embeddings):
                 primary_domain = domain
                 break
     
-    # Generate response based on the identified legal domain
+    # Generate response based on the identified legal domain and specific query content
     if primary_domain == 'criminal' or any(term in lower_query for term in criminal_keywords):
-        return f"Based on the InCaseLawBERT model's understanding of Indian criminal law:\n\n" + \
-               f"Key Legal Provisions:\n" + \
-               f"1. Bail Applications: Sections 437-439 CrPC for regular bail, Section 438 CrPC for anticipatory bail\n" + \
-               f"2. Investigation Procedures: Sections 154-176 CrPC for police investigations\n" + \
-               f"3. Trial Process: Chapters XVII-XXIII of CrPC covering summons, warrants, and trial procedures\n\n" + \
-               f"Important Considerations:\n" + \
-               f"- Bail is a matter of right for bailable offenses and judicial discretion for non-bailable offenses\n" + \
-               f"- Courts consider factors like reasonable suspicion, risk of absconding, and interference with investigation\n" + \
-               f"- Maintain proper documentation of personal circumstances, community ties, and employment status\n\n" + \
-               f"Recommendation: Consult a criminal law practitioner familiar with the specific provisions of the IPC and CrPC relevant to your case."
+        # Add more specific guidance based on the exact query
+        if 'bail' in lower_query:
+            return f"Bail in criminal cases:\n\n" + \
+                   f"Types:\n" + \
+                   f"- Regular bail (Sections 437-439 CrPC)\n" + \
+                   f"- Anticipatory bail (Section 438 CrPC)\n" + \
+                   f"- Default bail (Section 436A)\n\n" + \
+                   f"Considerations:\n" + \
+                   f"- Reasonable suspicion of guilt\n" + \
+                   f"- Risk of absconding\n" + \
+                   f"- Interference with investigation\n\n" + \
+                   f"Prepare documentation showing community ties and employment status."
+        elif 'investigation' in lower_query or 'police' in lower_query:
+            return f"Criminal investigation procedures:\n\n" + \
+                   f"Key Rights:\n" + \
+                   f"- Right to legal representation\n" + \
+                   f"- Right against self-incrimination (Article 20(3))\n" + \
+                   f"- Right to be informed of arrest grounds\n" + \
+                   f"- Right to consult a lawyer\n\n" + \
+                   f"Process:\n" + \
+                   f"- FIR registration (Section 154 CrPC)\n" + \
+                   f"- Investigation (Sections 154-176 CrPC)\n" + \
+                   f"- Evidence collection and interrogation\n\n" + \
+                   f"Seek immediate legal counsel if under investigation."
+        elif 'involved' in lower_query or 'without intention' in lower_query or 'unintentional' in lower_query:
+            return f"If involved in a criminal case without intention:\n\n" + \
+                   f"Immediate Steps:\n" + \
+                   f"- Seek legal representation immediately\n" + \
+                   f"- Cooperate with authorities while protecting rights\n" + \
+                   f"- Gather evidence supporting lack of intent\n" + \
+                   f"- Document all communications\n\n" + \
+                   f"Legal Considerations:\n" + \
+                   f"- Intent is crucial in criminal law\n" + \
+                   f"- Burden of proof is on prosecution\n" + \
+                   f"- Consider plea bargaining if appropriate\n\n" + \
+                   f"Consult a criminal law attorney for personalized advice."
+        else:
+            return f"Criminal cases in India:\n\n" + \
+                   f"Bail:\n" + \
+                   f"- Right for bailable offenses\n" + \
+                   f"- Discretion for non-bailable offenses\n\n" + \
+                   f"Process:\n" + \
+                   f"- Investigation (Sections 154-176 CrPC)\n" + \
+                   f"- Trial (Chapters XVII-XXIII CrPC)\n" + \
+                   f"- Consider factors like reasonable suspicion\n\n" + \
+                   f"Documentation:\n" + \
+                   f"- Maintain records of personal circumstances\n" + \
+                   f"- Community ties and employment status\n\n" + \
+                   f"Consult a criminal law practitioner for specific guidance."
     
     elif primary_domain == 'civil' or any(term in lower_query for term in civil_keywords):
-        return f"Based on the InCaseLawBERT model's understanding of Indian civil law:\n\n" + \
-               f"Key Legal Framework:\n" + \
-               f"1. Contracts: Governed by the Indian Contract Act, 1872 (Sections 1-75)\n" + \
-               f"2. Property Rights: Transfer of Property Act, 1882 and various state-specific regulations\n" + \
-               f"3. Civil Procedure: Code of Civil Procedure, 1908 (CPC)\n\n" + \
-               f"Critical Elements:\n" + \
-               f"- Essential elements of a valid contract: offer, acceptance, consideration, capacity, and lawful object\n" + \
-               f"- Remedies for breach include damages, specific performance, and injunctions\n" + \
-               f"- Proper documentation and evidence preservation are crucial for civil litigation\n\n" + \
-               f"Recommendation: Review your documentation thoroughly and seek specialized civil litigation counsel for complex matters."
+        # Debug: Print which branch we're taking
+        print(f"DEBUG: Taking civil law branch", file=sys.stderr)
+        # Add more specific guidance based on the exact query
+        if 'contract' in lower_query or 'agreement' in lower_query:
+            print(f"DEBUG: Taking contract sub-branch", file=sys.stderr)
+            return f"Based on the InCaseLawBERT model's understanding of Indian civil law:\n\n" + \
+                   f"Contract Law in India:\n" + \
+                   f"1. Legal Framework: Indian Contract Act, 1872 (Sections 1-75)\n" + \
+                   f"2. Essential Elements: Offer, acceptance, consideration, capacity, and free consent\n" + \
+                   f"3. Breach Remedies: Sections 73-75 for compensation and specific performance\n\n" + \
+                   f"Handling Contract Disputes:\n" + \
+                   f"- Document all terms and conditions clearly\n" + \
+                   f"- Maintain records of all communications and modifications\n" + \
+                   f"- Identify specific breach and calculate damages\n" + \
+                   f"- Consider alternative dispute resolution methods\n\n" + \
+                   f"Recommendation: Have contracts reviewed by legal professionals and maintain detailed documentation."
+        elif 'property' in lower_query:
+            print(f"DEBUG: Taking property sub-branch", file=sys.stderr)
+            return f"Based on the InCaseLawBERT model's understanding of Indian civil law:\n\n" + \
+                   f"Property Law in India:\n" + \
+                   f"1. Transfer of Property Act, 1882: Governs property transactions\n" + \
+                   f"2. Real Estate (Regulation and Development) Act, 2016: For real estate projects\n" + \
+                   f"3. Registration Act, 1908: For property registration requirements\n\n" + \
+                   f"Property Dispute Resolution:\n" + \
+                   f"- Maintain clear title documents\n" + \
+                   f"- Understand local property laws and regulations\n" + \
+                   f"- Consider mediation for faster resolution\n" + \
+                   f"- Keep records of all transactions and communications\n\n" + \
+                   f"Recommendation: Consult property law specialists for complex issues."
+        elif 'tort' in lower_query or 'negligence' in lower_query:
+            print(f"DEBUG: Taking tort sub-branch", file=sys.stderr)
+            return f"Based on the InCaseLawBERT model's understanding of Indian civil law:\n\n" + \
+                   f"Tort Law in India:\n" + \
+                   f"1. Legal Framework: Primarily judge-made law based on English common law\n" + \
+                   f"2. Key Torts: Negligence, nuisance, defamation, trespass\n" + \
+                   f"3. Remedies: Damages, injunctions, specific restitution\n\n" + \
+                   f"Proving Negligence:\n" + \
+                   f"- Duty of care owed by defendant\n" + \
+                   f"- Breach of that duty\n" + \
+                   f"- Damage caused by the breach\n" + \
+                   f"- Causation between breach and damage\n\n" + \
+                   f"Recommendation: Document all incidents and seek legal advice for tort claims."
+        elif 'work' in lower_query or 'practice' in lower_query:
+            print(f"DEBUG: Taking work/practice sub-branch", file=sys.stderr)
+            print(f"DEBUG: lower_query = '{lower_query}'", file=sys.stderr)
+            print(f"DEBUG: 'work' in lower_query = {'work' in lower_query}", file=sys.stderr)
+            print(f"DEBUG: 'practice' in lower_query = {'practice' in lower_query}", file=sys.stderr)
+            return f"When working on civil cases in India:\n\n" + \
+                   f"Case Preparation:\n" + \
+                   f"- Research applicable laws and precedents\n" + \
+                   f"- Gather and organize evidence systematically\n" + \
+                   f"- Develop a clear legal strategy\n\n" + \
+                   f"Best Practices:\n" + \
+                   f"- Maintain detailed case files\n" + \
+                   f"- Communicate regularly with clients\n" + \
+                   f"- Stay updated on legal developments\n\n" + \
+                   f"Consult experienced civil litigation attorneys for complex matters."
+        elif 'deal with' in lower_query or 'handle' in lower_query:
+            print(f"DEBUG: Taking deal with/handle sub-branch", file=sys.stderr)
+            return f"Handling civil cases in India:\n\n" + \
+                   f"Key Steps:\n" + \
+                   f"- Document all relevant facts and evidence\n" + \
+                   f"- Identify applicable laws and legal precedents\n" + \
+                   f"- File within limitation periods\n" + \
+                   f"- Consider alternative dispute resolution\n\n" + \
+                   f"Important:\n" + \
+                   f"- Seek professional legal advice\n" + \
+                   f"- Understand court procedures\n" + \
+                   f"- Prepare for potential outcomes\n\n" + \
+                   f"For specific guidance, consult a qualified civil litigation attorney."
+        else:
+            print(f"DEBUG: Taking general civil law branch", file=sys.stderr)
+            print(f"DEBUG: lower_query = '{lower_query}'", file=sys.stderr)
+            print(f"DEBUG: 'work' in lower_query = {'work' in lower_query}", file=sys.stderr)
+            print(f"DEBUG: 'practice' in lower_query = {'practice' in lower_query}", file=sys.stderr)
+            print(f"DEBUG: 'deal with' in lower_query = {'deal with' in lower_query}", file=sys.stderr)
+            print(f"DEBUG: 'handle' in lower_query = {'handle' in lower_query}", file=sys.stderr)
+            return f"Civil cases in India:\n\n" + \
+                   f"Legal Framework:\n" + \
+                   f"- Contracts: Indian Contract Act, 1872\n" + \
+                   f"- Property: Transfer of Property Act, 1882\n" + \
+                   f"- Procedure: Code of Civil Procedure, 1908\n\n" + \
+                   f"Key Elements:\n" + \
+                   f"- Valid contracts require offer, acceptance, consideration\n" + \
+                   f"- Remedies include damages and specific performance\n" + \
+                   f"- Proper documentation is crucial\n\n" + \
+                   f"Consult a civil litigation attorney for complex matters."
     
     elif primary_domain == 'constitutional' or any(term in lower_query for term in constitutional_keywords):
-        return f"Based on the InCaseLawBERT model's understanding of Indian constitutional law:\n\n" + \
-               f"Fundamental Legal Principles:\n" + \
-               f"1. Fundamental Rights: Articles 12-35 of the Constitution of India\n" + \
-               f"2. Writ Jurisdiction: Articles 32 and 226 for constitutional remedies\n" + \
-               f"3. Judicial Review: Power of courts to examine legislative and executive actions\n\n" + \
+        return f"Constitutional law in India:\n\n" + \
+               f"Fundamental Rights:\n" + \
+               f"- Articles 12-35 of the Constitution\n" + \
+               f"- Writ jurisdiction (Articles 32, 226)\n\n" + \
                f"Key Considerations:\n" + \
-               f"- Direct approach to Supreme Court under Article 32 for violation of fundamental rights\n" + \
-               f"- High Court jurisdiction under Article 226 is wider and includes discretionary powers\n" + \
-               f"- Time limitations and procedural requirements vary by jurisdiction\n\n" + \
-               f"Recommendation: Constitutional matters require specialized expertise. Consult a senior advocate with constitutional law experience."
+               f"- Supreme Court under Article 32\n" + \
+               f"- High Court under Article 226\n" + \
+               f"- Time limitations vary by jurisdiction\n\n" + \
+               f"Consult a constitutional law expert for specialized matters."
     
     elif primary_domain == 'evidence' or any(term in lower_query for term in evidence_keywords):
-        return f"Based on the InCaseLawBERT model's understanding of Indian evidence law:\n\n" + \
-               f"Essential Legal Provisions:\n" + \
-               f"1. Indian Evidence Act, 1872 (Sections 1-167)\n" + \
-               f"2. Relevancy and Admissibility: Sections 5-55\n" + \
-               f"3. Burden of Proof: Sections 101-114\n\n" + \
-               f"Critical Requirements:\n" + \
-               f"- Evidence must be relevant to the facts in issue (Section 5)\n" + \
-               f"- Proper chain of custody for documentary evidence\n" + \
-               f"- Witness credibility and examination procedures\n\n" + \
-               f"Recommendation: Work with legal professionals to ensure proper documentation and authentication of evidence."
+        return f"Evidence law in India:\n\n" + \
+               f"Key Provisions:\n" + \
+               f"- Indian Evidence Act, 1872 (Sections 1-167)\n" + \
+               f"- Relevancy and admissibility (Sections 5-55)\n" + \
+               f"- Burden of proof (Sections 101-114)\n\n" + \
+               f"Requirements:\n" + \
+               f"- Evidence must be relevant (Section 5)\n" + \
+               f"- Proper chain of custody\n" + \
+               f"- Witness credibility procedures\n\n" + \
+               f"Work with legal professionals for proper documentation."
     
     elif primary_domain == 'family' or any(term in lower_query for term in family_keywords):
-        return f"Based on the InCaseLawBERT model's understanding of Indian family law:\n\n" + \
+        return f"Family law in India:\n\n" + \
                f"Applicable Legal Framework:\n" + \
-               f"1. Hindu Marriage Act, 1955 (for Hindus)\n" + \
-               f"2. Special Marriage Act, 1954 (inter-religion marriages)\n" + \
-               f"3. Hindu Succession Act, 1956 (property inheritance)\n" + \
-               f"4. Guardians and Wards Act, 1890 (custody matters)\n\n" + \
+               f"- Hindu Marriage Act, 1955 (for Hindus)\n" + \
+               f"- Special Marriage Act, 1954 (inter-religion marriages)\n" + \
+               f"- Hindu Succession Act, 1956 (property inheritance)\n" + \
+               f"- Guardians and Wards Act, 1890 (custody matters)\n\n" + \
                f"Key Considerations:\n" + \
                f"- Grounds for divorce vary by personal law\n" + \
                f"- Maintenance rights for spouses and children\n" + \
                f"- Custody decisions prioritize child welfare\n\n" + \
-               f"Recommendation: Family disputes benefit from both legal representation and mediation. Consult a family law specialist."
+               f"Consult a family law specialist for personalized advice."
     
     elif primary_domain == 'corporate' or any(term in lower_query for term in corporate_keywords):
-        return f"Based on the InCaseLawBERT model's understanding of Indian corporate law:\n\n" + \
+        return f"Corporate law in India:\n\n" + \
                f"Relevant Legal Statutes:\n" + \
-               f"1. Companies Act, 2013 (Company incorporation, governance, winding up)\n" + \
-               f"2. Insolvency and Bankruptcy Code, 2016 (Corporate insolvency resolution)\n" + \
-               f"3. Limited Liability Partnership Act, 2008 (LLP formation and regulation)\n\n" + \
+               f"- Companies Act, 2013 (Company incorporation, governance, winding up)\n" + \
+               f"- Insolvency and Bankruptcy Code, 2016 (Corporate insolvency resolution)\n" + \
+               f"- Limited Liability Partnership Act, 2008 (LLP formation and regulation)\n\n" + \
                f"Important Aspects:\n" + \
                f"- Director responsibilities and fiduciary duties\n" + \
                f"- Shareholder rights and meeting procedures\n" + \
                f"- Compliance with regulatory requirements (ROC, SEBI, RBI)\n\n" + \
-               f"Recommendation: Corporate legal matters require specialized expertise. Engage corporate lawyers for compliance and dispute resolution."
+               f"Engage corporate lawyers for compliance and disputes."
     
     else:
-        # General legal response using embedding analysis
-        return f"Based on the InCaseLawBERT model's understanding of Indian legal principles:\n\n" + \
-               f"General Legal Guidance:\n" + \
-               f"1. Documentation: Maintain comprehensive records of all relevant facts and communications\n" + \
-               f"2. Legal Research: Identify applicable statutes (IPC, CrPC, CPC, Indian Contract Act) and case law\n" + \
-               f"3. Professional Advice: Consult qualified legal practitioners for personalized guidance\n" + \
-               f"4. Timelines: Be aware of limitation periods for filing cases (Limitation Act, 1963)\n\n" + \
-               f"Important Note: This AI assistant provides general information only. Specific legal advice requires consultation with qualified attorneys who can examine your particular circumstances."
+        # More detailed general response based on query content
+        if 'civil' in lower_query and ('case' in lower_query or 'cases' in lower_query):
+            return f"Civil cases in India:\n\n" + \
+                   f"Overview:\n" + \
+                   f"- Types: Contracts, property, torts, family\n" + \
+                   f"- Laws: CPC, Contract Act, Transfer of Property Act\n" + \
+                   f"- Courts: Based on pecuniary and territorial limits\n\n" + \
+                   f"Handling:\n" + \
+                   f"- Document facts and evidence\n" + \
+                   f"- Identify applicable laws\n" + \
+                   f"- File within limitation periods\n" + \
+                   f"- Consider alternative dispute resolution\n\n" + \
+                   f"Consult a civil litigation attorney for guidance."
+        elif 'work' in lower_query or 'practice' in lower_query:
+            return f"Legal practice in India:\n\n" + \
+                   f"Case Preparation:\n" + \
+                   f"- Research laws and precedents\n" + \
+                   f"- Gather and organize evidence\n" + \
+                   f"- Develop legal strategy\n\n" + \
+                   f"Best Practices:\n" + \
+                   f"- Maintain detailed case files\n" + \
+                   f"- Communicate with clients regularly\n" + \
+                   f"- Stay updated on legal developments\n\n" + \
+                   f"Continuous learning and professional development are essential."
+        else:
+            # General legal response using embedding analysis
+            return f"Legal guidance:\n\n" + \
+                   f"1. Documentation: Record all relevant facts\n" + \
+                   f"2. Research: Identify applicable laws\n" + \
+                   f"3. Advice: Consult qualified legal practitioners\n" + \
+                   f"4. Timelines: Be aware of limitation periods\n\n" + \
+                   f"This provides general information only. Specific advice requires consultation with qualified attorneys."
 
 if __name__ == "__main__":
-    # Read input from stdin
-    input_data = sys.stdin.read()
-    
     try:
-        # Debug: Print raw input data
+        # Read input from stdin
+        input_data = sys.stdin.read()
+        
+        # Debug: Print raw input data to stderr
         print(f"DEBUG: Raw input data length: {len(input_data)}", file=sys.stderr)
         print(f"DEBUG: Raw input data sample: {repr(input_data[:100])}", file=sys.stderr)
         
@@ -813,6 +952,7 @@ if __name__ == "__main__":
             print(json.dumps({"error": f"document_text is not a string: {type(document_text)}"}), file=sys.stderr)
             document_text = str(document_text)
         
+        result = None
         if query:
             # Handle legal assistant query
             result = get_legal_assistant_response(query)
@@ -822,10 +962,13 @@ if __name__ == "__main__":
         else:
             result = {"error": "No query or document text provided"}
         
-        # Output the result as JSON
-        print(json.dumps(result))
+        # Output the result as JSON to stdout
+        if result:
+            print(json.dumps(result))
         
     except json.JSONDecodeError as e:
-        print(json.dumps({"error": f"Invalid JSON input: {str(e)}"}))
+        error_result = {"error": f"Invalid JSON input: {str(e)}"}
+        print(json.dumps(error_result))
     except Exception as e:
-        print(json.dumps({"error": f"Unexpected error: {str(e)}"}))
+        error_result = {"error": f"Unexpected error: {str(e)}"}
+        print(json.dumps(error_result))

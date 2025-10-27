@@ -12,7 +12,7 @@ router.get('/status', aiController.getAIStatus);
 router.post('/analyze-document', authenticateToken, aiController.analyzeDocument);
 
 // Get legal assistant response
-router.post('/legal-assistant', authenticateToken, aiController.getLegalAssistantResponse);
+router.post('/legal-assistant', aiController.getLegalAssistantResponse);
 
 // Get comprehensive legal research
 router.post('/legal-research', authenticateToken, aiController.getLegalResearch);

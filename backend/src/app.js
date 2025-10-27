@@ -4,6 +4,9 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const multer = require('multer');
 
+// Load environment variables
+require('dotenv').config();
+
 // Configure multer for file uploads
 const upload = multer({ 
   limits: {
@@ -39,7 +42,8 @@ const legalNewsRoutes = require('./routes/legalNews');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
-const PORT = process.env.PORT || 5001;
+// Use port 5002 as default to align with project configuration
+const PORT = process.env.PORT || 5002;
 
 // Middleware
 app.use(cors());
@@ -48,6 +52,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Serve static files
 app.use(express.static(path.join(__dirname, '../../frontend/build')));
+
+// Serve evidence images from scenario 1 folder
+app.use('/scenario 1/evidences folder', express.static(path.join(__dirname, '../../scenario 1/evidences folder')));
 
 // API Routes
 app.use('/api/auth', authRoutes);

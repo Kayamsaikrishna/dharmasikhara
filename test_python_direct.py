@@ -1,8 +1,33 @@
 import json
 import sys
-import os
-sys.path.append('.')
-from legal_ai import analyze_legal_document
+import json
+
+# Test the legal_ai module directly
+try:
+    # Add the backend directory to the path
+    sys.path.append('backend')
+    
+    from backend.legal_ai import get_legal_assistant_response
+    
+    # Test queries
+    test_queries = [
+        "how to deal with civil cases in india?",
+        "how to work on civil cases",
+        "what to do if I am involved in any criminal case without my intention"
+    ]
+    
+    for i, query in enumerate(test_queries):
+        print(f"\n--- Test {i+1}: '{query}' ---")
+        result = get_legal_assistant_response(query)
+        if isinstance(result, dict) and "response" in result:
+            print(f"Response: {result['response']}")
+        else:
+            print(f"Error or unexpected result: {result}")
+            
+except Exception as e:
+    print(f"Error importing or running legal_ai module: {e}")
+    import traceback
+    traceback.print_exc()
 
 # Read the extracted text from the PDF
 # We'll simulate what the JavaScript code sends to the Python script
