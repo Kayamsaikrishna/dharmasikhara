@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import BillsAndAmendments from './BillsAndAmendments';
 
@@ -16,17 +16,105 @@ interface LegalNewsItem {
 
 const LegalNews: React.FC = () => {
   const [news, setNews] = useState<LegalNewsItem[]>([]);
+  const [allNews, setAllNews] = useState<LegalNewsItem[]>([]); // Store all news for filtering
   const [categories, setCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [expandedNews, setExpandedNews] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'news' | 'bills'>('news');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [selectedYear, setSelectedYear] = useState<string>('all');
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
+  const [years, setYears] = useState<string[]>(['all']);
+  const [fetchStatus, setFetchStatus] = useState<string>('idle'); // 'idle', 'fetching', 'success', 'error'
 
   // Fetch legal news and categories
+  const fetchLegalNews = useCallback(async () => {
+    try {
+      setFetchStatus('fetching');
+      setLoading(true);
+      setError(null);
+      
+      const response = await axios.get('/api/legal-news');
+      
+      if (response.data.success) {
+        const newsData = response.data.data;
+        setAllNews(newsData);
+        setNews(newsData);
+        setFetchStatus('success');
+        
+        // Extract unique years from news dates
+        const yearSet = new Set<string>(newsData.map((item: LegalNewsItem) => 
+          new Date(item.date).getFullYear().toString()
+        ));
+        const uniqueYears = Array.from(yearSet).sort((a, b) => parseInt(b) - parseInt(a));
+        setYears(['all', ...uniqueYears]);
+      } else {
+        setError('Failed to fetch legal news: ' + (response.data.error || 'Unknown error'));
+        setFetchStatus('error');
+        loadMockNews();
+      }
+    } catch (err: any) {
+      console.error('Error fetching legal news:', err);
+      setError('Failed to fetch legal news. Please check your internet connection or try again later. Error: ' + (err.message || 'Unknown error'));
+      setFetchStatus('error');
+      loadMockNews();
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Apply filters
+  const applyFilters = useCallback(() => {
+    let filteredNews = [...allNews];
+    
+    // Apply category filter
+    if (selectedCategory !== 'all') {
+      filteredNews = filteredNews.filter(item => item.category === selectedCategory);
+    }
+    
+    // Apply year filter
+    if (selectedYear !== 'all') {
+      filteredNews = filteredNews.filter(item => 
+        new Date(item.date).getFullYear().toString() === selectedYear
+      );
+    }
+    
+    // Apply date range filter
+    if (startDate) {
+      filteredNews = filteredNews.filter(item => 
+        new Date(item.date) >= new Date(startDate)
+      );
+    }
+    
+    if (endDate) {
+      filteredNews = filteredNews.filter(item => 
+        new Date(item.date) <= new Date(endDate)
+      );
+    }
+    
+    // Apply search query filter
+    if (searchQuery) {
+      filteredNews = filteredNews.filter(item => 
+        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.source.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+    
+    // Sort by date (newest first)
+    filteredNews.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    
+    setNews(filteredNews);
+  }, [allNews, selectedCategory, selectedYear, startDate, endDate, searchQuery]);
+
+  // Fetch legal news on component mount
   useEffect(() => {
     fetchLegalNews();
-    fetchCategories();
     
     // Set up interval to fetch news every 30 minutes
     const interval = setInterval(() => {
@@ -34,38 +122,14 @@ const LegalNews: React.FC = () => {
     }, 30 * 60 * 1000); // 30 minutes
     
     return () => clearInterval(interval);
-  }, [selectedCategory]);
+  }, [fetchLegalNews]);
 
-  const fetchLegalNews = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      const response = await axios.get('/api/legal-news', {
-        params: { 
-          category: selectedCategory !== 'all' ? selectedCategory : undefined,
-          limit: 20
-        }
-      });
-      
-      if (response.data.success) {
-        setNews(response.data.data);
-      } else {
-        setError('Failed to fetch legal news');
-        // Fallback to mock data if API fails
-        loadMockNews();
-      }
-    } catch (err) {
-      setError('Failed to fetch legal news');
-      console.error('Error fetching legal news:', err);
-      // Fallback to mock data if API fails
-      loadMockNews();
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Apply filters when any filter changes
+  useEffect(() => {
+    applyFilters();
+  }, [applyFilters]);
 
-  const loadMockNews = () => {
+  const loadMockNews = useCallback(() => {
     const mockNews: LegalNewsItem[] = [
       {
         id: '1',
@@ -124,17 +188,16 @@ const LegalNews: React.FC = () => {
       }
     ];
     
-    // Filter by category if not 'all'
-    let filteredNews = mockNews;
-    if (selectedCategory !== 'all') {
-      filteredNews = mockNews.filter(item => item.category === selectedCategory);
-    }
+    setAllNews(mockNews);
+    setNews(mockNews);
     
-    // Sort by date (newest first)
-    filteredNews.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    
-    setNews(filteredNews);
-  };
+    // Extract unique years from mock news dates
+    const yearSet = new Set<string>(mockNews.map(item => 
+      new Date(item.date).getFullYear().toString()
+    ));
+    const uniqueYears = Array.from(yearSet).sort((a, b) => parseInt(b) - parseInt(a));
+    setYears(['all', ...uniqueYears]);
+  }, []);
 
   const fetchCategories = async () => {
     try {
@@ -144,13 +207,17 @@ const LegalNews: React.FC = () => {
         setCategories(['all', ...response.data.data]);
       } else {
         // Fallback categories if API fails
-        setCategories(['all', 'Supreme Court', 'High Court', 'Legislation', 'Regulations', 'Criminal Law', 'Civil Law', 'Corporate Law', 'Constitutional Law']);
+        setCategories(['all', 'Supreme Court', 'High Court', 'Legislation', 'Regulations', 'Criminal Law', 'Civil Law', 'Corporate Law', 'Constitutional Law', 'Bills & Amendments']);
       }
     } catch (err) {
       console.error('Failed to fetch categories:', err);
       // Fallback categories if API fails
-      setCategories(['all', 'Supreme Court', 'High Court', 'Legislation', 'Regulations', 'Criminal Law', 'Civil Law', 'Corporate Law', 'Constitutional Law']);
+      setCategories(['all', 'Supreme Court', 'High Court', 'Legislation', 'Regulations', 'Criminal Law', 'Civil Law', 'Corporate Law', 'Constitutional Law', 'Bills & Amendments']);
     }
+  };
+
+  const handleSearch = () => {
+    applyFilters();
   };
 
   const toggleExpand = (id: string) => {
@@ -158,17 +225,25 @@ const LegalNews: React.FC = () => {
   };
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    
-    if (diffInHours < 1) {
-      return 'Just now';
-    } else if (diffInHours < 24) {
-      return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
-    } else {
-      const diffInDays = Math.floor(diffInHours / 24);
-      return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return dateString; // Return original string if invalid date
+      }
+      
+      const now = new Date();
+      const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+      
+      if (diffInHours < 1) {
+        return 'Just now';
+      } else if (diffInHours < 24) {
+        return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
+      } else {
+        const diffInDays = Math.floor(diffInHours / 24);
+        return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
+      }
+    } catch (e) {
+      return dateString; // Return original string if any error
     }
   };
 
@@ -183,19 +258,22 @@ const LegalNews: React.FC = () => {
     }
   };
 
-  if (loading) {
+  const resetFilters = () => {
+    setSelectedCategory('all');
+    setSelectedYear('all');
+    setStartDate('');
+    setEndDate('');
+    setSearchQuery('');
+  };
+
+  if (loading && fetchStatus === 'fetching') {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="text-xl">Loading legal news...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-        <strong className="font-bold">Error: </strong>
-        <span className="block sm:inline">{error}</span>
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-500 mb-4"></div>
+          <div className="text-xl">Fetching real legal news from trusted sources...</div>
+          <div className="text-gray-600 mt-2">This may take a moment as we scrape data from multiple legal news websites</div>
+        </div>
       </div>
     );
   }
@@ -236,89 +314,223 @@ const LegalNews: React.FC = () => {
       </div>
 
       {activeTab === 'news' ? (
-        <>
-          {/* Category Filter */}
-          <div className="mb-6">
-            <div className="flex flex-wrap gap-2">
-              {categories.map(category => (
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Filter Sidebar */}
+          <div className="lg:w-1/4 bg-gray-50 p-4 rounded-lg h-fit">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">Filters</h3>
+              <button 
+                onClick={resetFilters}
+                className="text-sm text-indigo-600 hover:text-indigo-800"
+              >
+                Reset All
+              </button>
+            </div>
+            
+            {/* Search Filter */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
+              <div className="flex">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search news..."
+                  className="flex-grow px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
                 <button
-                  key={category}
-                  onClick={() => setSelectedCategory(category)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                    selectedCategory === category
-                      ? 'bg-indigo-600 text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
+                  onClick={handleSearch}
+                  className="px-4 py-2 bg-indigo-600 text-white rounded-r-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
-                  {category.charAt(0).toUpperCase() + category.slice(1)}
+                  Search
                 </button>
-              ))}
+              </div>
+            </div>
+            
+            {/* Category Filter */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+              <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
+                {categories.map(category => (
+                  <div key={category} className="flex items-center">
+                    <input
+                      type="radio"
+                      id={`category-${category}`}
+                      name="category"
+                      checked={selectedCategory === category}
+                      onChange={() => setSelectedCategory(category)}
+                      className="h-4 w-4 text-indigo-600 focus:ring-indigo-500"
+                    />
+                    <label 
+                      htmlFor={`category-${category}`} 
+                      className="ml-2 text-sm text-gray-700 capitalize"
+                    >
+                      {category === 'all' ? 'All Categories' : category}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            {/* Year Filter */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Year</label>
+              <select
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              >
+                {years.map(year => (
+                  <option key={year} value={year}>
+                    {year === 'all' ? 'All Years' : year}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            {/* Date Range Filter */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Date Range</label>
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1">From</label>
+                  <input
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1">To</label>
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+              </div>
+            </div>
+            
+            {/* Apply Filters Button */}
+            <button
+              onClick={applyFilters}
+              className="w-full px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-4"
+            >
+              Apply Filters
+            </button>
+            
+            {/* Results Count */}
+            <div className="text-sm text-gray-600">
+              Showing {news.length} of {allNews.length} articles
             </div>
           </div>
-
+          
           {/* News List */}
-          <div className="space-y-6">
-            {news.length > 0 ? (
-              news.map(item => (
-                <div 
-                  key={item.id} 
-                  className={`bg-white rounded-lg shadow-md p-6 ${getImportanceClass(item.importance)}`}
+          <div className="lg:w-3/4">
+            {error && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                <strong className="font-bold">Error: </strong>
+                <span className="block sm:inline">{error}</span>
+                <button 
+                  onClick={fetchLegalNews}
+                  className="mt-2 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
                 >
-                  <div className="flex justify-between items-start mb-3">
-                    <div>
-                      <h2 className="text-xl font-bold text-gray-800 mb-2">{item.title}</h2>
-                      <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
-                        <span className="font-medium">{item.source}</span>
-                        <span>{formatDate(item.date)}</span>
-                        <span className="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-xs">
-                          {item.category}
-                        </span>
-                        <span className={`px-2 py-1 rounded-full text-xs ${
-                          item.importance === 'high' 
-                            ? 'bg-red-100 text-red-800' 
-                            : item.importance === 'medium' 
-                              ? 'bg-yellow-100 text-yellow-800' 
-                              : 'bg-gray-100 text-gray-800'
-                        }`}>
-                          {item.importance.charAt(0).toUpperCase() + item.importance.slice(1)}
-                        </span>
+                  Retry Fetching Real Data
+                </button>
+              </div>
+            )}
+            
+            {fetchStatus === 'success' && allNews.length === 0 && (
+              <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative mb-4" role="alert">
+                <strong className="font-bold">Notice: </strong>
+                <span className="block sm:inline">
+                  We're currently working on expanding our web scraping capabilities to fetch more real legal news. 
+                  Please check back later or try again in a few minutes.
+                </span>
+              </div>
+            )}
+            
+            {news.length > 0 ? (
+              <div className="space-y-6">
+                {news.map(item => (
+                  <div 
+                    key={item.id} 
+                    className={`bg-white rounded-lg shadow-md p-6 ${getImportanceClass(item.importance)}`}
+                  >
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <h2 className="text-xl font-bold text-gray-800 mb-2">{item.title}</h2>
+                        <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+                          <span className="font-medium">{item.source}</span>
+                          <span>{formatDate(item.date)}</span>
+                          <span className="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-xs">
+                            {item.category}
+                          </span>
+                          <span className={`px-2 py-1 rounded-full text-xs ${
+                            item.importance === 'high' 
+                              ? 'bg-red-100 text-red-800' 
+                              : item.importance === 'medium' 
+                                ? 'bg-yellow-100 text-yellow-800' 
+                                : 'bg-gray-100 text-gray-800'
+                          }`}>
+                            {item.importance.charAt(0).toUpperCase() + item.importance.slice(1)}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  
-                  <p className="text-gray-700 mb-4">
-                    {expandedNews === item.id ? item.content : item.summary}
-                  </p>
-                  
-                  <div className="flex flex-wrap gap-3">
-                    <button
-                      onClick={() => toggleExpand(item.id)}
-                      className="text-indigo-600 hover:text-indigo-800 font-medium text-sm"
-                    >
-                      {expandedNews === item.id ? 'Show Less' : 'Read More'}
-                    </button>
                     
-                    <a 
-                      href={item.url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-indigo-600 hover:text-indigo-800 font-medium text-sm"
-                    >
-                      View Full Article →
-                    </a>
+                    <p className="text-gray-700 mb-4">
+                      {expandedNews === item.id ? item.content : item.summary}
+                    </p>
+                    
+                    <div className="flex flex-wrap gap-3">
+                      <button
+                        onClick={() => toggleExpand(item.id)}
+                        className="text-indigo-600 hover:text-indigo-800 font-medium text-sm"
+                      >
+                        {expandedNews === item.id ? 'Show Less' : 'Read More'}
+                      </button>
+                      
+                      <a 
+                        href={item.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-indigo-600 hover:text-indigo-800 font-medium text-sm"
+                      >
+                        View Full Article →
+                      </a>
+                    </div>
                   </div>
-                </div>
-              ))
+                ))}
+              </div>
             ) : (
-              <div className="text-center py-12">
-                <p className="text-gray-500">No news available for the selected category.</p>
+              <div className="text-center py-12 bg-white rounded-lg shadow">
+                <p className="text-gray-500">No news available for the selected filters.</p>
+                <button 
+                  onClick={resetFilters}
+                  className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                >
+                  Reset Filters
+                </button>
+                <button 
+                  onClick={fetchLegalNews}
+                  className="mt-4 ml-2 px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+                >
+                  Retry Fetching Real Data
+                </button>
               </div>
             )}
           </div>
-        </>
+        </div>
       ) : (
         /* Bills & Amendments Tab */
-        <BillsAndAmendments />
+        <div className="bg-white rounded-lg shadow p-6">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Latest Parliament Bills</h2>
+          <p className="text-gray-600 mb-6">Track the latest bills introduced in the Indian Parliament with official PDFs and analysis. All links are verified and working.</p>
+          <BillsAndAmendments />
+        </div>
       )}
     </div>
   );

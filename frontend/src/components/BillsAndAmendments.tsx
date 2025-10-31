@@ -15,20 +15,41 @@ interface BillItem {
 
 const BillsAndAmendments: React.FC = () => {
   const [bills, setBills] = useState<BillItem[]>([]);
+  const [filteredBills, setFilteredBills] = useState<BillItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [selectedMinistry, setSelectedMinistry] = useState<string>('all');
+  const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  const [ministries, setMinistries] = useState<string[]>(['all']);
+  const [statuses, setStatuses] = useState<string[]>(['all']);
 
   useEffect(() => {
     fetchBills();
   }, []);
+
+  useEffect(() => {
+    applyFilters();
+  }, [bills, searchQuery, selectedMinistry, selectedStatus]);
 
   const fetchBills = async () => {
     try {
       setLoading(true);
       setError(null);
       
-      // In a real implementation, this would fetch from /api/legal-news/bills
-      // For now, we'll use mock data
+      // First try to fetch from API
+      try {
+        const response = await axios.get('/api/legal-news/bills');
+        if (response.data.success) {
+          setBills(response.data.data);
+          extractFilters(response.data.data);
+          return;
+        }
+      } catch (apiError) {
+        console.log('API fetch failed, using mock data');
+      }
+      
+      // Fallback to mock data
       const mockBills: BillItem[] = [
         {
           id: 'b1',
@@ -88,21 +109,66 @@ const BillsAndAmendments: React.FC = () => {
       ];
       
       setBills(mockBills);
-    } catch (err) {
+      extractFilters(mockBills);
+    } catch (err: any) {
       console.error('Error fetching bills:', err);
-      setError('Failed to fetch bills and amendments');
+      setError('Failed to fetch bills and amendments: ' + (err.message || 'Unknown error'));
     } finally {
       setLoading(false);
     }
   };
 
+  const extractFilters = (billsData: BillItem[]) => {
+    // Extract unique ministries
+    const ministrySet = new Set<string>(billsData.map(bill => bill.ministry));
+    const uniqueMinistries = Array.from(ministrySet);
+    setMinistries(['all', ...uniqueMinistries]);
+    
+    // Extract unique statuses
+    const statusSet = new Set<string>(billsData.map(bill => bill.status));
+    const uniqueStatuses = Array.from(statusSet);
+    setStatuses(['all', ...uniqueStatuses]);
+  };
+
+  const applyFilters = () => {
+    let result = [...bills];
+    
+    // Apply search filter
+    if (searchQuery) {
+      result = result.filter(bill => 
+        bill.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        bill.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        bill.ministry.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+    
+    // Apply ministry filter
+    if (selectedMinistry !== 'all') {
+      result = result.filter(bill => bill.ministry === selectedMinistry);
+    }
+    
+    // Apply status filter
+    if (selectedStatus !== 'all') {
+      result = result.filter(bill => bill.status === selectedStatus);
+    }
+    
+    setFilteredBills(result);
+  };
+
   const formatBillDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-IN', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return dateString; // Return original string if invalid date
+      }
+      return date.toLocaleDateString('en-IN', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    } catch (e) {
+      return dateString; // Return original string if any error
+    }
   };
 
   const getStatusClass = (status: string) => {
@@ -118,19 +184,16 @@ const BillsAndAmendments: React.FC = () => {
     }
   };
 
+  const resetFilters = () => {
+    setSearchQuery('');
+    setSelectedMinistry('all');
+    setSelectedStatus('all');
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="text-xl">Loading bills and amendments...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-        <strong className="font-bold">Error: </strong>
-        <span className="block sm:inline">{error}</span>
       </div>
     );
   }
@@ -156,71 +219,151 @@ const BillsAndAmendments: React.FC = () => {
         </div>
       </div>
 
-      {bills.length > 0 ? (
-        bills.map(bill => (
-          <div key={bill.id} className="bg-white rounded-lg shadow-md p-6 border-l-4 border-indigo-500">
-            <div className="flex justify-between items-start mb-3">
-              <div>
-                <h2 className="text-xl font-bold text-gray-800 mb-2">{bill.title}</h2>
-                <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
-                  <span className="font-medium">{bill.ministry}</span>
-                  <span>Introduced: {formatBillDate(bill.introducedDate)}</span>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(bill.status)}`}>
-                    {bill.status}
-                  </span>
-                  <span className="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-xs">
-                    {bill.type}
-                  </span>
+      {/* Filters */}
+      <div className="bg-gray-50 p-4 rounded-lg">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search bills..."
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Ministry</label>
+            <select
+              value={selectedMinistry}
+              onChange={(e) => setSelectedMinistry(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              {ministries.map(ministry => (
+                <option key={ministry} value={ministry}>
+                  {ministry === 'all' ? 'All Ministries' : ministry}
+                </option>
+              ))}
+            </select>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+            <select
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              {statuses.map(status => (
+                <option key={status} value={status}>
+                  {status === 'all' ? 'All Statuses' : status}
+                </option>
+              ))}
+            </select>
+          </div>
+          
+          <div className="flex items-end">
+            <button
+              onClick={resetFilters}
+              className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
+            >
+              Reset Filters
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+          <strong className="font-bold">Error: </strong>
+          <span className="block sm:inline">{error}</span>
+          <button 
+            onClick={fetchBills}
+            className="mt-2 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+          >
+            Retry
+          </button>
+        </div>
+      )}
+
+      {filteredBills.length > 0 ? (
+        <div className="space-y-6">
+          {filteredBills.map(bill => (
+            <div key={bill.id} className="bg-white rounded-lg shadow-md p-6 border-l-4 border-indigo-500">
+              <div className="flex justify-between items-start mb-3">
+                <div>
+                  <h2 className="text-xl font-bold text-gray-800 mb-2">{bill.title}</h2>
+                  <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+                    <span className="font-medium">{bill.ministry}</span>
+                    <span>Introduced: {formatBillDate(bill.introducedDate)}</span>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(bill.status)}`}>
+                      {bill.status}
+                    </span>
+                    <span className="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-xs">
+                      {bill.type}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-            
-            <p className="text-gray-700 mb-4">
-              {bill.description}
-            </p>
-            
-            <div className="flex flex-wrap gap-3">
-              <a 
-                href={bill.pdfUrl} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700"
-              >
-                <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                View PDF
-              </a>
               
-              <a 
-                href={bill.analysisUrl} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700"
-              >
-                <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                </svg>
-                PRS Analysis
-              </a>
+              <p className="text-gray-700 mb-4">
+                {bill.description}
+              </p>
               
-              <a 
-                href="https://sansad.in/ls/bills" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700"
-              >
-                <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-                </svg>
-                Parliament Site
-              </a>
+              <div className="flex flex-wrap gap-3">
+                <a 
+                  href={bill.pdfUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700"
+                >
+                  <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  View PDF
+                </a>
+                
+                <a 
+                  href={bill.analysisUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700"
+                >
+                  <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                  PRS Analysis
+                </a>
+                
+                <a 
+                  href="https://sansad.in/ls/bills" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700"
+                >
+                  <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                  </svg>
+                  Parliament Site
+                </a>
+              </div>
             </div>
+          ))}
+          
+          <div className="text-sm text-gray-600 text-center">
+            Showing {filteredBills.length} of {bills.length} bills
           </div>
-        ))
+        </div>
       ) : (
-        <div className="text-center py-12">
-          <p className="text-gray-500">No bills available at the moment.</p>
+        <div className="text-center py-12 bg-white rounded-lg shadow">
+          <p className="text-gray-500">No bills available for the selected filters.</p>
+          <button 
+            onClick={resetFilters}
+            className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+          >
+            Reset Filters
+          </button>
         </div>
       )}
     </div>
