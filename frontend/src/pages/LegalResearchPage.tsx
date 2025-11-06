@@ -1,11 +1,11 @@
 import React from 'react';
-import LegalResearch from '../components/LegalResearch';
+import LegalResearchDocuments from '../components/LegalResearchDocuments';
 import Layout from '../components/Layout';
 
 const LegalResearchPage: React.FC = () => {
   return (
     <Layout>
-      <LegalResearch />
+      <LegalResearchDocuments />
     </Layout>
   );
 };

@@ -34,6 +34,7 @@ const expertSupportRoutes = require('./routes/expertSupport');
 const caseSpecificAIRoutes = require('./routes/caseSpecificAI');
 const marketingRoutes = require('./routes/marketing');
 const legalNewsRoutes = require('./routes/legalNews');
+const progressRoutes = require('./routes/progress');
 // Assessment routes removed
 // Legal updates routes removed
 // Live sessions routes removed
@@ -76,6 +77,7 @@ app.use('/api/expert-support', expertSupportRoutes);
 app.use('/api/case-specific-ai', caseSpecificAIRoutes);
 app.use('/api/marketing', marketingRoutes);
 app.use('/api/legal-news', legalNewsRoutes);
+app.use('/api/progress', progressRoutes);
 // Assessment routes removed
 // Legal updates routes removed
 // Live sessions routes removed

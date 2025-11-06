@@ -1,6 +1,323 @@
 const axios = require('axios');
 const User = require('../models/User');
 const Scenario = require('../models/Scenario');
+const fs = require('fs');
+const path = require('path');
+
+// Cache for storing document data
+let documentsCache = {
+  data: [],
+  timestamp: 0,
+  ttl: 60 * 60 * 1000 // 1 hour cache
+};
+
+// Function to scan and categorize research documents
+const scanResearchDocuments = () => {
+  const researchDir = path.join(__dirname, '../../../research');
+  const documents = [];
+  
+  try {
+    // Scan BNS_DATA directory
+    const bnsDataDir = path.join(researchDir, 'BNS_DATA');
+    if (fs.existsSync(bnsDataDir)) {
+      // Scan main PDF files (if any)
+      const mainFiles = fs.readdirSync(bnsDataDir).filter(file => 
+        file.endsWith('.pdf') && fs.statSync(path.join(bnsDataDir, file)).isFile()
+      );
+      
+      mainFiles.forEach(file => {
+        documents.push({
+          id: `main-${file.replace(/\s+/g, '-').toLowerCase()}`,
+          title: file.replace('.pdf', '').replace(/-/g, ' '),
+          fileName: file,
+          category: 'Main Documents',
+          language: 'English',
+          type: 'PDF',
+          size: fs.statSync(path.join(bnsDataDir, file)).size,
+          path: `/api/legal-research/documents/main/${file}`,
+          uploadDate: fs.statSync(path.join(bnsDataDir, file)).mtime.toISOString().split('T')[0]
+        });
+      });
+      
+      // Define the main document categories
+      const categories = ['BNS', 'BNSS', 'BSA', 'CONSTITUTION', 'JUDGEMENTS'];
+      
+      categories.forEach(category => {
+        const categoryDir = path.join(bnsDataDir, category);
+        if (fs.existsSync(categoryDir) && fs.statSync(categoryDir).isDirectory()) {
+          // Handle CONSTITUTION and JUDGEMENTS differently as they may not have language subdirectories
+          if (category === 'CONSTITUTION' || category === 'JUDGEMENTS') {
+            // Scan files directly in the directory
+            const files = fs.readdirSync(categoryDir).filter(file => file.endsWith('.pdf'));
+            files.forEach(file => {
+              // Determine language from filename
+              let languageName = 'English';
+              if (file.toLowerCase().includes('kan')) languageName = 'Kannada';
+              else if (file.toLowerCase().includes('hin')) languageName = 'Hindi';
+              
+              documents.push({
+                id: `${category.toLowerCase()}-${file.replace(/\s+/g, '-').toLowerCase()}`,
+                title: `${file.replace('.pdf', '').replace(/-/g, ' ')}`,
+                fileName: file,
+                category: category,
+                language: languageName,
+                type: 'PDF',
+                size: fs.statSync(path.join(categoryDir, file)).size,
+                path: `/api/legal-research/documents/${category.toLowerCase()}/${file}`,
+                uploadDate: fs.statSync(path.join(categoryDir, file)).mtime.toISOString().split('T')[0]
+              });
+            });
+          } else {
+            // Handle BNS, BNSS, BSA with language subdirectories
+            const langDirs = fs.readdirSync(categoryDir).filter(subDir => 
+              fs.statSync(path.join(categoryDir, subDir)).isDirectory()
+            );
+            
+            langDirs.forEach(langDir => {
+              const langPath = path.join(categoryDir, langDir);
+              const files = fs.readdirSync(langPath).filter(file => file.endsWith('.pdf'));
+              
+              files.forEach(file => {
+                // Determine language name
+                let languageName = 'English';
+                if (langDir === 'HIN') languageName = 'Hindi';
+                else if (langDir === 'KAN') languageName = 'Kannada';
+                else languageName = langDir;
+                
+                documents.push({
+                  id: `${category.toLowerCase()}-${langDir.toLowerCase()}-${file.replace(/\s+/g, '-').toLowerCase()}`,
+                  title: `${file.replace('.pdf', '').replace(/-/g, ' ')}`,
+                  fileName: file,
+                  category: category,
+                  language: languageName,
+                  type: 'PDF',
+                  size: fs.statSync(path.join(langPath, file)).size,
+                  path: `/api/legal-research/documents/${category.toLowerCase()}/${langDir}/${file}`,
+                  uploadDate: fs.statSync(path.join(langPath, file)).mtime.toISOString().split('T')[0]
+                });
+              });
+            });
+          }
+        }
+      });
+    }
+  } catch (error) {
+    console.error('Error scanning research documents:', error);
+  }
+  
+  return documents;
+};
+// Get all research documents
+const getResearchDocuments = async (req, res) => {
+  try {
+    const currentTime = Date.now();
+    
+    // Check if cache is still valid
+    if (documentsCache.data.length > 0 && (currentTime - documentsCache.timestamp) < documentsCache.ttl) {
+      console.log('Returning cached documents data');
+      return res.json({
+        success: true,
+        data: documentsCache.data,
+        total: documentsCache.data.length
+      });
+    }
+    
+    console.log('Scanning research documents');
+    const documents = scanResearchDocuments();
+    
+    // Update cache
+    documentsCache.data = documents;
+    documentsCache.timestamp = currentTime;
+    
+    return res.json({
+      success: true,
+      data: documents,
+      total: documents.length
+    });
+  } catch (error) {
+    console.error('Error in getResearchDocuments:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to fetch research documents: ' + error.message
+    });
+  }
+};
+
+// Get research documents by category
+const getResearchDocumentsByCategory = async (req, res) => {
+  try {
+    const { category } = req.params;
+    const { limit = 50 } = req.query;
+    
+    // Get all documents
+    const documents = scanResearchDocuments();
+    
+    // Filter by category
+    const filteredDocuments = documents.filter(doc => 
+      doc.category.toLowerCase() === category.toLowerCase()
+    );
+    
+    // Limit results
+    const limitedDocuments = filteredDocuments.slice(0, parseInt(limit));
+    
+    return res.json({
+      success: true,
+      data: limitedDocuments,
+      total: filteredDocuments.length
+    });
+  } catch (error) {
+    console.error('Error in getResearchDocumentsByCategory:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to fetch research documents by category: ' + error.message
+    });
+  }
+};
+
+// Get research document by ID
+const getResearchDocumentById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // Get all documents
+    const documents = scanResearchDocuments();
+    
+    // Find document by ID
+    const document = documents.find(doc => doc.id === id);
+    
+    if (!document) {
+      return res.status(404).json({
+        success: false,
+        error: 'Document not found'
+      });
+    }
+    
+    return res.json({
+      success: true,
+      data: document
+    });
+  } catch (error) {
+    console.error('Error in getResearchDocumentById:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to fetch document details: ' + error.message
+    });
+  }
+};
+
+// Search research documents
+const searchResearchDocuments = async (req, res) => {
+  try {
+    const { query, category } = req.query;
+    
+    if (!query) {
+      return res.status(400).json({
+        success: false,
+        error: 'Search query is required'
+      });
+    }
+    
+    // Get all documents
+    const documents = scanResearchDocuments();
+    
+    // Filter by category if specified
+    let filteredDocuments = documents;
+    if (category && category !== 'all') {
+      filteredDocuments = documents.filter(doc => 
+        doc.category.toLowerCase() === category.toLowerCase()
+      );
+    }
+    
+    // Search by query in title and fileName
+    const searchResults = filteredDocuments.filter(doc => 
+      doc.title.toLowerCase().includes(query.toLowerCase()) ||
+      doc.fileName.toLowerCase().includes(query.toLowerCase()) ||
+      doc.category.toLowerCase().includes(query.toLowerCase())
+    );
+    
+    return res.json({
+      success: true,
+      data: searchResults,
+      total: searchResults.length
+    });
+  } catch (error) {
+    console.error('Error in searchResearchDocuments:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to search research documents: ' + error.message
+    });
+  }
+};
+
+// Get research document categories
+const getResearchDocumentCategories = async (req, res) => {
+  try {
+    // Get all documents
+    const documents = scanResearchDocuments();
+    
+    // Extract unique categories
+    const categories = [...new Set(documents.map(doc => doc.category))];
+    
+    return res.json({
+      success: true,
+      data: categories
+    });
+  } catch (error) {
+    console.error('Error in getResearchDocumentCategories:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to fetch document categories: ' + error.message
+    });
+  }
+};
+
+// Serve document file
+const serveDocumentFile = async (req, res) => {
+  try {
+    const { category, lang, fileName } = req.params;
+    
+    let filePath;
+    if (category === 'main') {
+      filePath = path.join(__dirname, '../../../research/BNS_DATA', fileName);
+    } else if (category === 'judgements') {
+      filePath = path.join(__dirname, '../../../research/BNS_DATA/JUDGEMENTS', fileName);
+    } else if (category === 'constitution') {
+      filePath = path.join(__dirname, '../../../research/BNS_DATA/CONSTITUTION', fileName);
+    } else {
+      filePath = path.join(__dirname, '../../../research/BNS_DATA', category, lang, fileName);
+    }
+    
+    // Check if file exists
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({
+        success: false,
+        error: 'Document not found'
+      });
+    }
+    
+    // Set appropriate headers for PDF
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
+    
+    // Stream the file
+    const fileStream = fs.createReadStream(filePath);
+    fileStream.pipe(res);
+    
+    fileStream.on('error', (error) => {
+      console.error('Error serving document file:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to serve document file: ' + error.message
+      });
+    });
+  } catch (error) {
+    console.error('Error in serveDocumentFile:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to serve document file: ' + error.message
+    });
+  }
+};
 
 class LegalResearchController {
     constructor() {
@@ -1311,4 +1628,29 @@ class LegalResearchController {
     }
 }
 
-module.exports = new LegalResearchController();
+// Export both the class methods and the document functions
+const controller = new LegalResearchController();
+
+module.exports = {
+  // Document-related functions
+  getResearchDocuments,
+  getResearchDocumentsByCategory,
+  getResearchDocumentById,
+  searchResearchDocuments,
+  getResearchDocumentCategories,
+  serveDocumentFile,
+  
+  // Controller methods
+  searchSimilarCases: controller.searchSimilarCases,
+  searchIndianKanoon: controller.searchIndianKanoon,
+  searchSCCOnline: controller.searchSCCOnline,
+  searchGoogleScholar: controller.searchGoogleScholar,
+  searchNews: controller.searchNews,
+  searchAcademicSources: controller.searchAcademicSources,
+  combineSearchResults: controller.combineSearchResults,
+  getCaseDetails: controller.getCaseDetails,
+  getIndianKanoonCaseDetails: controller.getIndianKanoonCaseDetails,
+  getSCCOnlineCaseDetails: controller.getSCCOnlineCaseDetails,
+  getGoogleScholarCaseDetails: controller.getGoogleScholarCaseDetails,
+  generateReport: controller.generateReport
+};
