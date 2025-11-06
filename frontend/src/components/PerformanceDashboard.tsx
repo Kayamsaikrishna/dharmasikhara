@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart, LineChart, PieChart, Bar, Line, Pie, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from 'recharts';
 import { useUser } from '../contexts/UserContext';
-import { getUserProgress } from '../utils/progressApi';
+import { getUserProgress, getAllUserProgress } from '../utils/progressApi';
 
 interface SkillData {
   name: string;
@@ -53,6 +53,7 @@ const PerformanceDashboard: React.FC = () => {
   const [scenariosCompleted, setScenariosCompleted] = useState(0);
   const [bonusPoints, setBonusPoints] = useState(0);
   const [earnedAchievements, setEarnedAchievements] = useState(0);
+  const [completedScenarios, setCompletedScenarios] = useState<Set<string>>(new Set());
 
   // Custom hook to listen for localStorage changes
   const useLocalStorage = (key: string, initialValue: any) => {
@@ -89,67 +90,84 @@ const PerformanceDashboard: React.FC = () => {
       try {
         setLoading(true);
         
-        let progress = null;
+        // Initialize with zero values for all users
+        let allProgressData: any[] = [];
         let assessmentScore = null;
         
         if (user) {
-          // For authenticated users, fetch from backend
+          // For authenticated users, fetch all progress from backend
           try {
-            const userProgress = await getUserProgress('the-inventory-that-changed-everything');
-            progress = userProgress;
+            const allUserProgress = await getAllUserProgress();
+            allProgressData = allUserProgress?.data || [];
           } catch (error) {
             console.error('Error fetching progress from backend:', error);
             // Fallback to localStorage
-            const progressKey = 'scenario-progress-the-inventory-that-changed-everything';
-            const savedProgress = localStorage.getItem(progressKey);
-            progress = savedProgress ? JSON.parse(savedProgress) : null;
+            const savedProgress = localStorage.getItem('user-progress-data');
+            allProgressData = savedProgress ? JSON.parse(savedProgress) : [];
           }
         } else {
           // For non-authenticated users, get from localStorage
-          const progressKey = 'scenario-progress-the-inventory-that-changed-everything';
-          const savedProgress = localStorage.getItem(progressKey);
-          progress = savedProgress ? JSON.parse(savedProgress) : null;
+          const savedProgress = localStorage.getItem('user-progress-data');
+          allProgressData = savedProgress ? JSON.parse(savedProgress) : [];
         }
         
         // Check if assessment is completed
         assessmentScore = localStorage.getItem('assessment_total_score');
         
-        // Calculate real data based on user progress
-        const completedStages = progress?.completedStages || [];
-        const scenariosCompletedCount = completedStages.length;
+        // Track unique completed scenarios to prevent duplicates
+        const uniqueCompletedScenarios = new Set<string>();
+        let totalScenariosCompleted = 0;
+        let totalTimeSpent = 0;
+        
+        // Process all progress data to count unique completed scenarios
+        allProgressData.forEach((progress: any) => {
+          if (progress && progress.status === 'completed') {
+            // Use scenario ID to ensure uniqueness
+            const scenarioId = progress.scenario?._id || progress.scenario;
+            if (scenarioId && !uniqueCompletedScenarios.has(scenarioId)) {
+              uniqueCompletedScenarios.add(scenarioId);
+              totalScenariosCompleted++;
+              totalTimeSpent += progress.timeSpent || 0;
+            }
+          }
+        });
+        
+        // Update completed scenarios state
+        setCompletedScenarios(uniqueCompletedScenarios);
         
         // Determine overall score based on progress
         let calculatedOverallScore = 0;
         if (assessmentScore) {
           // If assessment is completed, use the actual score
           calculatedOverallScore = parseInt(assessmentScore.replace('%', ''));
-        } else if (scenariosCompletedCount > 0) {
-          // Base score on completed stages
-          calculatedOverallScore = Math.min(30 + (scenariosCompletedCount * 20), 90);
+        } else if (totalScenariosCompleted > 0) {
+          // Base score on completed scenarios
+          calculatedOverallScore = Math.min(20 + (totalScenariosCompleted * 15), 95);
         }
         
         // Set skill data based on progress
         const skillDataArray = [
-          { name: 'Legal Research', score: Math.min(40 + (scenariosCompletedCount * 15), 95), target: 90 },
-          { name: 'Case Analysis', score: Math.min(35 + (scenariosCompletedCount * 12), 85), target: 85 },
-          { name: 'Document Drafting', score: Math.min(30 + (scenariosCompletedCount * 10), 80), target: 80 },
-          { name: 'Oral Advocacy', score: Math.min(25 + (scenariosCompletedCount * 10), 75), target: 80 },
-          { name: 'Negotiation', score: Math.min(20 + (scenariosCompletedCount * 8), 70), target: 75 }
+          { name: 'Legal Research', score: Math.min(30 + (totalScenariosCompleted * 12), 90), target: 90 },
+          { name: 'Case Analysis', score: Math.min(25 + (totalScenariosCompleted * 10), 80), target: 85 },
+          { name: 'Document Drafting', score: Math.min(20 + (totalScenariosCompleted * 8), 75), target: 80 },
+          { name: 'Oral Advocacy', score: Math.min(15 + (totalScenariosCompleted * 8), 70), target: 80 },
+          { name: 'Negotiation', score: Math.min(10 + (totalScenariosCompleted * 6), 65), target: 75 }
         ];
         
-        // Set progress data based on completed stages
+        // Set progress data based on time
         const progressDataArray = [
-          { date: 'Week 1', score: 30 },
-          { date: 'Week 2', score: completedStages.includes('client-interview') ? 45 : 30 },
-          { date: 'Week 3', score: completedStages.includes('digital-evidence') ? 55 : (completedStages.includes('client-interview') ? 45 : 30) },
-          { date: 'Week 4', score: completedStages.includes('bail-draft') ? 65 : (completedStages.includes('digital-evidence') ? 55 : (completedStages.includes('client-interview') ? 45 : 30)) },
-          { date: 'Week 5', score: completedStages.includes('court-hearing') ? 75 : (completedStages.includes('bail-draft') ? 65 : (completedStages.includes('digital-evidence') ? 55 : (completedStages.includes('client-interview') ? 45 : 30))) },
-          { date: 'Week 6', score: assessmentScore ? calculatedOverallScore : (completedStages.includes('court-hearing') ? 75 : (completedStages.includes('bail-draft') ? 65 : (completedStages.includes('digital-evidence') ? 55 : (completedStages.includes('client-interview') ? 45 : 30)))) }
+          { date: 'Week 1', score: totalScenariosCompleted >= 1 ? 35 : 20 },
+          { date: 'Week 2', score: totalScenariosCompleted >= 2 ? 50 : (totalScenariosCompleted >= 1 ? 35 : 20) },
+          { date: 'Week 3', score: totalScenariosCompleted >= 3 ? 60 : (totalScenariosCompleted >= 2 ? 50 : (totalScenariosCompleted >= 1 ? 35 : 20)) },
+          { date: 'Week 4', score: totalScenariosCompleted >= 4 ? 70 : (totalScenariosCompleted >= 3 ? 60 : (totalScenariosCompleted >= 2 ? 50 : (totalScenariosCompleted >= 1 ? 35 : 20))) },
+          { date: 'Week 5', score: totalScenariosCompleted >= 5 ? 80 : (totalScenariosCompleted >= 4 ? 70 : (totalScenariosCompleted >= 3 ? 60 : (totalScenariosCompleted >= 2 ? 50 : (totalScenariosCompleted >= 1 ? 35 : 20)))) },
+          { date: 'Week 6', score: assessmentScore ? calculatedOverallScore : (totalScenariosCompleted >= 5 ? 80 : (totalScenariosCompleted >= 4 ? 70 : (totalScenariosCompleted >= 3 ? 60 : (totalScenariosCompleted >= 2 ? 50 : (totalScenariosCompleted >= 1 ? 35 : 20))))) }
         ];
         
-        // Set category data based on scenario
+        // Set category data based on completed scenarios
+        // For now, we'll keep it simple with Criminal Law as the main focus
         const categoryDataArray = [
-          { name: 'Criminal Law', value: 100 },
+          { name: 'Criminal Law', value: totalScenariosCompleted > 0 ? 100 : 0 },
           { name: 'Civil Law', value: 0 },
           { name: 'Corporate Law', value: 0 },
           { name: 'Family Law', value: 0 },
@@ -163,15 +181,15 @@ const PerformanceDashboard: React.FC = () => {
           { subject: 'Document Drafting', A: skillDataArray[2].score, B: skillDataArray[2].target, fullMark: 100 },
           { subject: 'Oral Advocacy', A: skillDataArray[3].score, B: skillDataArray[3].target, fullMark: 100 },
           { subject: 'Negotiation', A: skillDataArray[4].score, B: skillDataArray[4].target, fullMark: 100 },
-          { subject: 'Legal Writing', A: Math.min(30 + (scenariosCompletedCount * 10), 80), B: 85, fullMark: 100 }
+          { subject: 'Legal Writing', A: Math.min(25 + (totalScenariosCompleted * 8), 75), B: 85, fullMark: 100 }
         ];
         
         // Set achievements based on progress
         const achievementsArray = [
-          { id: 1, title: 'First Scenario', description: 'Complete your first legal scenario', earned: scenariosCompletedCount > 0, points: 100 },
-          { id: 2, title: 'Speed Demon', description: 'Complete a scenario in under 30 minutes', earned: scenariosCompletedCount >= 2, points: 250 },
+          { id: 1, title: 'First Scenario', description: 'Complete your first legal scenario', earned: totalScenariosCompleted > 0, points: 100 },
+          { id: 2, title: 'Speed Demon', description: 'Complete a scenario in under 30 minutes', earned: totalTimeSpent > 0 && totalTimeSpent < 30, points: 250 },
           { id: 3, title: 'Research Master', description: 'Score 90% or higher on legal research', earned: skillDataArray[0].score >= 90, points: 150 },
-          { id: 4, title: 'Perfectionist', description: 'Achieve 100% on three scenarios', earned: false, points: 300 },
+          { id: 4, title: 'Perfectionist', description: 'Achieve 100% on three scenarios', earned: totalScenariosCompleted >= 3, points: 300 },
           { id: 5, title: 'Social Learner', description: 'Participate in a multiplayer scenario', earned: false, points: 200 },
           { id: 6, title: 'Jack of All Trades', description: 'Complete scenarios in 5 different practice areas', earned: false, points: 400 }
         ];
@@ -183,20 +201,25 @@ const PerformanceDashboard: React.FC = () => {
           recentActivityArray.push({ id: 1, title: 'Completed Assessment', description: 'Legal Competency Assessment', time: 'Just now', type: 'completed', points: 200 });
         }
         
-        if (completedStages.includes('court-hearing')) {
-          recentActivityArray.push({ id: 2, title: 'Completed Scenario', description: 'Court Hearing Simulation', time: assessmentScore ? '1 day ago' : 'Just now', type: 'completed', points: 150 });
+        // Add completed scenarios to recent activity
+        if (totalScenariosCompleted >= 5) {
+          recentActivityArray.push({ id: 2, title: 'Completed Scenario', description: 'Fifth Scenario', time: assessmentScore ? '1 day ago' : 'Just now', type: 'completed', points: 150 });
         }
         
-        if (completedStages.includes('bail-draft')) {
-          recentActivityArray.push({ id: 3, title: 'Completed Scenario', description: 'Bail Application Draft', time: completedStages.includes('court-hearing') ? '2 days ago' : '1 day ago', type: 'completed', points: 120 });
+        if (totalScenariosCompleted >= 4) {
+          recentActivityArray.push({ id: 3, title: 'Completed Scenario', description: 'Fourth Scenario', time: totalScenariosCompleted >= 5 ? '2 days ago' : '1 day ago', type: 'completed', points: 120 });
         }
         
-        if (completedStages.includes('digital-evidence')) {
-          recentActivityArray.push({ id: 4, title: 'Completed Scenario', description: 'Digital Evidence Review', time: completedStages.includes('bail-draft') ? '3 days ago' : '2 days ago', type: 'completed', points: 100 });
+        if (totalScenariosCompleted >= 3) {
+          recentActivityArray.push({ id: 4, title: 'Completed Scenario', description: 'Third Scenario', time: totalScenariosCompleted >= 4 ? '3 days ago' : '2 days ago', type: 'completed', points: 100 });
         }
         
-        if (completedStages.includes('client-interview')) {
-          recentActivityArray.push({ id: 5, title: 'Completed Scenario', description: 'Client Interview', time: completedStages.includes('digital-evidence') ? '4 days ago' : '3 days ago', type: 'completed', points: 80 });
+        if (totalScenariosCompleted >= 2) {
+          recentActivityArray.push({ id: 5, title: 'Completed Scenario', description: 'Second Scenario', time: totalScenariosCompleted >= 3 ? '4 days ago' : '3 days ago', type: 'completed', points: 80 });
+        }
+        
+        if (totalScenariosCompleted >= 1) {
+          recentActivityArray.push({ id: 6, title: 'Completed Scenario', description: 'First Scenario', time: totalScenariosCompleted >= 2 ? '5 days ago' : '4 days ago', type: 'completed', points: 60 });
         }
         
         // Add achievements to recent activity
@@ -205,7 +228,7 @@ const PerformanceDashboard: React.FC = () => {
           const lastAchievement = achievementsArray.find(a => a.earned);
           if (lastAchievement) {
             recentActivityArray.unshift({ 
-              id: 6, 
+              id: 7, 
               title: 'New Achievement', 
               description: lastAchievement.title, 
               time: 'Just now', 
@@ -218,7 +241,7 @@ const PerformanceDashboard: React.FC = () => {
         // Ensure we have at least some recent activity
         if (recentActivityArray.length === 0) {
           recentActivityArray.push({ 
-            id: 7, 
+            id: 8, 
             title: 'Welcome!', 
             description: 'Start your first legal scenario', 
             time: 'Just now', 
@@ -237,8 +260,8 @@ const PerformanceDashboard: React.FC = () => {
         setAchievements(achievementsArray);
         setRecentActivity(recentActivityArray);
         setOverallScore(calculatedOverallScore);
-        setScenariosCompleted(scenariosCompletedCount);
-        setBonusPoints(earnedAchievementsCount * 100 + scenariosCompletedCount * 50);
+        setScenariosCompleted(totalScenariosCompleted);
+        setBonusPoints(earnedAchievementsCount * 100 + totalScenariosCompleted * 50);
         setEarnedAchievements(earnedAchievementsCount);
         
         setLoading(false);
