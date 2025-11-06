@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case Analysis & Reasoning - Dharmasikhara Assessment</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #c0392b;
+            --gray-color: #95a5a6;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f7fa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--dark-color));
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .assessment-info {
+            display: flex;
+            justify-content: space-between;
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .timer, .progress {
+            font-weight: bold;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background-color: #eee;
+            border-radius: 5px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary-color), var(--accent-color));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .content-area {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--secondary-color);
+        }
+        
+        .question-container {
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+        
+        .question-text {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        
+        .options-container {
+            margin-top: 15px;
+        }
+        
+        .multi-select .option.selected {
+            background-color: #d4edda;
+            color: #155724;
+            border-color: #28a745;
+        }
+        
+        .option {
+            display: block;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .option:hover {
+            background-color: #e3f2fd;
+            border-color: var(--secondary-color);
+        }
+        
+        .option.selected {
+            background-color: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+        
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-prev {
+            background-color: var(--gray-color);
+            color: white;
+        }
+        
+        .btn-next {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .clue-btn {
+            background-color: var(--warning-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+        
+        .clue-btn:hover {
+            opacity: 0.9;
+        }
+        
+        .clue-warning {
+            display: none;
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 10px;
+            color: #856404;
+        }
+        
+        .clue-content {
+            display: none;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 10px;
+            color: #155724;
+        }
+        
+        .incorrect-answer {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: var(--gray-color);
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .assessment-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Dharmasikhara Legal Competency Assessment</h1>
+            <div class="subtitle">Section B: Case Analysis & Reasoning</div>
+        </header>
+        
+        <div class="assessment-info">
+            <div class="timer">
+                Time Remaining: <span id="time-display">15:00</span>
+            </div>
+            <div class="progress">
+                Progress: <span id="progress-text">0/6</span>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-area">
+            <h2 class="section-title">Case Analysis & Reasoning (30% of total assessment)</h2>
+            
+            <div class="question-container">
+                <div class="question-text">
+                    Q1. [Multi-Select] Review this excerpt from your witness interview with the security guard: "I saw someone matching the accused's height leaving the office around 7 PM. The lights were dim, and I was about 30 feet away. I'm 70% sure it was him." Which THREE factors undermine the reliability of this identification?
+                </div>
+                <div class="options-container multi-select">
+                    <div class="option" data-question="q1" data-value="0">
+                        A) Distance from the subject
+                    </div>
+                    <div class="option" data-question="q1" data-value="1">
+                        B) Poor lighting conditions
+                    </div>
+                    <div class="option" data-question="q1" data-value="2">
+                        C) Witness's expressed uncertainty (70% confidence)
+                    </div>
+                    <div class="option" data-question="q1" data-value="3">
+                        D) The witness was off-duty at the time
+                    </div>
+                    <div class="option" data-question="q1" data-value="4">
+                        E) Time of day (evening)
+                    </div>
+                    <div class="option" data-question="q1" data-value="5">
+                        F) Witness has a financial interest in the case
+                    </div>
+                </div>
+                <button class="clue-btn" data-question="q1">Show Clue</button>
+                <div class="clue-warning" id="clue-warning-q1">
+                    <strong>Warning:</strong> Using this clue will result in receiving only half marks for this question.
+                    <button class="btn" onclick="showClue('q1')">Continue</button>
+                    <button class="btn btn-prev" onclick="hideClueWarning('q1')">Cancel</button>
+                </div>
+                <div class="clue-content" id="clue-content-q1">
+                    <strong>Clue:</strong> Consider factors that affect the witness's ability to accurately identify the person.
+                </div>
+            </div>
+            
+            <div class="question-container">
+                <div class="question-text">
+                    Q2. [Multi-Select] The prosecution claims the accused had "motive and opportunity." You discovered that: The laptop was a personal device, not company property; The accused had recently received a performance bonus; Access logs show 3 other employees entered the room that evening. Which of the following are valid counter-arguments?
+                </div>
+                <div class="options-container multi-select">
+                    <div class="option" data-question="q2" data-value="0">
+                        A) Lack of motive (had financial resources)
+                    </div>
+                    <div class="option" data-question="q2" data-value="1">
+                        B) Challenge to "opportunity" with alternative suspects
+                    </div>
+                    <div class="option" data-question="q2" data-value="2">
+                        C) Ownership/theft classification questions
+                    </div>
+                    <div class="option" data-question="q2" data-value="3">
+                        D) Character evidence of other employees
+                    </div>
+                    <div class="option" data-question="q2" data-value="4">
+                        E) Accused's good work performance
+                    </div>
+                    <div class="option" data-question="q2" data-value="5">
+                        F) Company's inadequate security measures
+                    </div>
+                </div>
+                <button class="clue-btn" data-question="q2">Show Clue</button>
+                <div class="clue-warning" id="clue-warning-q2">
+                    <strong>Warning:</strong> Using this clue will result in receiving only half marks for this question.
+                    <button class="btn" onclick="showClue('q2')">Continue</button>
+                    <button class="btn btn-prev" onclick="hideClueWarning('q2')">Cancel</button>
+                </div>
+                <div class="clue-content" id="clue-content-q2">
+                    <strong>Clue:</strong> Think about what undermines the prosecution's claims of motive and opportunity.
+                </div>
+            </div>
+            
+            <div class="question-container">
+                <div class="question-text">
+                    Q3. [Multi-Select] During investigation, which of the following evidence collection methods would strengthen your client's defense?
+                </div>
+                <div class="options-container multi-select">
+                    <div class="option" data-question="q3" data-value="0">
+                        A) Obtaining access logs from the building management
+                    </div>
+                    <div class="option" data-question="q3" data-value="1">
+                        B) Interviewing other employees who had access
+                    </div>
+                    <div class="option" data-question="q3" data-value="2">
+                        C) Challenging the CCTV timestamp authenticity
+                    </div>
+                    <div class="option" data-question="q3" data-value="3">
+                        D) Requesting financial records of the complainant
+                    </div>
+                    <div class="option" data-question="q3" data-value="4">
+                        E) Examining the laptop for personal data
+                    </div>
+                    <div class="option" data-question="q3" data-value="5">
+                        F) Checking the accused's phone location data
+                    </div>
+                </div>
+                <button class="clue-btn" data-question="q3">Show Clue</button>
+                <div class="clue-warning" id="clue-warning-q3">
+                    <strong>Warning:</strong> Using this clue will result in receiving only half marks for this question.
+                    <button class="btn" onclick="showClue('q3')">Continue</button>
+                    <button class="btn btn-prev" onclick="hideClueWarning('q3')">Cancel</button>
+                </div>
+                <div class="clue-content" id="clue-content-q3">
+                    <strong>Clue:</strong> Consider what evidence would support alternative theories or challenge prosecution evidence.
+                </div>
+            </div>
+            
+            <div class="question-container">
+                <div class="question-text">
+                    Q4. [Multi-Select] Which of the following are legally relevant considerations when challenging the prosecution's evidence?
+                </div>
+                <div class="options-container multi-select">
+                    <div class="option" data-question="q4" data-value="0">
+                        A) Chain of custody of the CCTV footage
+                    </div>
+                    <div class="option" data-question="q4" data-value="1">
+                        B) Technical specifications of the security cameras
+                    </div>
+                    <div class="option" data-question="q4" data-value="2">
+                        C) Personal relationships between witnesses
+                    </div>
+                    <div class="option" data-question="q4" data-value="3">
+                        D) Time-stamping accuracy of digital evidence
+                    </div>
+                    <div class="option" data-question="q4" data-value="4">
+                        E) Maintenance records of surveillance equipment
+                    </div>
+                    <div class="option" data-question="q4" data-value="5">
+                        F) Political affiliations of the complainant
+                    </div>
+                </div>
+                <button class="clue-btn" data-question="q4">Show Clue</button>
+                <div class="clue-warning" id="clue-warning-q4">
+                    <strong>Warning:</strong> Using this clue will result in receiving only half marks for this question.
+                    <button class="btn" onclick="showClue('q4')">Continue</button>
+                    <button class="btn btn-prev" onclick="hideClueWarning('q4')">Cancel</button>
+                </div>
+                <div class="clue-content" id="clue-content-q4">
+                    <strong>Clue:</strong> Think about what factors affect the admissibility and reliability of evidence.
+                </div>
+            </div>
+            
+            <div class="question-container">
+                <div class="question-text">
+                    Q5. [Multi-Select] Which factors would support an argument that the accused is not a flight risk?
+                </div>
+                <div class="options-container multi-select">
+                    <div class="option" data-question="q5" data-value="0">
+                        A) Employment history of 5 years with the company
+                    </div>
+                    <div class="option" data-question="q5" data-value="1">
+                        B) Family dependents residing with the accused
+                    </div>
+                    <div class="option" data-question="q5" data-value="2">
+                        C) Surrender of passport to authorities
+                    </div>
+                    <div class="option" data-question="q5" data-value="3">
+                        D) Financial assets in the country
+                    </div>
+                    <div class="option" data-question="q5" data-value="4">
+                        E) Community ties and social connections
+                    </div>
+                    <div class="option" data-question="q5" data-value="5">
+                        F) Previous travel history outside the country
+                    </div>
+                </div>
+                <button class="clue-btn" data-question="q5">Show Clue</button>
+                <div class="clue-warning" id="clue-warning-q5">
+                    <strong>Warning:</strong> Using this clue will result in receiving only half marks for this question.
+                    <button class="btn" onclick="showClue('q5')">Continue</button>
+                    <button class="btn btn-prev" onclick="hideClueWarning('q5')">Cancel</button>
+                </div>
+                <div class="clue-content" id="clue-content-q5">
+                    <strong>Clue:</strong> Consider what ties the accused to the community and country.
+                </div>
+            </div>
+            
+            <div class="question-container">
+                <div class="question-text">
+                    Q6. [Case-Based Reasoning] The prosecution claims the accused had "motive and opportunity." You discovered that: The laptop was a personal device, not company property; The accused had recently received a performance bonus; Access logs show 3 other employees entered the room that evening. Construct the strongest counter-argument. What is your PRIMARY line of defense?
+                </div>
+                <div class="options-container">
+                    <div class="option" data-question="q6" data-value="0">
+                        Identifies lack of motive (had financial resources)
+                    </div>
+                    <div class="option" data-question="q6" data-value="1">
+                        Challenges "opportunity" with alternative suspects
+                    </div>
+                    <div class="option" data-question="q6" data-value="2">
+                        Questions ownership/theft classification
+                    </div>
+                    <div class="option" data-question="q6" data-value="3">
+                        Structures argument logically with evidence references
+                    </div>
+                </div>
+                <button class="clue-btn" data-question="q6">Show Clue</button>
+                <div class="clue-warning" id="clue-warning-q6">
+                    <strong>Warning:</strong> Using this clue will result in receiving only half marks for this question.
+                    <button class="btn" onclick="showClue('q6')">Continue</button>
+                    <button class="btn btn-prev" onclick="hideClueWarning('q6')">Cancel</button>
+                </div>
+                <div class="clue-content" id="clue-content-q6">
+                    <strong>Clue:</strong> Think about which approach most effectively undermines the prosecution's case.
+                </div>
+            </div>
+            
+            <div class="btn-container">
+                <button class="btn btn-prev" id="prev-section">Previous Section</button>
+                <button class="btn btn-next" id="next-section" disabled>Next Section</button>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Dharmasikhara Legal Competency Assessment System</p>
+            <p>Contact: kkavyaammulu@gmail.com | +91 7019357082</p>
+        </footer>
+    </div>
+
+    <script>
+        // Initialize section state
+        const sectionState = {
+            totalQuestions: 6,
+            answeredQuestions: 0,
+            responses: {},
+            cluesUsed: {},
+            timeRemaining: 30 * 60 // 30 minutes in seconds for Case Analysis section
+        };
+
+        // DOM elements
+        const timeDisplay = document.getElementById('time-display');
+        const progressText = document.getElementById('progress-text');
+        const progressFill = document.getElementById('progress-fill');
+        const prevSectionBtn = document.getElementById('prev-section');
+        const nextSectionBtn = document.getElementById('next-section');
+        const optionElements = document.querySelectorAll('.option');
+        const clueButtons = document.querySelectorAll('.clue-btn');
+
+        // Initialize the section
+        function initSection() {
+            // Set up option selection
+            optionElements.forEach(option => {
+                option.addEventListener('click', handleOptionSelect);
+            });
+
+            // Set up clue buttons
+            clueButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const questionId = this.dataset.question;
+                    showClueWarning(questionId);
+                });
+            });
+
+            // Set up navigation buttons
+            prevSectionBtn.addEventListener('click', goToPreviousSection);
+            nextSectionBtn.addEventListener('click', goToNextSection);
+
+            // Start timer
+            startTimer();
+            
+            // Load previous responses if any
+            const savedResponses = localStorage.getItem('case_analysis_responses');
+            if (savedResponses) {
+                sectionState.responses = JSON.parse(savedResponses);
+                // Restore UI selections
+                Object.keys(sectionState.responses).forEach(questionId => {
+                    if (Array.isArray(sectionState.responses[questionId])) {
+                        // Multi-select question
+                        sectionState.responses[questionId].forEach(value => {
+                            const option = document.querySelector(`[data-question="${questionId}"][data-value="${value}"]`);
+                            if (option) {
+                                option.classList.add('selected');
+                            }
+                        });
+                    } else {
+                        // Single-select question
+                        const value = sectionState.responses[questionId];
+                        const option = document.querySelector(`[data-question="${questionId}"][data-value="${value}"]`);
+                        if (option) {
+                            option.classList.add('selected');
+                        }
+                    }
+                });
+                updateProgress();
+            }
+            
+            // Load previous responses from legal knowledge section
+            const legalKnowledgeResponses = localStorage.getItem('legal_knowledge_responses');
+            if (legalKnowledgeResponses) {
+                // We don't need to do anything with these here, but we know they exist
+            }
+            
+            // Load clues used if any
+            const savedClues = localStorage.getItem('case_analysis_clues');
+            if (savedClues) {
+                sectionState.cluesUsed = JSON.parse(savedClues);
+                // Show clues that were previously used
+                Object.keys(sectionState.cluesUsed).forEach(questionId => {
+                    if (sectionState.cluesUsed[questionId]) {
+                        document.getElementById(`clue-content-${questionId}`).style.display = 'block';
+                        // Hide the clue button
+                        const clueBtn = document.querySelector(`.clue-btn[data-question="${questionId}"]`);
+                        if (clueBtn) clueBtn.style.display = 'none';
+                    }
+                });
+            }
+        }
+
+        // Handle option selection
+        function handleOptionSelect(event) {
+            const option = event.target;
+            const questionId = option.dataset.question;
+            
+            // For multi-select questions, allow multiple selections
+            if (questionId.startsWith('q') && parseInt(questionId.substring(1)) <= 5) {
+                option.classList.toggle('selected');
+                
+                // Initialize array if not exists
+                if (!sectionState.responses[questionId]) {
+                    sectionState.responses[questionId] = [];
+                }
+                
+                const value = parseInt(option.dataset.value);
+                const index = sectionState.responses[questionId].indexOf(value);
+                
+                if (index === -1) {
+                    sectionState.responses[questionId].push(value);
+                } else {
+                    sectionState.responses[questionId].splice(index, 1);
+                }
+            } else {
+                // For single-select questions, deselect others in the same question
+                const siblings = document.querySelectorAll(`[data-question="${questionId}"]`);
+                siblings.forEach(sib => sib.classList.remove('selected'));
+                
+                option.classList.add('selected');
+                sectionState.responses[questionId] = parseInt(option.dataset.value);
+            }
+            
+            updateProgress();
+        }
+
+        // Show clue warning
+        function showClueWarning(questionId) {
+            document.getElementById(`clue-warning-${questionId}`).style.display = 'block';
+        }
+
+        // Hide clue warning
+        function hideClueWarning(questionId) {
+            document.getElementById(`clue-warning-${questionId}`).style.display = 'none';
+        }
+
+        // Show clue content
+        function showClue(questionId) {
+            document.getElementById(`clue-warning-${questionId}`).style.display = 'none';
+            document.getElementById(`clue-content-${questionId}`).style.display = 'block';
+            
+            // Mark that clue was used for this question
+            sectionState.cluesUsed[questionId] = true;
+            
+            // Hide the clue button
+            const clueBtn = document.querySelector(`.clue-btn[data-question="${questionId}"]`);
+            if (clueBtn) clueBtn.style.display = 'none';
+        }
+
+        // Update progress tracking
+        function updateProgress() {
+            sectionState.answeredQuestions = Object.keys(sectionState.responses).length;
+            progressText.textContent = `${sectionState.answeredQuestions}/${sectionState.totalQuestions}`;
+            const progressPercent = (sectionState.answeredQuestions / sectionState.totalQuestions) * 100;
+            progressFill.style.width = `${progressPercent}%`;
+            
+            // Enable next button when all questions are answered
+            if (sectionState.answeredQuestions === sectionState.totalQuestions) {
+                nextSectionBtn.disabled = false;
+            }
+        }
+
+        // Timer functionality
+        function startTimer() {
+            const timer = setInterval(() => {
+                sectionState.timeRemaining--;
+                
+                // Update display
+                const minutes = Math.floor(sectionState.timeRemaining / 60);
+                const seconds = sectionState.timeRemaining % 60;
+                timeDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                
+                // Change color when time is running low (less than 2 minutes)
+                if (sectionState.timeRemaining < 2 * 60) {
+                    timeDisplay.style.color = '#e74c3c'; // Red color for urgency
+                    timeDisplay.style.fontWeight = 'bold';
+                }
+                
+                // Auto-submit when time runs out
+                if (sectionState.timeRemaining <= 0) {
+                    clearInterval(timer);
+                    alert('Time is up! Your answers have been automatically saved. Moving to the next section.');
+                    goToNextSection(true); // true indicates time expired
+                }
+            }, 1000);
+        }
+
+        // Go to previous section
+        function goToPreviousSection() {
+            // Check if the previous section is accessible
+            const legalKnowledgeCompleted = localStorage.getItem('legal_knowledge_completed');
+            if (legalKnowledgeCompleted === 'true') {
+                alert("You have already completed the Legal Knowledge section and cannot return to it.");
+                return;
+            }
+            
+            // Save responses and clues used to localStorage
+            localStorage.setItem('case_analysis_responses', JSON.stringify(sectionState.responses));
+            localStorage.setItem('case_analysis_clues', JSON.stringify(sectionState.cluesUsed));
+            
+            // Redirect to previous section
+            window.location.href = 'section_legal_knowledge.html';
+        }
+
+        // Go to next section with confirmation
+        function goToNextSection(timeExpired = false) {
+            // If time has expired, proceed automatically without confirmation
+            if (timeExpired) {
+                // Save responses and clues used to localStorage
+                localStorage.setItem('case_analysis_responses', JSON.stringify(sectionState.responses));
+                localStorage.setItem('case_analysis_clues', JSON.stringify(sectionState.cluesUsed));
+                // Mark this section as completed
+                localStorage.setItem('case_analysis_completed', 'true');
+                // Redirect to next section
+                window.location.href = 'section_ethical_judgment.html';
+                return;
+            }
+            
+            // Show confirmation dialog
+            if (confirm("Are you sure you want to proceed to the next section? You will not be able to return to this section once you leave.")) {
+                // Save responses and clues used to localStorage
+                localStorage.setItem('case_analysis_responses', JSON.stringify(sectionState.responses));
+                localStorage.setItem('case_analysis_clues', JSON.stringify(sectionState.cluesUsed));
+                // Mark this section as completed
+                localStorage.setItem('case_analysis_completed', 'true');
+                // Redirect to next section
+                window.location.href = 'section_ethical_judgment.html';
+            }
+        }
+        
+        // Check if user is trying to access a completed section
+        function checkSectionAccess() {
+            // If coming from Legal Knowledge, check if it's completed
+            const legalKnowledgeCompleted = localStorage.getItem('legal_knowledge_completed');
+            if (legalKnowledgeCompleted === 'true') {
+                // User has completed Legal Knowledge, they can access this section
+                return true;
+            }
+            // User hasn't completed the previous section
+            return false;
+        }
+
+        // Initialize the section when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user can access this section
+            if (!checkSectionAccess()) {
+                // Redirect to the previous section
+                window.location.href = 'section_legal_knowledge.html';
+                return;
+            }
+            
+            initSection();
+        });
+    </script>
+</body>
+</html>

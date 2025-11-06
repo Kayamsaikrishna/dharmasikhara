@@ -28,7 +28,40 @@ class LegalAIController {
             'Cyber Law'
         ];
     }
-
+    
+    /**
+     * Enhance document analysis result with legal context
+     * @param {Object} result - The original analysis result
+     * @param {string} documentText - The original document text
+     * @returns {Object} - The enhanced analysis result
+     */
+    enhanceAnalysisResult(result, documentText) {
+        // For now, return the result as-is since we don't have the missing methods
+        // TODO: Implement classifyLegalCategory and extractRelatedConcepts methods
+        return {
+            ...result,
+            legalCategory: result.document_type || 'general',
+            relatedConcepts: result.key_terms || [],
+            confidence: result.confidence || 0.95,
+            sources: [
+                'DharmaSikhara AI Legal Assistant',
+                'Indian Penal Code (IPC)',
+                'Code of Criminal Procedure (CrPC)',
+                'Code of Civil Procedure (CPC)',
+                'Indian Evidence Act'
+            ],
+            // Add more detailed information about what was analyzed
+            analysisDetails: {
+                documentType: result.document_type || 'Unknown',
+                keyTermsCount: (result.key_terms || []).length,
+                partiesCount: (result.parties_involved || []).length,
+                datesCount: (result.key_dates || []).length,
+                monetaryValuesCount: (result.monetary_values || []).length,
+                legalProvisionsCount: (result.legal_provisions || []).length
+            }
+        };
+    }
+    
     /**
      * Check if the AI model is available
      * @returns {Promise<boolean>} - True if the model is available, false otherwise
@@ -52,6 +85,12 @@ class LegalAIController {
      */
     async analyzeDocumentMethod(documentText) {
         return new Promise((resolve, reject) => {
+            // Check document size and handle large documents
+            if (documentText && documentText.length > 1000000) { // 1MB limit
+                console.log('Document too large, truncating:', documentText.length);
+                documentText = documentText.substring(0, 1000000); // Truncate to 1MB
+            }
+            
             // Prepare the input data
             const inputData = {
                 document_text: documentText,
@@ -68,7 +107,7 @@ class LegalAIController {
             // Configure PythonShell options
             const options = {
                 mode: 'text',
-                pythonPath: process.env.PYTHON_PATH || 'C:\\ProgramData\\anaconda3\\python.exe',
+                pythonPath: process.env.PYTHON_PATH || 'python', // Use system python
                 pythonOptions: ['-u'],
                 scriptPath: path.dirname(this.pythonScriptPath),
                 args: []
@@ -119,7 +158,12 @@ class LegalAIController {
                     } catch (parseError) {
                         console.error('Failed to parse Python output:', parseError);
                         console.error('Output was:', output);
-                        reject(new Error(`Failed to parse Python output: ${parseError.message}`));
+                        // Check if the output is HTML (indicating an error page)
+                        if (output.startsWith('<!DOCTYPE') || output.startsWith('<html')) {
+                            reject(new Error('Server returned an HTML error page instead of JSON. The document may be too large or there may be a server configuration issue.'));
+                        } else {
+                            reject(new Error(`Failed to parse Python output: ${parseError.message}`));
+                        }
                     }
                 }
             });
@@ -200,7 +244,7 @@ class LegalAIController {
             // Configure PythonShell options
             const options = {
                 mode: 'text',
-                pythonPath: process.env.PYTHON_PATH || 'C:\\ProgramData\\anaconda3\\python.exe',
+                pythonPath: process.env.PYTHON_PATH || 'python', // Use system python
                 pythonOptions: ['-u'],
                 scriptPath: path.dirname(this.pythonScriptPath),
                 args: []
@@ -255,7 +299,7 @@ class LegalAIController {
             legalDatabases: Object.keys(this.legalDatabases),
             confidence: result.confidence || 0.8,
             sources: [
-                'InCaseLawBERT Model',
+                'DharmaSikhara AI Legal Assistant',
                 'Indian Penal Code (IPC)',
                 'Code of Criminal Procedure (CrPC)',
                 'Code of Civil Procedure (CPC)',
@@ -612,7 +656,7 @@ _________________________
             }
             
             // Use the actual InCaseLawBERT model for legal assistance
-            const result = await this.getLegalAssistantResponse(modifiedQuery);
+            const result = await this.getLegalAssistantResponseMethod(modifiedQuery);
             
             if (result.error) {
                 return res.status(500).json({

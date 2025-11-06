@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal Knowledge - Dharmasikhara Assessment</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #c0392b;
+            --gray-color: #95a5a6;
+            --section-a-color: #3498db;
+            --section-b-color: #9b59b6;
+            --section-c-color: #e67e22;
+            --section-d-color: #2ecc71;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf9 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--dark-color));
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+        }
+        
+        h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.3rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+            position: relative;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-weight: 300;
+            position: relative;
+        }
+        
+        .assessment-info {
+            display: flex;
+            justify-content: space-between;
+            background: linear-gradient(135deg, white 0%, #f8f9fa 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border-left: 5px solid var(--section-a-color);
+        }
+        
+        .timer-container, .progress-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .timer-label, .progress-label {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .timer-display {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--section-a-color);
+            font-family: 'Poppins', sans-serif;
+            background: rgba(52, 152, 219, 0.1);
+            padding: 10px 20px;
+            border-radius: 10px;
+        }
+        
+        .progress-text {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 10px;
+        }
+        
+        .progress-bar {
+            height: 12px;
+            background-color: #eee;
+            border-radius: 10px;
+            margin-top: 5px;
+            overflow: hidden;
+            width: 200px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--section-a-color), #1abc9c);
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+        
+        .content-area {
+            background-color: white;
+            border-radius: 15px;
+            padding: 35px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+            position: relative;
+        }
+        
+        .content-area::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--section-a-color), #1abc9c);
+            border-radius: 15px 15px 0 0;
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(52, 152, 219, 0.2);
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1.5rem;
+        }
+        
+        .question-container {
+            margin-bottom: 35px;
+            padding: 25px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .question-container:hover {
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            transform: translateY(-3px);
+        }
+        
+        .question-number {
+            display: inline-block;
+            background: var(--section-a-color);
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 35px;
+            font-weight: 700;
+            margin-right: 15px;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .question-text {
+            font-size: 1.15rem;
+            margin-bottom: 20px;
+            font-weight: 500;
+            display: inline;
+            color: var(--dark-color);
+        }
+        
+        .options-container {
+            margin-top: 20px;
+        }
+        
+        .option {
+            display: block;
+            padding: 15px 20px;
+            margin-bottom: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: white;
+            position: relative;
+            padding-left: 60px;
+        }
+        
+        .option::before {
+            content: "";
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 22px;
+            height: 22px;
+            border: 2px solid #ddd;
+            border-radius: 50%;
+        }
+        
+        .option:hover {
+            background-color: rgba(52, 152, 219, 0.05);
+            border-color: var(--section-a-color);
+        }
+        
+        .option.selected {
+            background-color: rgba(52, 152, 219, 0.15);
+            border-color: var(--section-a-color);
+        }
+        
+        .option.selected::before {
+            background-color: var(--section-a-color);
+            border-color: var(--section-a-color);
+        }
+        
+        .option.selected::after {
+            content: "✓";
+            position: absolute;
+            left: 24px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 35px;
+            gap: 20px;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .btn-prev {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+            color: white;
+        }
+        
+        .btn-next {
+            background: linear-gradient(135deg, var(--section-a-color), #2980b9);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .clue-container {
+            margin-top: 20px;
+        }
+        
+        .clue-btn {
+            background: linear-gradient(135deg, var(--warning-color), #e67e22);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(243, 156, 18, 0.3);
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .clue-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(243, 156, 18, 0.4);
+        }
+        
+        .clue-warning, .clue-content {
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .clue-warning {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+        
+        .clue-content {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .warning-title, .clue-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .warning-icon, .clue-icon {
+            font-size: 1.2rem;
+        }
+        
+        .clue-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 35px;
+            padding: 25px;
+            color: var(--gray-color);
+            font-size: 0.95rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .contact-info {
+            margin-top: 10px;
+            font-size: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .assessment-info {
+                flex-direction: column;
+                gap: 20px;
+                align-items: center;
+            }
+            
+            .btn-container {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .content-area {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Dharmasikhara Legal Competency Assessment</h1>
+            <div class="subtitle">Section A: Legal Knowledge & Procedure</div>
+        </header>
+        
+        <div class="assessment-info">
+            <div class="timer-container">
+                <div class="timer-label">TIME REMAINING</div>
+                <div class="timer-display" id="time-display">10:00</div>
+            </div>
+            <div class="progress-container">
+                <div class="progress-label">PROGRESS</div>
+                <div class="progress-text" id="progress-text">0/10</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-area">
+            <h2 class="section-title">Legal Knowledge & Procedure (20% of total assessment)</h2>
+            
+            <div class="question-container">
+                <div class="question-header">
+                    <span class="question-number">1</span>
+                    <span class="question-text">
+                        According to Section 437 of CrPC, which of the following is NOT a valid ground for granting bail in a theft case?
+                    </span>
+                </div>
+                <div class="options-container">
+                    <div class="option" data-question="q1" data-value="0">
+                        A) The accused is unlikely to commit another offense while on bail
+                    </div>
+                    <div class="option" data-question="q1" data-value="1">
+                        B) The accused has a permanent residence and strong community ties
+                    </div>
+                    <div class="option" data-question="q1" data-value="2">
+                        C) The accused has no prior criminal record
+                    </div>
+                    <div class="option" data-question="q1" data-value="3">
+                        D) The complainant has agreed to withdraw the case
+                    </div>
+                </div>
+                <div class="clue-container">
+                    <button class="clue-btn" data-question="q1">💡 Show Clue</button>
+                    <div class="clue-warning" id="clue-warning-q1">
+                        <div class="warning-title">
+                            <span class="warning-icon">⚠️</span>
+                            <span>Warning: Using this clue will result in receiving only half marks for this question.</span>
+                        </div>
+                        <div class="clue-buttons">
+                            <button class="btn btn-prev" onclick="showClue('q1')">Continue</button>
+                            <button class="btn" onclick="hideClueWarning('q1')">Cancel</button>
+                        </div>
+                    </div>
+                    <div class="clue-content" id="clue-content-q1">
+                        <div class="clue-title">
+                            <span class="clue-icon">🔍</span>
+                            <span>Clue</span>
+                        </div>
+                        <p>Consider which of these is not a factor the court evaluates when determining bail eligibility. The complainant's willingness to withdraw the case is not a legal ground for bail.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="question-container">
+                <div class="question-header">
+                    <span class="question-number">2</span>
+                    <span class="question-text">
+                        In the scenario, the prosecution relied heavily on CCTV footage. Which evidentiary principle should you invoke to challenge video evidence?
+                    </span>
+                </div>
+                <div class="options-container">
+                    <div class="option" data-question="q2" data-value="0">
+                        A) Best Evidence Rule
+                    </div>
+                    <div class="option" data-question="q2" data-value="1">
+                        B) Chain of Custody Requirements
+                    </div>
+                    <div class="option" data-question="q2" data-value="2">
+                        C) Hearsay Exclusion
+                    </div>
+                    <div class="option" data-question="q2" data-value="3">
+                        D) Both A and B
+                    </div>
+                </div>
+                <div class="clue-container">
+                    <button class="clue-btn" data-question="q2">💡 Show Clue</button>
+                    <div class="clue-warning" id="clue-warning-q2">
+                        <div class="warning-title">
+                            <span class="warning-icon">⚠️</span>
+                            <span>Warning: Using this clue will result in receiving only half marks for this question.</span>
+                        </div>
+                        <div class="clue-buttons">
+                            <button class="btn btn-prev" onclick="showClue('q2')">Continue</button>
+                            <button class="btn" onclick="hideClueWarning('q2')">Cancel</button>
+                        </div>
+                    </div>
+                    <div class="clue-content" id="clue-content-q2">
+                        <div class="clue-title">
+                            <span class="clue-icon">🔍</span>
+                            <span>Clue</span>
+                        </div>
+                        <p>Video evidence can be challenged on multiple grounds. The Best Evidence Rule requires the original recording, and Chain of Custody ensures the evidence hasn't been tampered with.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="question-container">
+                <div class="question-header">
+                    <span class="question-number">3</span>
+                    <span class="question-text">
+                        What is the maximum period for which a Magistrate can grant interim bail under Section 437 CrPC?
+                    </span>
+                </div>
+                <div class="options-container">
+                    <div class="option" data-question="q3" data-value="0">
+                        A) 7 days
+                    </div>
+                    <div class="option" data-question="q3" data-value="1">
+                        B) 15 days
+                    </div>
+                    <div class="option" data-question="q3" data-value="2">
+                        C) 30 days
+                    </div>
+                    <div class="option" data-question="q3" data-value="3">
+                        D) No specific limit
+                    </div>
+                </div>
+                <div class="clue-container">
+                    <button class="clue-btn" data-question="q3">💡 Show Clue</button>
+                    <div class="clue-warning" id="clue-warning-q3">
+                        <div class="warning-title">
+                            <span class="warning-icon">⚠️</span>
+                            <span>Warning: Using this clue will result in receiving only half marks for this question.</span>
+                        </div>
+                        <div class="clue-buttons">
+                            <button class="btn btn-prev" onclick="showClue('q3')">Continue</button>
+                            <button class="btn" onclick="hideClueWarning('q3')">Cancel</button>
+                        </div>
+                    </div>
+                    <div class="clue-content" id="clue-content-q3">
+                        <div class="clue-title">
+                            <span class="clue-icon">🔍</span>
+                            <span>Clue</span>
+                        </div>
+                        <p>Section 437(2) CrPC specifies the maximum period for interim bail. Consider the balance between ensuring accused's presence and preventing prolonged detention without trial.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="question-container">
+                <div class="question-header">
+                    <span class="question-number">4</span>
+                    <span class="question-text">
+                        Which of the following is a mandatory consideration for granting bail under Section 437 CrPC?
+                    </span>
+                </div>
+                <div class="options-container">
+                    <div class="option" data-question="q4" data-value="0">
+                        A) Possibility of accused influencing witnesses
+                    </div>
+                    <div class="option" data-question="q4" data-value="1">
+                        B) Nature and gravity of the accusation
+                    </div>
+                    <div class="option" data-question="q4" data-value="2">
+                        C) Previous criminal record of the accused
+                    </div>
+                    <div class="option" data-question="q4" data-value="3">
+                        D) All of the above
+                    </div>
+                </div>
+                <div class="clue-container">
+                    <button class="clue-btn" data-question="q4">💡 Show Clue</button>
+                    <div class="clue-warning" id="clue-warning-q4">
+                        <div class="warning-title">
+                            <span class="warning-icon">⚠️</span>
+                            <span>Warning: Using this clue will result in receiving only half marks for this question.</span>
+                        </div>
+                        <div class="clue-buttons">
+                            <button class="btn btn-prev" onclick="showClue('q4')">Continue</button>
+                            <button class="btn" onclick="hideClueWarning('q4')">Cancel</button>
+                        </div>
+                    </div>
+                    <div class="clue-content" id="clue-content-q4">
+                        <div class="clue-title">
+                            <span class="clue-icon">🔍</span>
+                            <span>Clue</span>
+                        </div>
+                        <p>Section 437(1) enumerates specific factors the court must consider. Review the statutory language to identify which considerations are mandatory versus discretionary.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="question-container">
+                <div class="question-header">
+                    <span class="question-number">5</span>
+                    <span class="question-text">
+                        Under what circumstances can bail be cancelled under Section 437(5) CrPC?
+                    </span>
+                </div>
+                <div class="options-container">
+                    <div class="option" data-question="q5" data-value="0">
+                        A) If the accused fails to appear before the court
+                    </div>
+                    <div class="option" data-question="q5" data-value="1">
+                        B) If the accused misuses the concession granted
+                    </div>
+                    <div class="option" data-question="q5" data-value="2">
+                        C) If new evidence comes to light
+                    </div>
+                    <div class="option" data-question="q5" data-value="3">
+                        D) All of the above
+                    </div>
+                </div>
+                <div class="clue-container">
+                    <button class="clue-btn" data-question="q5">💡 Show Clue</button>
+                    <div class="clue-warning" id="clue-warning-q5">
+                        <div class="warning-title">
+                            <span class="warning-icon">⚠️</span>
+                            <span>Warning: Using this clue will result in receiving only half marks for this question.</span>
+                        </div>
+                        <div class="clue-buttons">
+                            <button class="btn btn-prev" onclick="showClue('q5')">Continue</button>
+                            <button class="btn" onclick="hideClueWarning('q5')">Cancel</button>
+                        </div>
+                    </div>
+                    <div class="clue-content" id="clue-content-q5">
+                        <div class="clue-title">
+                            <span class="clue-icon">🔍</span>
+                            <span>Clue</span>
+                        </div>
+                        <p>Section 437(5) specifically addresses cancellation of bail. Consider what constitutes misuse of the bail concession and when courts have exercised this power.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="question-container">
+                <div class="question-header">
+                    <span class="question-number">6</span>
+                    <span class="question-text">
+                        What is the pecuniary jurisdiction limit for a Metropolitan Magistrate to try a theft case?
+                    </span>
+                </div>
+                <div class="options-container">
+                    <div class="option" data-question="q6" data-value="0">
+                        A) ₹1,000
+                    </div>
+                    <div class="option" data-question="q6" data-value="1">
+                        B) ₹2,000
+                    </div>
+                    <div class="option" data-question="q6" data-value="2">
+                        C) ₹10,000
+                    </div>
+                    <div class="option" data-question="q6" data-value="3">
+                        D) No pecuniary limit
+                    </div>
+                </div>
+                <div class="clue-container">
+                    <button class="clue-btn" data-question="q6">💡 Show Clue</button>
+                    <div class="clue-warning" id="clue-warning-q6">
+                        <div class="warning-title">
+                            <span class="warning-icon">⚠️</span>
+                            <span>Warning: Using this clue will result in receiving only half marks for this question.</span>
+                        </div>
+                        <div class="clue-buttons">
+                            <button class="btn btn-prev" onclick="showClue('q6')">Continue</button>
+                            <button class="btn" onclick="hideClueWarning('q6')">Cancel</button>
+                        </div>
+                    </div>
+                    <div class="clue-content" id="clue-content-q6">
+                        <div class="clue-title">
+                            <span class="clue-icon">🔍</span>
+                            <span>Clue</span>
+                        </div>
+                        <p>Check the First Schedule of CrPC for pecuniary jurisdiction of Metropolitan Magistrates. Consider how the value of stolen property affects the court with jurisdiction.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="question-container">
+                <div class="question-header">
+                    <span class="question-number">7</span>
+                    <span class="question-text">
+                        Which section of the CrPC deals with the procedure for taking evidence on commission?
+                    </span>
+                </div>
+                <div class="options-container">
+                    <div class="option" data-question="q7" data-value="0">
+                        A) Section 284
+                    </div>
+                    <div class="option" data-question="q7" data-value="1">
+                        B) Section 285
+                    </div>
+                    <div class="option" data-question="q7" data-value="2">
+                        C) Section 286
+                    </div>
+                    <div class="option" data-question="q7" data-value="3">
+                        D) Section 287
+                    </div>
+                </div>
+                <div class="clue-container">
+                    <button class="clue-btn" data-question="q7">💡 Show Clue</button>
+                    <div class="clue-warning" id="clue-warning-q7">
+                        <div class="warning-title">
+                            <span class="warning-icon">⚠️</span>
+                            <span>Warning: Using this clue will result in receiving only half marks for this question.</span>
+                        </div>
+                        <div class="clue-buttons">
+                            <button class="btn btn-prev" onclick="showClue('q7')">Continue</button>
+                            <button class="btn" onclick="hideClueWarning('q7')">Cancel</button>
+                        </div>
+                    </div>
+                    <div class="clue-content" id="clue-content-q7">
+                        <div class="clue-title">
+                            <span class="clue-icon">🔍</span>
+                            <span>Clue</span>
+                        </div>
+                        <p>Commission proceedings allow evidence to be recorded by one court on behalf of another. Review the procedural provisions in Chapter XXIII of CrPC.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="question-container">
+                <div class="question-header">
+                    <span class="question-number">8</span>
+                    <span class="question-text">
+                        What is the maximum punishment for theft under Section 379 IPC?
+                    </span>
+                </div>
+                <div class="options-container">
+                    <div class="option" data-question="q8" data-value="0">
+                        A) 1 year imprisonment
+                    </div>
+                    <div class="option" data-question="q8" data-value="1">
+                        B) 3 years imprisonment
+                    </div>
+                    <div class="option" data-question="q8" data-value="2">
+                        C) 5 years imprisonment
+                    </div>
+                    <div class="option" data-question="q8" data-value="3">
+                        D) 7 years imprisonment
+                    </div>
+                </div>
+                <div class="clue-container">
+                    <button class="clue-btn" data-question="q8">💡 Show Clue</button>
+                    <div class="clue-warning" id="clue-warning-q8">
+                        <div class="warning-title">
+                            <span class="warning-icon">⚠️</span>
+                            <span>Warning: Using this clue will result in receiving only half marks for this question.</span>
+                        </div>
+                        <div class="clue-buttons">
+                            <button class="btn btn-prev" onclick="showClue('q8')">Continue</button>
+                            <button class="btn" onclick="hideClueWarning('q8')">Cancel</button>
+                        </div>
+                    </div>
+                    <div class="clue-content" id="clue-content-q8">
+                        <div class="clue-title">
+                            <span class="clue-icon">🔍</span>
+                            <span>Clue</span>
+                        </div>
+                        <p>Section 379 IPC defines theft and prescribes punishment. Consider how this base offense differs from aggravated forms of theft under other sections.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="question-container">
+                <div class="question-header">
+                    <span class="question-number">9</span>
+                    <span class="question-text">
+                        Which of the following is NOT a ground for refusing bail in a bailable offense?
+                    </span>
+                </div>
+                <div class="options-container">
+                    <div class="option" data-question="q9" data-value="0">
+                        A) Accused is likely to abscond
+                    </div>
+                    <div class="option" data-question="q9" data-value="1">
+                        B) Accused has previous conviction
+                    </div>
+                    <div class="option" data-question="q9" data-value="2">
+                        C) Accused is charged with heinous crime
+                    </div>
+                    <div class="option" data-question="q9" data-value="3">
+                        D) None of the above (bail is a matter of right)
+                    </div>
+                </div>
+                <div class="clue-container">
+                    <button class="clue-btn" data-question="q9">💡 Show Clue</button>
+                    <div class="clue-warning" id="clue-warning-q9">
+                        <div class="warning-title">
+                            <span class="warning-icon">⚠️</span>
+                            <span>Warning: Using this clue will result in receiving only half marks for this question.</span>
+                        </div>
+                        <div class="clue-buttons">
+                            <button class="btn btn-prev" onclick="showClue('q9')">Continue</button>
+                            <button class="btn" onclick="hideClueWarning('q9')">Cancel</button>
+                        </div>
+                    </div>
+                    <div class="clue-content" id="clue-content-q9">
+                        <div class="clue-title">
+                            <span class="clue-icon">🔍</span>
+                            <span>Clue</span>
+                        </div>
+                        <p>In bailable offenses, bail is a right, not a discretion. Review the distinction between bailable and non-bailable offenses in the First Schedule of CrPC.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="question-container">
+                <div class="question-header">
+                    <span class="question-number">10</span>
+                    <span class="question-text">
+                        Under which provision can the court direct the accused to execute a bond with or without sureties for appearance?
+                    </span>
+                </div>
+                <div class="options-container">
+                    <div class="option" data-question="q10" data-value="0">
+                        A) Section 436 CrPC
+                    </div>
+                    <div class="option" data-question="q10" data-value="1">
+                        B) Section 437 CrPC
+                    </div>
+                    <div class="option" data-question="q10" data-value="2">
+                        C) Section 438 CrPC
+                    </div>
+                    <div class="option" data-question="q10" data-value="3">
+                        D) Section 440 CrPC
+                    </div>
+                </div>
+                <div class="clue-container">
+                    <button class="clue-btn" data-question="q10">💡 Show Clue</button>
+                    <div class="clue-warning" id="clue-warning-q10">
+                        <div class="warning-title">
+                            <span class="warning-icon">⚠️</span>
+                            <span>Warning: Using this clue will result in receiving only half marks for this question.</span>
+                        </div>
+                        <div class="clue-buttons">
+                            <button class="btn btn-prev" onclick="showClue('q10')">Continue</button>
+                            <button class="btn" onclick="hideClueWarning('q10')">Cancel</button>
+                        </div>
+                    </div>
+                    <div class="clue-content" id="clue-content-q10">
+                        <div class="clue-title">
+                            <span class="clue-icon">🔍</span>
+                            <span>Clue</span>
+                        </div>
+                        <p>Section 440 CrPC specifically deals with bonds for appearance. Distinguish this from anticipatory bail (Section 438) and regular bail provisions.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="btn-container">
+                <button class="btn btn-next" onclick="goToNextSection()">Next Section: Case Analysis & Reasoning</button>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Dharmasikhara Legal Competency Assessment System</p>
+            <div class="contact-info">
+                <p>Contact: kkavyaammulu@gmail.com | +91 7019357082</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Timer functionality
+        let timeLeft = 20 * 60; // 20 minutes in seconds for Legal Knowledge section
+        let timerInterval;
+        let currentQuestion = 1;
+        let totalQuestions = 10;
+        let timeExpired = false;
+        
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                const timeDisplay = document.getElementById('time-display');
+                timeDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                
+                // Change color when time is running low (less than 2 minutes)
+                if (timeLeft < 2 * 60) {
+                    timeDisplay.style.color = '#e74c3c'; // Red color for urgency
+                    timeDisplay.style.fontWeight = 'bold';
+                }
+                
+                // Auto-submit when time runs out
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timeExpired = true;
+                    alert('Time is up! Your answers have been automatically saved. Moving to the next section.');
+                    goToNextSection();
+                }
+            }, 1000);
+        }
+        
+        // Update progress bar
+        function updateProgress() {
+            const progress = Math.floor((currentQuestion / totalQuestions) * 100);
+            document.getElementById('progress-fill').style.width = `${progress}%`;
+            document.getElementById('progress-text').textContent = `${currentQuestion}/${totalQuestions}`;
+        }
+        
+        // Show clue warning
+        function showClueWarning(questionId) {
+            document.getElementById(`clue-warning-${questionId}`).style.display = 'block';
+        }
+        
+        // Hide clue warning
+        function hideClueWarning(questionId) {
+            document.getElementById(`clue-warning-${questionId}`).style.display = 'none';
+        }
+        
+        // Show clue content
+        function showClue(questionId) {
+            document.getElementById(`clue-warning-${questionId}`).style.display = 'none';
+            document.getElementById(`clue-content-${questionId}`).style.display = 'block';
+            
+            // Mark this question as having used a clue
+            let cluesUsed = JSON.parse(localStorage.getItem('legal_knowledge_clues') || '{}');
+            cluesUsed[questionId] = true;
+            localStorage.setItem('legal_knowledge_clues', JSON.stringify(cluesUsed));
+        }
+        
+        // Handle option selection
+        function selectOption(questionId, optionValue) {
+            // Remove selected class from all options for this question
+            const options = document.querySelectorAll(`.option[data-question="${questionId}"]`);
+            options.forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked option
+            const selectedOption = document.querySelector(`.option[data-question="${questionId}"][data-value="${optionValue}"]`);
+            if (selectedOption) {
+                selectedOption.classList.add('selected');
+            }
+        }
+        
+        // Save responses to localStorage
+        function saveResponses() {
+            const responses = {};
+            for (let i = 1; i <= 10; i++) {
+                const questionId = `q${i}`;
+                const selectedOption = document.querySelector(`.option[data-question="${questionId}"].selected`);
+                if (selectedOption) {
+                    responses[questionId] = parseInt(selectedOption.dataset.value);
+                }
+            }
+            localStorage.setItem('legal_knowledge_responses', JSON.stringify(responses));
+        }
+        
+        // Navigate to the next section with confirmation
+        function goToNextSection() {
+            // If time has expired, proceed automatically without confirmation
+            if (timeExpired) {
+                saveResponses();
+                // Mark this section as completed
+                localStorage.setItem('legal_knowledge_completed', 'true');
+                window.location.href = 'section_case_analysis.html';
+                return;
+            }
+            
+            // Show confirmation dialog
+            if (confirm("Are you sure you want to proceed to the next section? You will not be able to return to this section once you leave.")) {
+                saveResponses();
+                // Mark this section as completed
+                localStorage.setItem('legal_knowledge_completed', 'true');
+                window.location.href = 'section_case_analysis.html';
+            }
+        }
+        
+        // Check if user is trying to access a completed section
+        function checkSectionAccess() {
+            // For the first section, no need to check access restrictions
+            return true;
+        }
+        
+        // Initialize the section when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user can access this section
+            if (!checkSectionAccess()) {
+                // Redirect to the next available section
+                window.location.href = 'section_case_analysis.html';
+                return;
+            }
+            
+            // Set time limit to 20 minutes (1200 seconds) for Legal Knowledge section
+            timeLeft = 20 * 60;
+            startTimer();
+            updateProgress();
+            
+            // Load saved responses if they exist
+            const savedResponses = JSON.parse(localStorage.getItem('legal_knowledge_responses') || '{}');
+            Object.keys(savedResponses).forEach(questionId => {
+                const answer = savedResponses[questionId];
+                const option = document.querySelector(`.option[data-question="${questionId}"][data-value="${answer}"]`);
+                if (option) {
+                    option.classList.add('selected');
+                }
+            });
+            
+            // Load clues used
+            const savedClues = JSON.parse(localStorage.getItem('legal_knowledge_clues') || '{}');
+            Object.keys(savedClues).forEach(questionId => {
+                if (savedClues[questionId]) {
+                    document.getElementById(`clue-content-${questionId}`).style.display = 'block';
+                }
+            });
+            
+            // Add event listeners to options
+            const allOptions = document.querySelectorAll('.option');
+            allOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const questionId = this.dataset.question;
+                    const optionValue = this.dataset.value;
+                    selectOption(questionId, optionValue);
+                });
+            });
+            
+            // Add event listeners to clue buttons
+            const clueButtons = document.querySelectorAll('.clue-btn');
+            clueButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const questionId = this.dataset.question;
+                    showClueWarning(questionId);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

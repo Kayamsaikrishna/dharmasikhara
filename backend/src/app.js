@@ -42,8 +42,8 @@ const legalNewsRoutes = require('./routes/legalNews');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
-// Use port 5002 as default to align with project configuration
-const PORT = process.env.PORT || 5002;
+// Use port 5003 as default to align with project configuration
+const PORT = process.env.PORT || 5003;
 
 // Middleware
 app.use(cors());

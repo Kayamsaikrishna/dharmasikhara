@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assessment Results - Dharmasikhara Assessment</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #c0392b;
+            --gray-color: #95a5a6;
+            --gold-color: #d4af37;
+            --silver-color: #c0c0c0;
+            --bronze-color: #cd7f32;
+            --section-a-color: #3498db;
+            --section-b-color: #9b59b6;
+            --section-c-color: #e67e22;
+            --section-d-color: #2ecc71;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf9 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--dark-color));
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+        }
+        
+        h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.3rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+            position: relative;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-weight: 300;
+            position: relative;
+        }
+        
+        .results-summary {
+            background: linear-gradient(135deg, white 0%, #f8f9fa 100%);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .results-summary::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: linear-gradient(90deg, var(--success-color), var(--secondary-color), var(--accent-color));
+        }
+        
+        .completion-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+        
+        .score-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .score-display {
+            font-family: 'Poppins', sans-serif;
+            font-size: 5rem;
+            font-weight: 700;
+            color: var(--success-color);
+            margin: 0;
+            text-shadow: 0 5px 10px rgba(39, 174, 96, 0.3);
+        }
+        
+        .grade-container {
+            background: linear-gradient(135deg, var(--light-color), white);
+            padding: 20px 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .grade-label {
+            font-size: 1.2rem;
+            color: var(--dark-color);
+            margin-bottom: 10px;
+        }
+        
+        .grade {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .section-scores {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+        
+        .section-score {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            border-left: 5px solid var(--section-a-color);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .section-score:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .section-score.section-a {
+            border-left-color: var(--section-a-color);
+        }
+        
+        .section-score.section-b {
+            border-left-color: var(--section-b-color);
+        }
+        
+        .section-score.section-c {
+            border-left-color: var(--section-c-color);
+        }
+        
+        .section-score.section-d {
+            border-left-color: var(--section-d-color);
+        }
+        
+        .section-name {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.2rem;
+        }
+        
+        .section-result {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--dark-color);
+        }
+        
+        .section-percentage {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+        
+        .completion-info {
+            margin: 30px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #e8f4fc 0%, #d1e7f9 100%);
+            border-radius: 12px;
+            font-size: 1.1rem;
+            display: inline-block;
+        }
+        
+        .badges-container {
+            margin: 30px 0;
+        }
+        
+        .badges-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+        
+        .badges-grid {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .badge {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #ffd700;
+            font-weight: 600;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            min-width: 180px;
+        }
+        
+        .badge:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+        
+        .badge-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .badge.gold {
+            background: linear-gradient(135deg, #fff9e6 0%, #ffecb3 100%);
+            border-color: var(--gold-color);
+            color: var(--gold-color);
+        }
+        
+        .badge.gold .badge-icon {
+            color: var(--gold-color);
+        }
+        
+        .badge.silver {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-color: var(--silver-color);
+            color: var(--silver-color);
+        }
+        
+        .badge.silver .badge-icon {
+            color: var(--silver-color);
+        }
+        
+        .badge.bronze {
+            background: linear-gradient(135deg, #fff4e6 0%, #ffe0b3 100%);
+            border-color: var(--bronze-color);
+            color: var(--bronze-color);
+        }
+        
+        .badge.bronze .badge-icon {
+            color: var(--bronze-color);
+        }
+        
+        .content-area {
+            background: linear-gradient(135deg, white 0%, #f8f9fa 100%);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .content-area::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: linear-gradient(90deg, var(--secondary-color), var(--accent-color));
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(52, 152, 219, 0.2);
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1.5rem;
+        }
+        
+        .question-review {
+            margin-bottom: 35px;
+            padding: 25px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border-left: 3px solid var(--section-a-color);
+        }
+        
+        .question-review.section-a {
+            border-left-color: var(--section-a-color);
+        }
+        
+        .question-review.section-b {
+            border-left-color: var(--section-b-color);
+        }
+        
+        .question-review.section-c {
+            border-left-color: var(--section-c-color);
+        }
+        
+        .question-review.section-d {
+            border-left-color: var(--section-d-color);
+        }
+        
+        .question-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .question-number {
+            display: inline-block;
+            background: var(--section-a-color);
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 35px;
+            font-weight: 700;
+            margin-right: 15px;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--dark-color);
+            flex: 1;
+        }
+        
+        .answer-comparison {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #e8f4fc 0%, #d1e7f9 100%);
+        }
+        
+        .user-answer, .correct-answer {
+            font-weight: 600;
+            margin: 10px 0;
+        }
+        
+        .user-answer {
+            color: var(--accent-color);
+        }
+        
+        .correct-answer {
+            color: var(--success-color);
+        }
+        
+        .recommendation {
+            background: linear-gradient(135deg, #e8f4fc 0%, #d1e7f9 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            border-left: 5px solid var(--secondary-color);
+        }
+        
+        .recommendation-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+        
+        .btn-container {
+            text-align: center;
+            margin-top: 40px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            min-width: 200px;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--gray-color), #7f8c8d);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary-color), #2980b9);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color), #219653);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 30px;
+            color: var(--gray-color);
+            font-size: 0.95rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .contact-info {
+            margin-top: 15px;
+            font-size: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .section-scores {
+                grid-template-columns: 1fr;
+            }
+            
+            .score-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .content-area {
+                padding: 25px;
+            }
+            
+            .btn-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Dharmasikhara Legal Competency Assessment</h1>
+            <div class="subtitle">Assessment Results</div>
+        </header>
+        
+        <div class="results-summary">
+            <h2 class="completion-title">Assessment Complete!</h2>
+            
+            <div class="score-container">
+                <div class="score-display" id="total-score">0%</div>
+                <div class="grade-container">
+                    <div class="grade-label">Performance Tier</div>
+                    <div class="grade" id="performance-grade">Not Calculated</div>
+                </div>
+            </div>
+            
+            <div class="section-scores">
+                <div class="section-score section-a">
+                    <div class="section-name">Legal Knowledge</div>
+                    <div class="section-result" id="legal-knowledge-score">0/20 (0%)</div>
+                    <div class="section-percentage" id="legal-knowledge-percentage">0%</div>
+                </div>
+                <div class="section-score section-b">
+                    <div class="section-name">Case Analysis</div>
+                    <div class="section-result" id="case-analysis-score">0/30 (0%)</div>
+                    <div class="section-percentage" id="case-analysis-percentage">0%</div>
+                </div>
+                <div class="section-score section-c">
+                    <div class="section-name">Ethical Judgment</div>
+                    <div class="section-result" id="ethical-judgment-score">0/25 (0%)</div>
+                    <div class="section-percentage" id="ethical-judgment-percentage">0%</div>
+                </div>
+                <div class="section-score section-d">
+                    <div class="section-name">Argument Quality</div>
+                    <div class="section-result" id="argument-quality-score">0/25 (0%)</div>
+                    <div class="section-percentage" id="argument-quality-percentage">0%</div>
+                </div>
+            </div>
+            
+            <div class="completion-info">
+                <p><strong>Date Completed:</strong> <span id="completion-date">Not completed</span></p>
+            </div>
+            
+            <div class="badges-container">
+                <h3 class="badges-title">Badges Earned</h3>
+                <div class="badges-grid" id="badges-grid">
+                    <!-- Badges will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-area">
+            <h2 class="section-title">Performance Summary</h2>
+            
+            <div class="recommendation">
+                <h3 class="recommendation-title">Recommendations</h3>
+                <p>Based on your performance, you have demonstrated strong competency in legal knowledge and case analysis. Continue to develop your ethical judgment skills through additional scenario practice. Your argument quality skills are excellent - consider mentoring others in this area.</p>
+            </div>
+        </div>
+        
+        <div class="btn-container">
+            <a href="section_legal_knowledge.html" class="btn btn-secondary" id="retake-assessment">Retake Assessment</a>
+            <a href="question_review.html" class="btn btn-primary">Review Answers</a>
+            <a href="certificate_name.html" class="btn btn-success">Earn Certificate</a>
+        </div>
+        
+        <footer>
+            <p>Dharmasikhara Legal Competency Assessment System</p>
+            <div class="contact-info">
+                <p>Contact: kkavyaammulu@gmail.com | +91 7019357082</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Correct answers for all questions
+        const correctAnswers = {
+            // Legal Knowledge Section (Questions 1-10)
+            'q1': 3,   // D
+            'q2': 3,   // D
+            'q3': 1,   // B
+            'q4': 3,   // D
+            'q5': 3,   // D
+            'q6': 3,   // D
+            'q7': 0,   // A
+            'q8': 1,   // B
+            'q9': 3,   // D
+            'q10': 3,  // D
+            
+            // Case Analysis Section (Questions 11-16)
+            'q11': [0, 1, 2],  // A, B, C
+            'q12': [0, 1, 2],  // A, B, C
+            'q13': [0, 1, 2],  // A, B, C
+            'q14': [0, 3, 4],  // A, D, E
+            'q15': [0, 1, 2, 4], // A, B, C, E
+            'q16': 3,  // Would be scored by rubric in real implementation
+            
+            // Ethical Judgment Section (Questions 17-21)
+            'q17': 1,  // B (second option is best)
+            'q18': 0,  // A
+            'q19': 1,  // B
+            'q20': 3,  // D
+            'q21': 1,  // B
+            
+            // Argument Quality Section (Questions 22-23)
+            'q22': [0, 1, 2], // A, B, C (weaknesses identified)
+            'q23': "Sample response" // Would be scored by rubric
+        };
+
+        // Section weights
+        const sectionWeights = {
+            'legal_knowledge': 20,
+            'case_analysis': 30,
+            'ethical_judgment': 25,
+            'argument_quality': 25
+        };
+
+        // Store completion time
+        const completionTime = new Date();
+
+        // Results page initialization
+        function initResults() {
+            // Check if we have responses for each section and mark as completed if so
+            const legalKnowledgeResponses = JSON.parse(localStorage.getItem('legal_knowledge_responses') || '{}');
+            const caseAnalysisResponses = JSON.parse(localStorage.getItem('case_analysis_responses') || '{}');
+            const ethicalJudgmentResponses = JSON.parse(localStorage.getItem('ethical_judgment_responses') || '{}');
+            const argumentQualityResponses = JSON.parse(localStorage.getItem('argument_quality_responses') || '{}');
+            
+            // Mark sections as completed only if they have responses
+            if (Object.keys(legalKnowledgeResponses).length > 0) {
+                localStorage.setItem('legal_knowledge_completed', 'true');
+            }
+            if (Object.keys(caseAnalysisResponses).length > 0) {
+                localStorage.setItem('case_analysis_completed', 'true');
+            }
+            if (Object.keys(ethicalJudgmentResponses).length > 0) {
+                localStorage.setItem('ethical_judgment_completed', 'true');
+            }
+            if (Object.keys(argumentQualityResponses).length > 0) {
+                localStorage.setItem('argument_quality_completed', 'true');
+            }
+            
+            // Retrieve clues used from localStorage
+            const legalKnowledgeClues = JSON.parse(localStorage.getItem('legal_knowledge_clues') || '{}');
+            const caseAnalysisClues = JSON.parse(localStorage.getItem('case_analysis_clues') || '{}');
+            const ethicalJudgmentClues = JSON.parse(localStorage.getItem('ethical_judgment_clues') || '{}');
+            const argumentQualityClues = JSON.parse(localStorage.getItem('argument_quality_clues') || '{}');
+            
+            // Calculate scores for each section
+            const legalKnowledgeData = calculateSectionScore('legal_knowledge', legalKnowledgeResponses, legalKnowledgeClues);
+            const caseAnalysisData = calculateSectionScore('case_analysis', caseAnalysisResponses, caseAnalysisClues);
+            const ethicalJudgmentData = calculateSectionScore('ethical_judgment', ethicalJudgmentResponses, ethicalJudgmentClues);
+            const argumentQualityData = calculateSectionScore('argument_quality', argumentQualityResponses, argumentQualityClues);
+            
+            // Calculate weighted total score
+            const totalScore = (
+                legalKnowledgeData.percentage * 0.2 + 
+                caseAnalysisData.percentage * 0.3 + 
+                ethicalJudgmentData.percentage * 0.25 + 
+                argumentQualityData.percentage * 0.25
+            );
+            
+            // Determine performance grade
+            const performanceGrade = determinePerformanceGrade(totalScore);
+            
+            // Display scores
+            document.getElementById('total-score').textContent = `${Math.round(totalScore)}%`;
+            document.getElementById('performance-grade').textContent = performanceGrade.text;
+            document.getElementById('legal-knowledge-score').textContent = `${legalKnowledgeData.score}/${legalKnowledgeData.maxScore}`;
+            document.getElementById('legal-knowledge-percentage').textContent = `(${Math.round(legalKnowledgeData.percentage)}%)`;
+            document.getElementById('case-analysis-score').textContent = `${caseAnalysisData.score}/${caseAnalysisData.maxScore}`;
+            document.getElementById('case-analysis-percentage').textContent = `(${Math.round(caseAnalysisData.percentage)}%)`;
+            document.getElementById('ethical-judgment-score').textContent = `${ethicalJudgmentData.score}/${ethicalJudgmentData.maxScore}`;
+            document.getElementById('ethical-judgment-percentage').textContent = `(${Math.round(ethicalJudgmentData.percentage)}%)`;
+            document.getElementById('argument-quality-score').textContent = `${argumentQualityData.score}/${argumentQualityData.maxScore}`;
+            document.getElementById('argument-quality-percentage').textContent = `(${Math.round(argumentQualityData.percentage)}%)`;
+            
+            // Display badges based on performance
+            displayBadges(totalScore, ethicalJudgmentData.percentage, caseAnalysisData.percentage);
+            
+            // Display completion date
+            document.getElementById('completion-date').textContent = completionTime.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            
+            // Save scores to localStorage for certificate page
+            localStorage.setItem('assessment_total_score', `${Math.round(totalScore)}%`);
+            localStorage.setItem('assessment_performance_tier', performanceGrade.text);
+            
+            // Generate question review for all questions
+            generateQuestionReview(legalKnowledgeResponses, caseAnalysisResponses, ethicalJudgmentResponses, argumentQualityResponses, correctAnswers);
+        }
+
+        // Generate question review for all questions
+        function generateQuestionReview(legalKnowledgeResponses, caseAnalysisResponses, ethicalJudgmentResponses, argumentQualityResponses, correctAnswers) {
+            const container = document.getElementById('question-review-container');
+            let html = '';
+            
+            // Legal Knowledge Section (Questions 1-10)
+            html += '<h3>Section A: Legal Knowledge & Procedure</h3>';
+            for (let i = 1; i <= 10; i++) {
+                const questionId = `q${i}`;
+                const userAnswer = legalKnowledgeResponses[questionId];
+                const correctAnswer = correctAnswers[questionId];
+                html += generateQuestionHtml(questionId, userAnswer, correctAnswer, 'legal_knowledge');
+            }
+            
+            // Case Analysis Section (Questions 11-16)
+            html += '<h3>Section B: Case Analysis & Reasoning</h3>';
+            for (let i = 11; i <= 16; i++) {
+                const questionId = `q${i}`;
+                const userAnswer = caseAnalysisResponses[questionId];
+                const correctAnswer = correctAnswers[questionId];
+                html += generateQuestionHtml(questionId, userAnswer, correctAnswer, 'case_analysis');
+            }
+            
+            // Ethical Judgment Section (Questions 17-21)
+            html += '<h3>Section C: Ethical Judgment</h3>';
+            for (let i = 17; i <= 21; i++) {
+                const questionId = `q${i}`;
+                const userAnswer = ethicalJudgmentResponses[questionId];
+                const correctAnswer = correctAnswers[questionId];
+                html += generateQuestionHtml(questionId, userAnswer, correctAnswer, 'ethical_judgment');
+            }
+            
+            // Argument Quality Section (Questions 22-23)
+            html += '<h3>Section D: Argument Quality Review</h3>';
+            for (let i = 22; i <= 23; i++) {
+                const questionId = `q${i}`;
+                const userAnswer = argumentQualityResponses[questionId];
+                const correctAnswer = correctAnswers[questionId];
+                html += generateQuestionHtml(questionId, userAnswer, correctAnswer, 'argument_quality');
+            }
+            
+            container.innerHTML = html;
+        }
+
+        // Generate HTML for a single question review
+        function generateQuestionHtml(questionId, userAnswer, correctAnswer, section) {
+            // Question texts (simplified for this example)
+            const questionTexts = {
+                'q1': 'According to Section 437 of CrPC, which of the following is NOT a valid ground for granting bail in a theft case?',
+                'q2': 'In the scenario, the prosecution relied heavily on CCTV footage. Which evidentiary principle should you invoke to challenge video evidence?',
+                'q3': 'What is the maximum period for which a Magistrate can grant interim bail under Section 437 CrPC?',
+                'q4': 'Which of the following is a mandatory consideration for granting bail under Section 437 CrPC?',
+                'q5': 'Under what circumstances can bail be cancelled under Section 437(5) CrPC?',
+                'q6': 'What is the pecuniary jurisdiction limit for a Metropolitan Magistrate to try a theft case?',
+                'q7': 'Which section of the CrPC deals with the procedure for taking evidence on commission?',
+                'q8': 'What is the maximum punishment for theft under Section 379 IPC?',
+                'q9': 'Which of the following is NOT a ground for refusing bail in a bailable offense?',
+                'q10': 'Under which provision can the court direct the accused to execute a bond with or without sureties for appearance?',
+                'q11': '[Multi-Select] Review this excerpt from your witness interview with the security guard: "I saw someone matching the accused\'s height leaving the office around 7 PM. The lights were dim, and I was about 30 feet away. I\'m 70% sure it was him." Which THREE factors undermine the reliability of this identification?',
+                'q12': '[Multi-Select] The prosecution claims the accused had "motive and opportunity." You discovered that: The laptop was a personal device, not company property; The accused had recently received a performance bonus; Access logs show 3 other employees entered the room that evening. Which of the following are valid counter-arguments?',
+                'q13': '[Multi-Select] During investigation, which of the following evidence collection methods would strengthen your client\'s defense?',
+                'q14': '[Multi-Select] Which of the following are legally relevant considerations when challenging the prosecution\'s evidence?',
+                'q15': '[Multi-Select] Which factors would support an argument that the accused is not a flight risk?',
+                'q16': '[Case-Based Reasoning] The prosecution claims the accused had "motive and opportunity." You discovered that: The laptop was a personal device, not company property; The accused had recently received a performance bonus; Access logs show 3 other employees entered the room that evening. Construct the strongest counter-argument. What is your PRIMARY line of defense?',
+                'q17': '[Situational Judgment] During case preparation, your client mentions: "I know who actually took the laptop, but revealing it would get my colleague fired. Can we just blame the poor CCTV quality?" Rank these responses from MOST to LEAST appropriate:',
+                'q18': '[Situational Judgment] You discover the CCTV timestamp was altered by 15 minutes, potentially exonerating your client. However, exposing this might reveal your client accessed the security system without authorization earlier that day. What should you do?',
+                'q19': '[Situational Judgment] The judge appears skeptical of your bail arguments and suggests you\'re merely trying to delay justice. How should you respond?',
+                'q20': '[Situational Judgment] Another lawyer offers to share confidential information about the prosecution\'s witnesses in exchange for information about your defense strategy. What is your response?',
+                'q21': '[Situational Judgment] The client\'s family offers you a "gratitude bonus" of ₹50,000 if bail is granted. Your response should be:',
+                'q22': '[Argument Deconstruction] Read this bail argument excerpt: "Your Honor, my client is innocent. The CCTV footage is unclear, and the police investigation was rushed. Many people have access to that room. Bail should be granted because the evidence is weak." Identify THREE specific weaknesses and rewrite the argument to address them.',
+                'q23': '[Reflective Practice] During the scenario, you chose to [USER\'S ACTUAL CHOICE: e.g., "aggressively cross-examine the security guard"]. Explain: Why you made this decision (strategic reasoning); What legal principle or tactical advantage you sought; How you would adjust this approach if the judge had warned against aggressive tactics.'
+            };
+            
+            // Options for questions (simplified for this example)
+            const questionOptions = {
+                'q1': ['A) The accused is unlikely to commit another offense while on bail', 'B) The accused has a permanent residence and strong community ties', 'C) The accused has no prior criminal record', 'D) The complainant has agreed to withdraw the case'],
+                'q2': ['A) Best Evidence Rule', 'B) Chain of Custody Requirements', 'C) Hearsay Exclusion', 'D) Both A and B'],
+                'q3': ['A) 7 days', 'B) 15 days', 'C) 30 days', 'D) No specific limit'],
+                'q4': ['A) Possibility of accused influencing witnesses', 'B) Nature and gravity of the accusation', 'C) Previous criminal record of the accused', 'D) All of the above'],
+                'q5': ['A) If the accused fails to appear before the court', 'B) If the accused misuses the concession granted', 'C) If new evidence comes to light', 'D) All of the above'],
+                'q6': ['A) ₹1,000', 'B) ₹2,000', 'C) ₹10,000', 'D) No pecuniary limit'],
+                'q7': ['A) Section 284', 'B) Section 285', 'C) Section 286', 'D) Section 287'],
+                'q8': ['A) 1 year imprisonment', 'B) 3 years imprisonment', 'C) 5 years imprisonment', 'D) 7 years imprisonment'],
+                'q9': ['A) Accused is likely to abscond', 'B) Accused has previous conviction', 'C) Accused is charged with heinous crime', 'D) None of the above (bail is a matter of right)'],
+                'q10': ['A) Section 436 CrPC', 'B) Section 437 CrPC', 'C) Section 438 CrPC', 'D) Section 440 CrPC'],
+                'q11': ['A) Distance from the subject', 'B) Poor lighting conditions', 'C) Witness\'s expressed uncertainty (70% confidence)', 'D) The witness was off-duty at the time', 'E) Time of day (evening)', 'F) Witness has a financial interest in the case'],
+                'q12': ['A) Lack of motive (had financial resources)', 'B) Challenge to "opportunity" with alternative suspects', 'C) Ownership/theft classification questions', 'D) Character evidence of other employees', 'E) Accused\'s good work performance', 'F) Company\'s inadequate security measures'],
+                'q13': ['A) Obtaining access logs from the building management', 'B) Interviewing other employees who had access', 'C) Challenging the CCTV timestamp authenticity', 'D) Requesting financial records of the complainant', 'E) Examining the laptop for personal data', 'F) Checking the accused\'s phone location data'],
+                'q14': ['A) Chain of custody of the CCTV footage', 'B) Technical specifications of the security cameras', 'C) Personal relationships between witnesses', 'D) Time-stamping accuracy of digital evidence', 'E) Maintenance records of surveillance equipment', 'F) Political affiliations of the complainant'],
+                'q15': ['A) Employment history of 5 years with the company', 'B) Family dependents residing with the accused', 'C) Surrender of passport to authorities', 'D) Financial assets in the country', 'E) Community ties and social connections', 'F) Previous travel history outside the country'],
+                'q16': ['Identifies lack of motive (had financial resources)', 'Challenges "opportunity" with alternative suspects', 'Questions ownership/theft classification', 'Structures argument logically with evidence references'],
+                'q17': ['A) "I cannot build a defense on concealing exculpatory evidence. We must discuss ethical disclosure."', 'B) "Let me investigate independently. If there\'s alibi evidence, we use it; but I cannot knowingly present false defenses."', 'C) "Your loyalty is admirable, but withholding this information could result in your conviction. Let\'s explore options."', 'D) "If you instruct me not to reveal it, I\'m bound by client confidentiality. We\'ll focus only on CCTV weaknesses."'],
+                'q18': ['A) Disclose the timestamp issue and address the access separately', 'B) Remain silent to protect your client from additional charges', 'C) Anonymously tip the court about the timestamp discrepancy', 'D) Negotiate with prosecution to drop charges in exchange for non-disclosure'],
+                'q19': ['A) Aggressively challenge the judge\'s characterization', 'B) Respectfully explain the legal basis for bail considerations', 'C) Withdraw your bail application to avoid conflict', 'D) Request a recess to reconsider your approach'],
+                'q20': ['A) Accept the offer as it benefits your client', 'B) Decline but ask for non-confidential information', 'C) Report the offer to the Bar Council', 'D) Decline and explain professional conduct rules'],
+                'q21': ['A) Accept but donate to legal aid to avoid conflict', 'B) Decline and explain fee arrangements must be predetermined', 'C) Accept only if bail is granted based on merit', 'D) Defer decision until after case conclusion'],
+                'q22': ['Asserts innocence (inappropriate at bail stage)', 'Lacks specific legal standard for bail', 'No affirmative facts supporting client\'s reliability'],
+                'q23': ['Sample response for open-ended question']
+            };
+            
+            let html = `<div class="question-review ${section}">`;
+            html += `<div class="question-header">`;
+            html += `<span class="question-number">${questionId.substring(1)}</span>`;
+            html += `<span class="question-text">${questionTexts[questionId] || 'Question text not available'}</span>`;
+            html += `</div>`;
+            html += `<div class="answer-comparison">`;
+            
+            // Display user answer
+            if (userAnswer !== undefined) {
+                if (Array.isArray(userAnswer)) {
+                    // Multi-select question
+                    const userAnswerText = userAnswer.map(idx => getOptionLabel(idx, questionId)).join(', ');
+                    html += `<p class="user-answer">Your Answer: ${userAnswerText}</p>`;
+                } else if (typeof userAnswer === 'string' && userAnswer !== '') {
+                    // Text answer (for open-ended questions)
+                    html += `<p class="user-answer">Your Answer: ${userAnswer}</p>`;
+                } else if (typeof userAnswer === 'number') {
+                    // Single-select question
+                    const userAnswerText = getOptionLabel(userAnswer, questionId);
+                    html += `<p class="user-answer">Your Answer: ${userAnswerText}</p>`;
+                } else {
+                    html += `<p class="user-answer">Your Answer: Not answered</p>`;
+                }
+            } else {
+                html += `<p class="user-answer">Your Answer: Not answered</p>`;
+            }
+            
+            // Display correct answer
+            if (correctAnswer !== undefined) {
+                if (Array.isArray(correctAnswer)) {
+                    // Multi-select question
+                    const correctAnswerText = correctAnswer.map(idx => getOptionLabel(idx, questionId)).join(', ');
+                    html += `<p class="correct-answer">Correct Answer: ${correctAnswerText}</p>`;
+                } else if (typeof correctAnswer === 'string') {
+                    // Text answer (for open-ended questions)
+                    html += `<p class="correct-answer">Sample Answer: ${correctAnswer}</p>`;
+                } else if (typeof correctAnswer === 'number') {
+                    // Single-select question
+                    const correctAnswerText = getOptionLabel(correctAnswer, questionId);
+                    html += `<p class="correct-answer">Correct Answer: ${correctAnswerText}</p>`;
+                } else {
+                    html += `<p class="correct-answer">Correct Answer: Not available</p>`;
+                }
+            } else {
+                html += `<p class="correct-answer">Correct Answer: Not available</p>`;
+            }
+            
+            html += `</div></div>`;
+            return html;
+        }
+
+        // Get option label (A, B, C, etc.) based on index
+        function getOptionLabel(index, questionId) {
+            const options = questionOptions[questionId];
+            if (options && index < options.length) {
+                const optionLabels = ['A', 'B', 'C', 'D', 'E', 'F'];
+                return `${optionLabels[index]}) ${options[index]}`;
+            }
+            // For questions without predefined options, just return the index
+            const optionLabels = ['A', 'B', 'C', 'D', 'E', 'F'];
+            if (typeof index === 'number' && index < optionLabels.length) {
+                return optionLabels[index];
+            }
+            return `Option ${index}`;
+        }
+
+        // Calculate section score
+        function calculateSectionScore(sectionId, responses, cluesUsed) {
+            let correctAnswersCount = 0;
+            let totalQuestions = 0;
+            let maxScore = 0;
+            
+            // Define question ranges for each section
+            let questionRange = [];
+            if (sectionId === 'legal_knowledge') {
+                questionRange = Array.from({length: 10}, (_, i) => `q${i + 1}`);
+                totalQuestions = 10;
+                maxScore = 20;
+            } else if (sectionId === 'case_analysis') {
+                questionRange = Array.from({length: 6}, (_, i) => `q${i + 11}`);
+                totalQuestions = 6;
+                maxScore = 30;
+            } else if (sectionId === 'ethical_judgment') {
+                questionRange = Array.from({length: 5}, (_, i) => `q${i + 17}`);
+                totalQuestions = 5;
+                maxScore = 25;
+            } else if (sectionId === 'argument_quality') {
+                questionRange = Array.from({length: 2}, (_, i) => `q${i + 22}`);
+                totalQuestions = 2;
+                maxScore = 25;
+            }
+            
+            // Points per question
+            const pointsPerQuestion = maxScore / totalQuestions;
+            
+            // Calculate score based on each question
+            let totalPoints = 0;
+            questionRange.forEach(questionId => {
+                if (responses.hasOwnProperty(questionId)) {
+                    const userAnswer = responses[questionId];
+                    const correctAnswer = correctAnswers[questionId];
+                    
+                    // Check if answer is correct
+                    let isCorrect = false;
+                    if (Array.isArray(correctAnswer)) {
+                        // Multi-select question
+                        if (Array.isArray(userAnswer) && 
+                            userAnswer.length === correctAnswer.length && 
+                            userAnswer.every(val => correctAnswer.includes(val))) {
+                            isCorrect = true;
+                        }
+                    } else {
+                        // Single-select question
+                        if (userAnswer === correctAnswer) {
+                            isCorrect = true;
+                        }
+                    }
+                    
+                    // Award points if correct
+                    if (isCorrect) {
+                        totalPoints += pointsPerQuestion;
+                    }
+                }
+            });
+            
+            // Apply clue penalties (50% points for questions where clues were used)
+            questionRange.forEach(questionId => {
+                if (cluesUsed[questionId] && responses.hasOwnProperty(questionId)) {
+                    const userAnswer = responses[questionId];
+                    const correctAnswer = correctAnswers[questionId];
+                    
+                    // Check if answer was correct
+                    let isCorrect = false;
+                    if (Array.isArray(correctAnswer)) {
+                        // Multi-select question
+                        if (Array.isArray(userAnswer) && 
+                            userAnswer.length === correctAnswer.length && 
+                            userAnswer.every(val => correctAnswer.includes(val))) {
+                            isCorrect = true;
+                        }
+                    } else {
+                        // Single-select question
+                        if (userAnswer === correctAnswer) {
+                            isCorrect = true;
+                        }
+                    }
+                    
+                    // If correct but clue was used, reduce points by 50%
+                    if (isCorrect) {
+                        totalPoints -= pointsPerQuestion * 0.5; // Remove half points
+                    }
+                }
+            });
+            
+            // Ensure score doesn't go below 0
+            totalPoints = Math.max(0, totalPoints);
+            
+            // Calculate percentage
+            const percentage = (totalPoints / maxScore) * 100;
+            
+            return {
+                score: Math.round(totalPoints),
+                maxScore: maxScore,
+                percentage: percentage,
+                correct: correctAnswersCount,
+                total: totalQuestions
+            };
+        }
+
+        // Determine performance grade
+        function determinePerformanceGrade(totalScore) {
+            if (totalScore >= 90) {
+                return { text: "Exemplary Advocate (Grade: A+)", recommendation: "Outstanding performance! You have demonstrated exceptional legal competency." };
+            } else if (totalScore >= 80) {
+                return { text: "Proficient Advocate (Grade: A)", recommendation: "Strong performance! You have demonstrated solid legal competency." };
+            } else if (totalScore >= 70) {
+                return { text: "Competent Advocate (Grade: B)", recommendation: "Good performance! You have demonstrated adequate legal competency." };
+            } else if (totalScore >= 60) {
+                return { text: "Developing Advocate (Grade: C)", recommendation: "Satisfactory performance. You should review the recommended modules." };
+            } else {
+                return { text: "Needs Improvement (Grade: F)", recommendation: "Your performance indicates areas requiring significant improvement." };
+            }
+        }
+
+        // Display badges based on performance
+        function displayBadges(totalScore, ethicsScore, caseAnalysisScore) {
+            const badgesGrid = document.getElementById('badges-grid');
+            let badgesHtml = '';
+            
+            // Scenario-specific badges
+            if (totalScore >= 70) {
+                badgesHtml += `
+                    <div class="badge bronze">
+                        <div class="badge-icon">🥉</div>
+                        <div>Bronze Star</div>
+                    </div>
+                `;
+            }
+            if (totalScore >= 80) {
+                badgesHtml += `
+                    <div class="badge silver">
+                        <div class="badge-icon">🥈</div>
+                        <div>Silver Star</div>
+                    </div>
+                `;
+            }
+            if (totalScore >= 90) {
+                badgesHtml += `
+                    <div class="badge gold">
+                        <div class="badge-icon">🥇</div>
+                        <div>Gold Star</div>
+                    </div>
+                `;
+            }
+            
+            // Special badges
+            if (ethicsScore >= 80) { // 80% in ethics section
+                badgesHtml += `
+                    <div class="badge gold">
+                        <div class="badge-icon">⚖️</div>
+                        <div>Guardian of Justice</div>
+                    </div>
+                `;
+            }
+            
+            if (caseAnalysisScore >= 80) { // 80% in case analysis section
+                badgesHtml += `
+                    <div class="badge gold">
+                        <div class="badge-icon">🧠</div>
+                        <div>Analytical Mind</div>
+                    </div>
+                `;
+            }
+            
+            badgesGrid.innerHTML = badgesHtml;
+        }
+
+        // Function to clear all assessment data from localStorage
+        function clearAssessmentData() {
+            // Clear all section responses
+            localStorage.removeItem('legal_knowledge_responses');
+            localStorage.removeItem('case_analysis_responses');
+            localStorage.removeItem('ethical_judgment_responses');
+            localStorage.removeItem('argument_quality_responses');
+            
+            // Clear all section clues
+            localStorage.removeItem('legal_knowledge_clues');
+            localStorage.removeItem('case_analysis_clues');
+            localStorage.removeItem('ethical_judgment_clues');
+            localStorage.removeItem('argument_quality_clues');
+            
+            // Clear assessment results
+            localStorage.removeItem('assessment_total_score');
+            localStorage.removeItem('assessment_performance_tier');
+            
+            // Clear section completion flags
+            localStorage.removeItem('legal_knowledge_completed');
+            localStorage.removeItem('case_analysis_completed');
+            localStorage.removeItem('ethical_judgment_completed');
+            localStorage.removeItem('argument_quality_completed');
+        }
+
+        // Add event listener to retake assessment button
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize results as before
+            initResults();
+            
+            // Add click event to retake assessment button
+            const retakeButton = document.getElementById('retake-assessment');
+            if (retakeButton) {
+                retakeButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // Clear all assessment data
+                    clearAssessmentData();
+                    // Redirect to first section
+                    window.location.href = 'section_legal_knowledge.html';
+                });
+            }
+        });
+
+    </script>
+</body>
+</html>

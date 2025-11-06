@@ -36,12 +36,23 @@ const ProgressTest: React.FC = () => {
           completedStages: ['client-interview', 'digital-evidence', 'bail-draft']
         }));
         break;
+      case 'assessment':
+        localStorage.setItem(progressKey, JSON.stringify({
+          scenarioId: 'the-inventory-that-changed-everything',
+          currentStage: 'assessment',
+          completedStages: ['client-interview', 'digital-evidence', 'bail-draft', 'court-hearing']
+        }));
+        // Simulate assessment completion by setting the total score
+        localStorage.setItem('assessment_total_score', '85%');
+        break;
       case 'all-completed':
         localStorage.setItem(progressKey, JSON.stringify({
           scenarioId: 'the-inventory-that-changed-everything',
-          currentStage: 'court-hearing',
-          completedStages: ['client-interview', 'digital-evidence', 'bail-draft']
+          currentStage: 'assessment',
+          completedStages: ['client-interview', 'digital-evidence', 'bail-draft', 'court-hearing', 'assessment']
         }));
+        // Simulate assessment completion by setting the total score
+        localStorage.setItem('assessment_total_score', '85%');
         break;
       case 'reset':
         localStorage.removeItem(progressKey);
@@ -83,6 +94,12 @@ const ProgressTest: React.FC = () => {
                 className="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors"
               >
                 Court Hearing
+              </button>
+              <button 
+                onClick={() => updateProgress('assessment')}
+                className="w-full px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors"
+              >
+                Assessment
               </button>
               <button 
                 onClick={() => updateProgress('all-completed')}

@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate - Dharmasikhara Assessment</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #c0392b;
+            --gray-color: #95a5a6;
+            --gold-color: #d4af37;
+            --silver-color: #c0c0c0;
+            --bronze-color: #cd7f32;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf9 100%);
+            min-height: 100vh;
+            padding: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+        
+        .certificate-wrapper {
+            position: relative;
+            perspective: 1000px;
+        }
+        
+        .certificate {
+            background: linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%);
+            border: 20px solid;
+            border-image: linear-gradient(45deg, var(--gold-color), #f9e076, var(--gold-color)) 1;
+            border-radius: 15px;
+            padding: 50px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            position: relative;
+            text-align: center;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+        }
+        
+        .certificate:hover {
+            transform: rotateY(5deg) rotateX(5deg);
+        }
+        
+        .certificate::before {
+            content: "";
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            border: 2px solid var(--gold-color);
+            border-radius: 10px;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+        
+        .certificate-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(212, 175, 55, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(212, 175, 55, 0.05) 0%, transparent 20%);
+            pointer-events: none;
+            border-radius: 15px;
+        }
+        
+        .logo {
+            max-width: 180px;
+            margin: 0 auto 25px;
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));
+            transition: transform 0.3s ease;
+        }
+        
+        .logo:hover {
+            transform: scale(1.05);
+        }
+        
+        .certificate-header {
+            margin-bottom: 35px;
+            position: relative;
+        }
+        
+        .certificate-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .certificate-subtitle {
+            font-size: 1.4rem;
+            color: var(--dark-color);
+            margin-bottom: 35px;
+            font-weight: 500;
+        }
+        
+        .award-text {
+            font-size: 1.5rem;
+            margin: 35px 0;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .recipient-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin: 30px 0;
+            text-transform: capitalize;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            display: inline-block;
+        }
+        
+        .recipient-name::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--secondary-color), transparent);
+        }
+        
+        .achievement {
+            font-size: 1.3rem;
+            margin: 30px 0;
+            color: var(--dark-color);
+            line-height: 1.8;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .score-details {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 40px 0;
+            display: inline-block;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .score-item {
+            margin: 15px 0;
+            font-size: 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            width: 350px;
+            padding: 10px 20px;
+        }
+        
+        .score-label {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        .score-value {
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .badge-container {
+            margin: 40px 0;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .badge {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #ffd700;
+            margin: 10px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            min-width: 180px;
+        }
+        
+        .badge:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+        
+        .badge-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .badge.gold {
+            background: linear-gradient(135deg, #fff9e6 0%, #ffecb3 100%);
+            border-color: var(--gold-color);
+            color: var(--gold-color);
+        }
+        
+        .badge.gold .badge-icon {
+            color: var(--gold-color);
+        }
+        
+        .badge.silver {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-color: var(--silver-color);
+            color: var(--silver-color);
+        }
+        
+        .badge.silver .badge-icon {
+            color: var(--silver-color);
+        }
+        
+        .badge.bronze {
+            background: linear-gradient(135deg, #fff4e6 0%, #ffe0b3 100%);
+            border-color: var(--bronze-color);
+            color: var(--bronze-color);
+        }
+        
+        .badge.bronze .badge-icon {
+            color: var(--bronze-color);
+        }
+        
+        .certificate-footer {
+            margin-top: 50px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .signature {
+            text-align: center;
+            margin: 20px;
+        }
+        
+        .signature-line {
+            width: 250px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #333, transparent);
+            margin: 25px auto;
+        }
+        
+        .signature-text {
+            font-style: italic;
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+        
+        .date {
+            margin-top: 25px;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+        
+        .verification {
+            margin-top: 40px;
+            padding: 20px;
+            background: linear-gradient(135deg, #e8f4fc 0%, #d1e7f9 100%);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            border-left: 4px solid var(--secondary-color);
+        }
+        
+        .verification-id {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .btn-container {
+            text-align: center;
+            margin-top: 40px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            min-width: 200px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary-color), #2980b9);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color), #219653);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        @media (max-width: 768px) {
+            .certificate {
+                padding: 30px 20px;
+            }
+            
+            .certificate-title {
+                font-size: 2.2rem;
+            }
+            
+            .recipient-name {
+                font-size: 2rem;
+            }
+            
+            .achievement {
+                font-size: 1.1rem;
+            }
+            
+            .certificate-footer {
+                flex-direction: column;
+            }
+            
+            .score-item {
+                width: 100%;
+                flex-direction: column;
+                align-items: center;
+                gap: 5px;
+            }
+            
+            .btn-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="certificate-wrapper">
+            <div class="certificate">
+                <div class="certificate-pattern"></div>
+                
+                <img src="logo.jpg" alt="Dharmasikhara Logo" class="logo">
+                
+                <div class="certificate-header">
+                    <div class="certificate-title">CERTIFICATE OF COMPLETION</div>
+                    <div class="certificate-subtitle">Dharmasikhara Legal Competency Assessment</div>
+                </div>
+                
+                <div class="award-text">This certificate is proudly awarded to</div>
+                
+                <div class="recipient-name" id="recipient-name">[User Name]</div>
+                
+                <div class="achievement">
+                    For successfully completing the Legal Competency Assessment in the Theft/Bail Application Scenario
+                </div>
+                
+                <div class="score-details">
+                    <div class="score-item">
+                        <span class="score-label">Overall Score:</span>
+                        <span class="score-value" id="overall-score">0%</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="score-label">Performance Tier:</span>
+                        <span class="score-value" id="performance-tier">Not Calculated</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="score-label">Date Completed:</span>
+                        <span class="score-value" id="completion-date">Not Completed</span>
+                    </div>
+                </div>
+                
+                <div class="badge-container" id="badges-container">
+                    <!-- Badges will be dynamically inserted here -->
+                </div>
+                
+                <div class="certificate-footer">
+                    <div class="signature">
+                        <div class="signature-line"></div>
+                        <div class="signature-text">Authorized Representative</div>
+                        <div>Dharmasikhara Assessment Center</div>
+                    </div>
+                    
+                    <div class="signature">
+                        <div class="signature-line"></div>
+                        <div class="signature-text">Date</div>
+                        <div class="date" id="certificate-date">Not Completed</div>
+                    </div>
+                </div>
+                
+                <div class="verification">
+                    <p><span class="verification-id">Verification ID:</span> DS2025-001-85A</p>
+                    <p>This certificate can be verified at: www.dharmasikhara-assessment.com/verify/DS2025-001-85A</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="btn-container">
+            <a href="assessment_results.html" class="btn btn-primary">Back to Results</a>
+            <button class="btn btn-success" onclick="downloadCertificate()">Download Certificate</button>
+        </div>
+    </div>
+
+    <script>
+        // Get scores from localStorage (if available)
+        const totalScore = localStorage.getItem('assessment_total_score');
+        const performanceTier = localStorage.getItem('assessment_performance_tier');
+        const userName = localStorage.getItem('certificate_name');
+        
+        // Set certificate date to current date
+        const currentDate = new Date();
+        const formattedDate = currentDate.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+        
+        // Display user information
+        if (userName) {
+            document.getElementById('recipient-name').textContent = userName;
+        }
+        
+        if (totalScore) {
+            document.getElementById('overall-score').textContent = totalScore;
+        }
+        
+        if (performanceTier) {
+            document.getElementById('performance-tier').textContent = performanceTier;
+        }
+        
+        // Display completion date
+        document.getElementById('completion-date').textContent = formattedDate;
+        document.getElementById('certificate-date').textContent = formattedDate;
+        
+        // Display badges based on performance
+        function displayBadges() {
+            const badgesContainer = document.getElementById('badges-container');
+            let badgesHtml = '';
+            
+            // Parse the total score to get numeric value
+            let scoreValue = 0;
+            if (totalScore) {
+                scoreValue = parseInt(totalScore.replace('%', ''));
+            }
+            
+            // Assign badges based on score
+            if (scoreValue >= 90) {
+                // Gold badges for excellent performance
+                badgesHtml += `
+                    <div class="badge gold">
+                        <div class="badge-icon">🥇</div>
+                        <div>Gold Star Achievement</div>
+                    </div>
+                    <div class="badge gold">
+                        <div class="badge-icon">⚖️</div>
+                        <div>Guardian of Justice</div>
+                    </div>
+                    <div class="badge gold">
+                        <div class="badge-icon">🧠</div>
+                        <div>Analytical Mind</div>
+                    </div>
+                `;
+            } else if (scoreValue >= 80) {
+                // Silver badges for good performance
+                badgesHtml += `
+                    <div class="badge silver">
+                        <div class="badge-icon">🥈</div>
+                        <div>Silver Star Achievement</div>
+                    </div>
+                    <div class="badge silver">
+                        <div class="badge-icon">⚖️</div>
+                        <div>Guardian of Justice</div>
+                    </div>
+                    <div class="badge silver">
+                        <div class="badge-icon">🧠</div>
+                        <div>Analytical Mind</div>
+                    </div>
+                `;
+            } else if (scoreValue >= 70) {
+                // Bronze badge for satisfactory performance
+                badgesHtml += `
+                    <div class="badge bronze">
+                        <div class="badge-icon">🥉</div>
+                        <div>Bronze Star Achievement</div>
+                    </div>
+                `;
+            }
+            
+            badgesContainer.innerHTML = badgesHtml;
+        }
+        
+        // Initialize the certificate page
+        function initCertificate() {
+            displayBadges();
+        }
+        
+        // Download certificate as PDF (simulated)
+        function downloadCertificate() {
+            alert('Certificate download functionality would be implemented here.\nIn a real application, this would generate a PDF version of your certificate.');
+        }
+        
+        // Initialize the certificate page when the page loads
+        document.addEventListener('DOMContentLoaded', initCertificate);
+    </script>
+</body>
+</html>

@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import TestBailHearingScript from './TestBailHearingScript';
 
 const TestScenarios: React.FC = () => {
   const [scenarios, setScenarios] = useState<any[]>([]);
@@ -25,7 +27,23 @@ const TestScenarios: React.FC = () => {
       <p className="mb-4">Number of scenarios: {scenarios.length}</p>
       
       <div className="text-center py-8">
-        <p className="text-gray-600">Scenarios are temporarily unavailable. Please check back later.</p>
+        <p className="text-gray-600 mb-4">Scenarios are temporarily unavailable. Please check back later.</p>
+        
+        {/* Add link to courtroom simulation test */}
+        <div className="mt-8">
+          <Link 
+            to="/courtroom-simulation-test" 
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition"
+          >
+            Courtroom Simulation Test
+          </Link>
+        </div>
+      </div>
+      
+      {/* Add bail hearing script test */}
+      <div className="mt-12">
+        <h2 className="text-xl font-bold mb-4">Bail Hearing Script Test</h2>
+        <TestBailHearingScript />
       </div>
     </div>
   );

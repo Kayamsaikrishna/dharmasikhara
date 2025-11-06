@@ -57,6 +57,12 @@ const SubscriptionPage: React.FC = () => {
         
         // Fetch subscription plans
         const plansResponse = await fetch('/api/payments/plans');
+        
+        // Check if response is OK
+        if (!plansResponse.ok) {
+          throw new Error(`HTTP error! status: ${plansResponse.status}`);
+        }
+        
         const plansData = await plansResponse.json();
         
         if (plansData.success) {
@@ -69,6 +75,11 @@ const SubscriptionPage: React.FC = () => {
             'Authorization': `Bearer ${token}`
           }
         });
+        
+        // Check if response is OK
+        if (!subscriptionResponse.ok) {
+          throw new Error(`HTTP error! status: ${subscriptionResponse.status}`);
+        }
         
         const subscriptionData = await subscriptionResponse.json();
         

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate Name - Dharmasikhara Assessment</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #c0392b;
+            --gray-color: #95a5a6;
+            --gold-color: #d4af37;
+            --silver-color: #c0c0c0;
+            --bronze-color: #cd7f32;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf9 100%);
+            min-height: 100vh;
+            padding: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        .certificate-name-wrapper {
+            position: relative;
+            perspective: 1000px;
+        }
+        
+        .certificate-name-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+            position: relative;
+            text-align: center;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .certificate-name-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .certificate-name-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: linear-gradient(90deg, var(--gold-color), #f9e076, var(--gold-color));
+            border-radius: 20px 20px 0 0;
+        }
+        
+        .logo {
+            max-width: 150px;
+            margin: 0 auto 30px;
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));
+            transition: transform 0.3s ease;
+        }
+        
+        .logo:hover {
+            transform: scale(1.05);
+        }
+        
+        .card-header {
+            margin-bottom: 40px;
+        }
+        
+        .card-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        
+        .card-subtitle {
+            font-size: 1.2rem;
+            color: var(--dark-color);
+            margin-bottom: 10px;
+            font-weight: 400;
+        }
+        
+        .card-description {
+            font-size: 1.1rem;
+            color: var(--gray-color);
+            max-width: 600px;
+            margin: 0 auto 40px;
+            line-height: 1.8;
+        }
+        
+        .name-input-container {
+            margin: 40px 0;
+            text-align: left;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .input-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--dark-color);
+            font-size: 1.1rem;
+        }
+        
+        .name-input {
+            width: 100%;
+            padding: 18px 25px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+        
+        .name-input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
+            background: white;
+        }
+        
+        .input-hint {
+            font-size: 0.9rem;
+            color: var(--gray-color);
+            margin-top: 8px;
+            font-style: italic;
+        }
+        
+        .btn-container {
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .btn {
+            padding: 18px 45px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 8px 20px rgba(39, 174, 96, 0.3);
+            background: linear-gradient(135deg, var(--success-color), #219653);
+            min-width: 250px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(39, 174, 96, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.2);
+        }
+        
+        .back-link {
+            display: block;
+            margin-top: 25px;
+            color: var(--gray-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .back-link:hover {
+            color: var(--secondary-color);
+        }
+        
+        .decoration {
+            position: absolute;
+            opacity: 0.1;
+            z-index: -1;
+        }
+        
+        .decoration-1 {
+            top: 20px;
+            right: 30px;
+            font-size: 5rem;
+            transform: rotate(15deg);
+            color: var(--gold-color);
+        }
+        
+        .decoration-2 {
+            bottom: 20px;
+            left: 30px;
+            font-size: 5rem;
+            transform: rotate(-15deg);
+            color: var(--gold-color);
+        }
+        
+        @media (max-width: 768px) {
+            .certificate-name-card {
+                padding: 30px 20px;
+            }
+            
+            .card-title {
+                font-size: 2rem;
+            }
+            
+            .name-input {
+                padding: 15px 20px;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="certificate-name-wrapper">
+            <div class="certificate-name-card">
+                <div class="decoration decoration-1">📜</div>
+                <div class="decoration decoration-2">🏆</div>
+                
+                <img src="logo.jpg" alt="Dharmasikhara Logo" class="logo">
+                
+                <div class="card-header">
+                    <div class="card-title">Certificate Name</div>
+                    <div class="card-subtitle">Dharmasikhara Legal Competency Assessment</div>
+                    <div class="card-description">
+                        Please enter your full name as you would like it to appear on your certificate of completion.
+                    </div>
+                </div>
+                
+                <div class="name-input-container">
+                    <label for="certificate-name" class="input-label">Your Full Name</label>
+                    <input 
+                        type="text" 
+                        id="certificate-name" 
+                        class="name-input" 
+                        placeholder="Enter your full name"
+                        maxlength="50"
+                    >
+                    <div class="input-hint">This name will appear on your certificate exactly as entered</div>
+                </div>
+                
+                <div class="btn-container">
+                    <button class="btn" onclick="generateCertificate()" id="generate-btn" disabled>
+                        Generate Certificate
+                    </button>
+                </div>
+                
+                <a href="assessment_results.html" class="back-link">← Back to Results</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Enable/disable button based on input
+        document.getElementById('certificate-name').addEventListener('input', function() {
+            const name = this.value.trim();
+            const button = document.getElementById('generate-btn');
+            
+            if (name.length > 0) {
+                button.disabled = false;
+                button.textContent = 'Generate Certificate';
+            } else {
+                button.disabled = true;
+                button.textContent = 'Generate Certificate';
+            }
+        });
+        
+        // Generate certificate
+        function generateCertificate() {
+            const nameInput = document.getElementById('certificate-name');
+            const name = nameInput.value.trim();
+            const button = document.getElementById('generate-btn');
+            
+            if (name.length === 0) {
+                alert('Please enter your name');
+                return;
+            }
+            
+            // Save name to localStorage
+            localStorage.setItem('certificate_name', name);
+            
+            // Show loading state
+            button.disabled = true;
+            button.textContent = 'Generating...';
+            
+            // Simulate processing time
+            setTimeout(function() {
+                // Redirect to certificate page
+                window.location.href = 'certificate.html';
+            }, 1000);
+        }
+        
+        // Load existing name if available
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedName = localStorage.getItem('certificate_name');
+            if (savedName) {
+                document.getElementById('certificate-name').value = savedName;
+                document.getElementById('generate-btn').disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

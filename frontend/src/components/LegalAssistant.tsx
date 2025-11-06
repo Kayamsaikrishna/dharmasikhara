@@ -23,22 +23,6 @@ interface Message {
   sources?: string[];
 }
 
-interface LegalResearch {
-  topic: string;
-  jurisdiction: string;
-  summary: string;
-  caseLaw: any[];
-  statutes: any[];
-  legalPrinciples: string[];
-  suggestedReading: string[];
-}
-
-interface LegalDocument {
-  documentType: string;
-  generatedDocument: string;
-  timestamp: string;
-}
-
 interface DocumentAnalysis {
   document_length: number;
   token_count: number;
@@ -56,12 +40,12 @@ interface DocumentAnalysis {
 }
 
 const LegalAssistant: React.FC = () => {
-  const { t, language } = useLanguage();
+  const { language } = useLanguage(); // Removed unused 't' variable
   const { token, isTokenExpired, logout, chatHistory, addChatHistory, updateChatHistory, deleteChatHistory } = useUser();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: 'Hello! I am your AI Legal Assistant powered by InCaseLawBERT. How can I help you with your legal questions today?',
+      text: 'Hello! I am your AI Legal Assistant. How can I help you with your legal questions today?',
       sender: 'ai',
       timestamp: new Date()
     }
@@ -69,28 +53,19 @@ const LegalAssistant: React.FC = () => {
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [researchTopic, setResearchTopic] = useState('');
-  const [researchJurisdiction, setResearchJurisdiction] = useState('india');
-  const [showResearchForm, setShowResearchForm] = useState(false);
-  const [legalResearch, setLegalResearch] = useState<LegalResearch | null>(null);
-  const [documentType, setDocumentType] = useState('');
-  const [documentDetails, setDocumentDetails] = useState('');
-  const [showDocumentForm, setShowDocumentForm] = useState(false);
-  const [generatedDocument, setGeneratedDocument] = useState<LegalDocument | null>(null);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [documentContext, setDocumentContext] = useState<string>('');
   const [analysisResult, setAnalysisResult] = useState<DocumentAnalysis | null>(null);
-  const [showDocumentAnalysis, setShowDocumentAnalysis] = useState(false);
-  const [activeTab, setActiveTab] = useState<'chat' | 'document' | 'summary' | 'keypoints' | 'sections'>('chat');
+  const [activeTab, setActiveTab] = useState<'chat' | 'document' | 'summary' | 'keypoints' | 'sections' | 'full'>('chat');
   const [currentChatId, setCurrentChatId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<any>(null);
 
   // Memoize expensive computations
-  const memoizedMessages = React.useMemo(() => messages, [messages.length]);
+  const memoizedMessages = React.useMemo(() => messages, [messages]); // Fixed dependency array
 
   // Auto-scroll to bottom of messages with optimized scrolling
   useEffect(() => {
@@ -282,12 +257,11 @@ const LegalAssistant: React.FC = () => {
         
         if (data.success) {
           setAnalysisResult(data.data);
-          setShowDocumentAnalysis(true);
           
           // Add a message to inform the user that the document has been analyzed
           const aiMessage: Message = {
             id: Date.now().toString(),
-            text: `I've analyzed your document. It appears to be a ${data.data.document_type} with ${data.data.document_length} characters. I've identified ${data.data.key_terms.length} key legal terms and provided a summary. You can now ask me questions about this document.`,
+            text: `I've analyzed your document. It appears to be a ${data.data.document_type}. I've identified ${data.data.key_terms.length} key legal terms and provided a summary. You can now ask me questions about this document. Try asking about the key points, legal provisions, or specific sections you're interested in.`,
             sender: 'ai',
             timestamp: new Date(),
             legalCategory: data.data.document_type,
@@ -384,110 +358,6 @@ const LegalAssistant: React.FC = () => {
     }
   };
 
-  const handleLegalResearch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!researchTopic.trim()) return;
-    
-    setIsLoading(true);
-    setError('');
-    setLegalResearch(null);
-
-    try {
-      // Check if token exists and is valid (required for legal research)
-      if (!token || isTokenExpired()) {
-        setError('Authentication required for legal research. Please log in.');
-        return;
-      }
-      
-      const response = await fetch('/api/ai/legal-research', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ 
-          topic: researchTopic,
-          jurisdiction: researchJurisdiction
-        })
-      });
-
-      const data = await response.json();
-
-      // Handle token expiration
-      if (response.status === 403 && data.message === 'Invalid or expired token') {
-        setError('Session expired. Please log in again.');
-        logout();
-        window.location.href = '/login';
-        return;
-      }
-
-      if (data.success) {
-        setLegalResearch(data.data);
-        setShowResearchForm(false);
-      } else {
-        setError(data.message || 'Failed to conduct legal research');
-      }
-    } catch (err) {
-      setError('Failed to connect to the server');
-      console.error('Legal research error:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleGenerateDocument = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!documentType || !documentDetails.trim()) return;
-    
-    setIsLoading(true);
-    setError('');
-    setGeneratedDocument(null);
-
-    try {
-      // Check if token exists and is valid (required for document generation)
-      if (!token || isTokenExpired()) {
-        setError('Authentication required for document generation. Please log in.');
-        return;
-      }
-      
-      const response = await fetch('/api/ai/generate-document', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ 
-          documentType,
-          details: documentDetails
-        })
-      });
-
-      const data = await response.json();
-
-      // Handle token expiration
-      if (response.status === 403 && data.message === 'Invalid or expired token') {
-        setError('Session expired. Please log in again.');
-        logout();
-        window.location.href = '/login';
-        return;
-      }
-
-      if (data.success) {
-        setGeneratedDocument(data.data);
-        setShowDocumentForm(false);
-      } else {
-        setError(data.message || 'Failed to generate legal document');
-      }
-    } catch (err) {
-      setError('Failed to connect to the server');
-      console.error('Generate document error:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handleTextToSpeech = async (text: string) => {
     if (isSpeaking) {
       textToSpeech.cancel();
@@ -521,7 +391,7 @@ const LegalAssistant: React.FC = () => {
     setMessages([
       {
         id: '1',
-        text: 'Hello! I am your AI Legal Assistant powered by InCaseLawBERT. How can I help you with your legal questions today?',
+        text: 'Hello! I am your AI Legal Assistant. How can I help you with your legal questions today?',
         sender: 'ai',
         timestamp: new Date()
       }
@@ -549,9 +419,6 @@ const LegalAssistant: React.FC = () => {
         <div className="container mx-auto flex justify-between items-center">
           <h2 className="text-xl font-bold">Legal Assistant</h2>
           <div className="flex items-center space-x-4">
-            <span className="text-xs bg-indigo-600 px-2 py-1 rounded-full">
-              Powered by InCaseLawBERT
-            </span>
             {(token && !isTokenExpired()) && (
               <div className="flex space-x-2">
                 <button 
@@ -608,20 +475,8 @@ const LegalAssistant: React.FC = () => {
           </div>
 
           <div className="mb-6">
-            <h2 className="text-lg font-semibold mb-3">Quick Actions</h2>
             <div className="space-y-2">
-              <button
-                onClick={() => setShowResearchForm(true)}
-                className="w-full text-left px-3 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-md transition duration-300"
-              >
-                Legal Research
-              </button>
-              <button
-                onClick={() => setShowDocumentForm(true)}
-                className="w-full text-left px-3 py-2 text-sm bg-purple-600 hover:bg-purple-700 text-white rounded-md transition duration-300"
-              >
-                Generate Document
-              </button>
+
             </div>
           </div>
 
@@ -721,6 +576,17 @@ const LegalAssistant: React.FC = () => {
                     }`}
                   >
                     Document Analysis
+                  </button>
+                  {/* Add a new tab for full document content */}
+                  <button
+                    onClick={() => setActiveTab('full')}
+                    className={`px-4 py-2 text-sm font-medium ${
+                      activeTab === 'full'
+                        ? 'text-indigo-600 border-b-2 border-indigo-600'
+                        : 'text-gray-500 hover:text-gray-700'
+                    }`}
+                  >
+                    Full Document
                   </button>
                 </>
               )}
@@ -894,8 +760,13 @@ const LegalAssistant: React.FC = () => {
                       <p className="text-gray-800">{analysisResult.document_type}</p>
                     </div>
                     <div className="bg-indigo-50 p-4 rounded-lg">
-                      <h3 className="font-semibold text-indigo-700 mb-2">Document Length</h3>
-                      <p className="text-gray-800">{analysisResult.document_length} characters</p>
+                      <h3 className="font-semibold text-indigo-700 mb-2">Key Information</h3>
+                      <ul className="text-gray-800 text-sm space-y-1">
+                        <li>{analysisResult.key_terms?.length || 0} Key Legal Terms</li>
+                        <li>{analysisResult.parties_involved?.length || 0} Parties Involved</li>
+                        <li>{analysisResult.key_dates?.length || 0} Important Dates</li>
+                        <li>{analysisResult.legal_provisions?.length || 0} Legal Provisions</li>
+                      </ul>
                     </div>
                   </div>
 
@@ -951,7 +822,20 @@ const LegalAssistant: React.FC = () => {
                 <div className="max-w-4xl mx-auto">
                   <h2 className="text-xl font-bold mb-4 text-indigo-700">Document Summary</h2>
                   <div className="bg-gray-50 p-6 rounded-lg">
-                    <p className="text-gray-800 whitespace-pre-wrap">{analysisResult.summary}</p>
+                    <div className="prose max-w-none">
+                      <p className="text-gray-800 whitespace-pre-line leading-relaxed">
+                        {analysisResult.summary || 'No summary available.'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-100">
+                    <h3 className="font-semibold text-blue-800 mb-2">About this Summary</h3>
+                    <p className="text-sm text-blue-700">
+                      This comprehensive summary provides an overview of the key points, structure, and important provisions 
+                      from your document. It combines the introduction, key sections, and conclusion to give you a complete 
+                      understanding of the document's content. Ask specific questions about any part of the document for 
+                      more detailed information.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -1013,13 +897,35 @@ const LegalAssistant: React.FC = () => {
                   <h2 className="text-xl font-bold mb-4 text-indigo-700">Legal Sections</h2>
                   <div className="bg-gray-50 p-6 rounded-lg">
                     <h3 className="text-lg font-semibold mb-3 text-indigo-700">Legal Provisions</h3>
-                    <ul className="space-y-2">
-                      {analysisResult.legal_provisions.map((provision, index) => (
-                        <li key={index} className="text-gray-800">
-                          {provision}
-                        </li>
-                      ))}
-                    </ul>
+                    {analysisResult.legal_provisions && analysisResult.legal_provisions.length > 0 ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {analysisResult.legal_provisions.map((provision, index) => (
+                          <div key={index} className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                            <p className="text-gray-800 font-medium">{provision}</p>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-gray-500 italic">No specific legal provisions were identified in the document.</p>
+                    )}
+                    <p className="text-xs text-gray-500 mt-4">
+                      These are the legal provisions, sections, and references identified in your document. 
+                      You can ask specific questions about any of these provisions for more detailed information.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Add Full Document tab content */}
+            {activeTab === 'full' && documentContext && (
+              <div className="h-full overflow-y-auto p-4 bg-white">
+                <div className="max-w-4xl mx-auto">
+                  <h2 className="text-xl font-bold mb-4 text-indigo-700">Full Document Content</h2>
+                  <div className="bg-gray-50 p-6 rounded-lg">
+                    <pre className="text-gray-800 whitespace-pre-wrap font-sans">
+                      {documentContext}
+                    </pre>
                   </div>
                 </div>
               </div>
@@ -1028,154 +934,6 @@ const LegalAssistant: React.FC = () => {
         </div>
       </div>
 
-      {/* Legal Research Modal */}
-      {showResearchForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-md w-full p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold">Legal Research</h3>
-              <button
-                onClick={() => setShowResearchForm(false)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </div>
-            <form onSubmit={handleLegalResearch}>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Research Topic
-                </label>
-                <input
-                  type="text"
-                  value={researchTopic}
-                  onChange={(e) => setResearchTopic(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  placeholder="Enter research topic"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Jurisdiction
-                </label>
-                <select
-                  value={researchJurisdiction}
-                  onChange={(e) => setResearchJurisdiction(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                >
-                  <option value="india">India</option>
-                  <option value="delhi">Delhi</option>
-                  <option value="mumbai">Mumbai</option>
-                  <option value="kolkata">Kolkata</option>
-                  <option value="chennai">Chennai</option>
-                </select>
-              </div>
-              <div className="flex justify-end space-x-2">
-                <button
-                  type="button"
-                  onClick={() => setShowResearchForm(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-                >
-                  Research
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Document Generation Modal */}
-      {showDocumentForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-md w-full p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold">Generate Legal Document</h3>
-              <button
-                onClick={() => setShowDocumentForm(false)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </div>
-            <form onSubmit={handleGenerateDocument}>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Document Type
-                </label>
-                <select
-                  value={documentType}
-                  onChange={(e) => setDocumentType(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                >
-                  <option value="">Select document type</option>
-                  <option value="bail-application">Bail Application</option>
-                  <option value="legal-opinion">Legal Opinion</option>
-                  <option value="contract-draft">Contract Draft</option>
-                </select>
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Details
-                </label>
-                <textarea
-                  value={documentDetails}
-                  onChange={(e) => setDocumentDetails(e.target.value)}
-                  rows={4}
-                  className="w-full border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  placeholder="Enter document details"
-                />
-              </div>
-              <div className="flex justify-end space-x-2">
-                <button
-                  type="button"
-                  onClick={() => setShowDocumentForm(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-                >
-                  Generate
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

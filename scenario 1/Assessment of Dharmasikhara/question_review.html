@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question Review - Dharmasikhara Assessment</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #c0392b;
+            --gray-color: #95a5a6;
+            --section-a-color: #3498db;
+            --section-b-color: #9b59b6;
+            --section-c-color: #e67e22;
+            --section-d-color: #2ecc71;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf9 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--dark-color));
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+        }
+        
+        h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.3rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+            position: relative;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-weight: 300;
+            position: relative;
+        }
+        
+        .navigation-tabs {
+            display: flex;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab:hover {
+            background: #f8f9fa;
+        }
+        
+        .tab.active {
+            background: #e8f4fc;
+            border-bottom: 3px solid var(--secondary-color);
+            color: var(--secondary-color);
+        }
+        
+        .tab.section-a {
+            border-left: 5px solid var(--section-a-color);
+        }
+        
+        .tab.section-b {
+            border-left: 5px solid var(--section-b-color);
+        }
+        
+        .tab.section-c {
+            border-left: 5px solid var(--section-c-color);
+        }
+        
+        .tab.section-d {
+            border-left: 5px solid var(--section-d-color);
+        }
+        
+        .content-area {
+            background: linear-gradient(135deg, white 0%, #f8f9fa 100%);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .content-area::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: linear-gradient(90deg, var(--secondary-color), var(--accent-color));
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(52, 152, 219, 0.2);
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1.5rem;
+        }
+        
+        .question-container {
+            margin-bottom: 35px;
+            padding: 25px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border-left: 3px solid var(--section-a-color);
+        }
+        
+        .question-container.section-a {
+            border-left-color: var(--section-a-color);
+        }
+        
+        .question-container.section-b {
+            border-left-color: var(--section-b-color);
+        }
+        
+        .question-container.section-c {
+            border-left-color: var(--section-c-color);
+        }
+        
+        .question-container.section-d {
+            border-left-color: var(--section-d-color);
+        }
+        
+        .question-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .question-number {
+            display: inline-block;
+            background: var(--section-a-color);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            font-weight: 700;
+            margin-right: 20px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.2rem;
+        }
+        
+        .question-text {
+            font-size: 1.15rem;
+            font-weight: 500;
+            color: var(--dark-color);
+            flex: 1;
+        }
+        
+        .answer-section {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 10px;
+            background: #f8f9fa;
+        }
+        
+        .answer-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--dark-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-answer {
+            background: linear-gradient(135deg, #fff5f5 0%, #ffecec 100%);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid var(--accent-color);
+            margin-bottom: 15px;
+        }
+        
+        .correct-answer {
+            background: linear-gradient(135deg, #f0fff4 0%, #e6fdee 100%);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid var(--success-color);
+        }
+        
+        .explanation {
+            background: linear-gradient(135deg, #e8f4fc 0%, #d1e7f9 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 3px solid var(--secondary-color);
+        }
+        
+        .explanation-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+        
+        .btn-container {
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            min-width: 200px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary-color), #2980b9);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 30px;
+            color: var(--gray-color);
+            font-size: 0.95rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .contact-info {
+            margin-top: 15px;
+            font-size: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .navigation-tabs {
+                flex-direction: column;
+            }
+            
+            .content-area {
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Dharmasikhara Legal Competency Assessment</h1>
+            <div class="subtitle">Question Review & Correct Answers</div>
+        </header>
+        
+        <div class="navigation-tabs">
+            <div class="tab section-a active" onclick="showSection('legal_knowledge')">Section A: Legal Knowledge</div>
+            <div class="tab section-b" onclick="showSection('case_analysis')">Section B: Case Analysis</div>
+            <div class="tab section-c" onclick="showSection('ethical_judgment')">Section C: Ethical Judgment</div>
+            <div class="tab section-d" onclick="showSection('argument_quality')">Section D: Argument Quality</div>
+        </div>
+        
+        <div class="content-area">
+            <div id="legal_knowledge_section">
+                <h2 class="section-title">Section A: Legal Knowledge & Procedure (20%)</h2>
+                
+                <!-- Question 1 -->
+                <div class="question-container section-a">
+                    <div class="question-header">
+                        <span class="question-number">1</span>
+                        <span class="question-text">According to Section 437 of CrPC, which of the following is NOT a valid ground for granting bail in a theft case?</span>
+                    </div>
+                    <div class="answer-section">
+                        <div class="user-answer">
+                            <div class="answer-title">Your Answer:</div>
+                            <p>D) The complainant has agreed to withdraw the case</p>
+                        </div>
+                        <div class="correct-answer">
+                            <div class="answer-title">Correct Answer:</div>
+                            <p>D) The complainant has agreed to withdraw the case</p>
+                        </div>
+                    </div>
+                    <div class="explanation">
+                        <div class="explanation-title">Explanation:</div>
+                        <p>The complainant's willingness to withdraw the case is not a legal ground for granting bail. Courts consider factors such as the accused's likelihood to commit another offense, community ties, and prior criminal record when determining bail eligibility.</p>
+                    </div>
+                </div>
+                
+                <!-- Question 2 -->
+                <div class="question-container section-a">
+                    <div class="question-header">
+                        <span class="question-number">2</span>
+                        <span class="question-text">In the scenario, the prosecution relied heavily on CCTV footage. Which evidentiary principle should you invoke to challenge video evidence?</span>
+                    </div>
+                    <div class="answer-section">
+                        <div class="user-answer">
+                            <div class="answer-title">Your Answer:</div>
+                            <p>D) Both A and B</p>
+                        </div>
+                        <div class="correct-answer">
+                            <div class="answer-title">Correct Answer:</div>
+                            <p>D) Both A and B</p>
+                        </div>
+                    </div>
+                    <div class="explanation">
+                        <div class="explanation-title">Explanation:</div>
+                        <p>Video evidence can be challenged on multiple grounds. The Best Evidence Rule requires the original recording, and Chain of Custody ensures the evidence hasn't been tampered with or altered.</p>
+                    </div>
+                </div>
+                
+                <!-- Question 3 -->
+                <div class="question-container section-a">
+                    <div class="question-header">
+                        <span class="question-number">3</span>
+                        <span class="question-text">What is the maximum period for which a Magistrate can grant interim bail under Section 437 CrPC?</span>
+                    </div>
+                    <div class="answer-section">
+                        <div class="user-answer">
+                            <div class="answer-title">Your Answer:</div>
+                            <p>B) 15 days</p>
+                        </div>
+                        <div class="correct-answer">
+                            <div class="answer-title">Correct Answer:</div>
+                            <p>B) 15 days</p>
+                        </div>
+                    </div>
+                    <div class="explanation">
+                        <div class="explanation-title">Explanation:</div>
+                        <p>Section 437(2) CrPC specifies that interim bail cannot exceed 15 days. This limitation ensures that the accused's presence is secured for trial while preventing prolonged detention without proper judicial review.</p>
+                    </div>
+                </div>
+                
+                <!-- Question 4 -->
+                <div class="question-container section-a">
+                    <div class="question-header">
+                        <span class="question-number">4</span>
+                        <span class="question-text">Which of the following is a mandatory consideration for granting bail under Section 437 CrPC?</span>
+                    </div>
+                    <div class="answer-section">
+                        <div class="user-answer">
+                            <div class="answer-title">Your Answer:</div>
+                            <p>D) All of the above</p>
+                        </div>
+                        <div class="correct-answer">
+                            <div class="answer-title">Correct Answer:</div>
+                            <p>D) All of the above</p>
+                        </div>
+                    </div>
+                    <div class="explanation">
+                        <div class="explanation-title">Explanation:</div>
+                        <p>Section 437(1) CrPC enumerates specific factors the court must consider when granting bail, including the possibility of the accused influencing witnesses, the nature and gravity of the accusation, and the previous criminal record of the accused.</p>
+                    </div>
+                </div>
+                
+                <!-- Question 5 -->
+                <div class="question-container section-a">
+                    <div class="question-header">
+                        <span class="question-number">5</span>
+                        <span class="question-text">Under what circumstances can bail be cancelled under Section 437(5) CrPC?</span>
+                    </div>
+                    <div class="answer-section">
+                        <div class="user-answer">
+                            <div class="answer-title">Your Answer:</div>
+                            <p>D) All of the above</p>
+                        </div>
+                        <div class="correct-answer">
+                            <div class="answer-title">Correct Answer:</div>
+                            <p>D) All of the above</p>
+                        </div>
+                    </div>
+                    <div class="explanation">
+                        <div class="explanation-title">Explanation:</div>
+                        <p>Section 437(5) CrPC allows for cancellation of bail if the accused fails to appear before the court, misuses the concession granted, or if new evidence comes to light that affects the bail decision.</p>
+                    </div>
+                </div>
+                
+                <!-- Question 6 -->
+                <div class="question-container section-a">
+                    <div class="question-header">
+                        <span class="question-number">6</span>
+                        <span class="question-text">What is the pecuniary jurisdiction limit for a Metropolitan Magistrate to try a theft case?</span>
+                    </div>
+                    <div class="answer-section">
+                        <div class="user-answer">
+                            <div class="answer-title">Your Answer:</div>
+                            <p>D) No pecuniary limit</p>
+                        </div>
+                        <div class="correct-answer">
+                            <div class="answer-title">Correct Answer:</div>
+                            <p>D) No pecuniary limit</p>
+                        </div>
+                    </div>
+                    <div class="explanation">
+                        <div class="explanation-title">Explanation:</div>
+                        <p>According to the First Schedule of CrPC, a Metropolitan Magistrate has no pecuniary jurisdiction limit for trying theft cases. This differs from other courts which have specific monetary thresholds.</p>
+                    </div>
+                </div>
+                
+                <!-- Question 7 -->
+                <div class="question-container section-a">
+                    <div class="question-header">
+                        <span class="question-number">7</span>
+                        <span class="question-text">Which section of the CrPC deals with the procedure for taking evidence on commission?</span>
+                    </div>
+                    <div class="answer-section">
+                        <div class="user-answer">
+                            <div class="answer-title">Your Answer:</div>
+                            <p>A) Section 284</p>
+                        </div>
+                        <div class="correct-answer">
+                            <div class="answer-title">Correct Answer:</div>
+                            <p>A) Section 284</p>
+                        </div>
+                    </div>
+                    <div class="explanation">
+                        <div class="explanation-title">Explanation:</div>
+                        <p>Section 284 CrPC deals with the procedure for taking evidence on commission. This allows evidence to be recorded by one court on behalf of another when it is not practicable to bring the witness before the court where the case is pending.</p>
+                    </div>
+                </div>
+                
+                <!-- Question 8 -->
+                <div class="question-container section-a">
+                    <div class="question-header">
+                        <span class="question-number">8</span>
+                        <span class="question-text">What is the maximum punishment for theft under Section 379 IPC?</span>
+                    </div>
+                    <div class="answer-section">
+                        <div class="user-answer">
+                            <div class="answer-title">Your Answer:</div>
+                            <p>B) 3 years imprisonment</p>
+                        </div>
+                        <div class="correct-answer">
+                            <div class="answer-title">Correct Answer:</div>
+                            <p>B) 3 years imprisonment</p>
+                        </div>
+                    </div>
+                    <div class="explanation">
+                        <div class="explanation-title">Explanation:</div>
+                        <p>Section 379 IPC prescribes a maximum punishment of 3 years imprisonment for theft. This is the base offense, with aggravated forms of theft under other sections carrying higher punishments.</p>
+                    </div>
+                </div>
+                
+                <!-- Question 9 -->
+                <div class="question-container section-a">
+                    <div class="question-header">
+                        <span class="question-number">9</span>
+                        <span class="question-text">Which of the following is NOT a ground for refusing bail in a bailable offense?</span>
+                    </div>
+                    <div class="answer-section">
+                        <div class="user-answer">
+                            <div class="answer-title">Your Answer:</div>
+                            <p>D) None of the above (bail is a matter of right)</p>
+                        </div>
+                        <div class="correct-answer">
+                            <div class="answer-title">Correct Answer:</div>
+                            <p>D) None of the above (bail is a matter of right)</p>
+                        </div>
+                    </div>
+                    <div class="explanation">
+                        <div class="explanation-title">Explanation:</div>
+                        <p>In bailable offenses, bail is a matter of right, not discretion. The accused cannot be refused bail if they fulfill the requirements under the relevant provisions of the CrPC.</p>
+                    </div>
+                </div>
+                
+                <!-- Question 10 -->
+                <div class="question-container section-a">
+                    <div class="question-header">
+                        <span class="question-number">10</span>
+                        <span class="question-text">Under which provision can the court direct the accused to execute a bond with or without sureties for appearance?</span>
+                    </div>
+                    <div class="answer-section">
+                        <div class="user-answer">
+                            <div class="answer-title">Your Answer:</div>
+                            <p>D) Section 440 CrPC</p>
+                        </div>
+                        <div class="correct-answer">
+                            <div class="answer-title">Correct Answer:</div>
+                            <p>D) Section 440 CrPC</p>
+                        </div>
+                    </div>
+                    <div class="explanation">
+                        <div class="explanation-title">Explanation:</div>
+                        <p>Section 440 CrPC specifically deals with bonds for appearance. This provision allows the court to direct the accused to execute a bond with or without sureties for their appearance before the court.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="case_analysis_section" style="display: none;">
+                <h2 class="section-title">Section B: Case Analysis & Reasoning (30%)</h2>
+                
+                <!-- Question 11 -->
+                <div class="question-container section-b">
+                    <div class="question-header">
+                        <span class="question-number">11</span>
+                        <span class="question-text">[Multi-Select] Review this excerpt from your witness interview with the security guard: "I saw someone matching the accused's height leaving the office around 7 PM. The lights were dim, and I was about 30 feet away. I'm 70% sure it was him." Which THREE factors undermine the reliability of this identification?</span>
+                    </div>
+                    <div class="answer-section">
+                        <div class="user-answer">
+                            <div class="answer-title">Your Answer:</div>
+                            <p>A) Distance from the subject, B) Poor lighting conditions, C) Witness's expressed uncertainty (70% confidence)</p>
+                        </div>
+                        <div class="correct-answer">
+                            <div class="answer-title">Correct Answer:</div>
+                            <p>A) Distance from the subject, B) Poor lighting conditions, C) Witness's expressed uncertainty (70% confidence)</p>
+                        </div>
+                    </div>
+                    <div class="explanation">
+                        <div class="explanation-title">Explanation:</div>
+                        <p>Eyewitness identification reliability decreases with distance, poor lighting, and expressed uncertainty. These factors should be highlighted when challenging identification evidence in court.</p>
+                    </div>
+                </div>
+                
+                <!-- Question 12 -->
+                <div class="question-container section-b">
+                    <div class="question-header">
+                        <span class="question-number">12</span>
+                        <span class="question-text">[Multi-Select] The prosecution claims the accused had "motive and opportunity." You discovered that: The laptop was a personal device, not company property; The accused had recently received a performance bonus; Access logs show 3 other employees entered the room that evening. Which of the following are valid counter-arguments?</span>
+                    </div>
+                    <div class="answer-section">
+                        <div class="user-answer">
+                            <div class="answer-title">Your Answer:</div>
+                            <p>A) Lack of motive (had financial resources), B) Challenge to "opportunity" with alternative suspects, C) Ownership/theft classification questions</p>
+                        </div>
+                        <div class="correct-answer">
+                            <div class="answer-title">Correct Answer:</div>
+                            <p>A) Lack of motive (had financial resources), B) Challenge to "opportunity" with alternative suspects, C) Ownership/theft classification questions</p>
+                        </div>
+                    </div>
+                    <div class="explanation">
+                        <div class="explanation-title">Explanation:</div>
+                        <p>Effective counter-arguments should challenge the prosecution's core assertions. Demonstrating the accused had no financial motive, that other individuals had access (opportunity), and questioning whether a theft actually occurred are all valid legal strategies.</p>
+                    </div>
+                </div>
+                
+                <!-- Question 13 -->
+                <div class="question-container section-b">
+                    <div class="question-header">
+                        <span class="question-number">13</span>
+                        <span class="question-text">[Multi-Select] During investigation, which of the following evidence collection methods would strengthen your client's defense?</span>
+                    </div>
+                    <div class="answer-section">
+                        <div class="user-answer">
+                            <div class="answer-title">Your Answer:</div>
+                            <p>A) Obtaining access logs from the building management, B) Interviewing other employees who had access, C) Challenging the CCTV timestamp authenticity</p>
+                        </div>
+                        <div class="correct-answer">
+                            <div class="answer-title">Correct Answer:</div>
+                            <p>A) Obtaining access logs from the building management, B) Interviewing other employees who had access, C) Challenging the CCTV timestamp authenticity</p>
+                        </div>
+                    </div>
+                    <div class="explanation">
+                        <div class="explanation-title">Explanation:</div>
+                        <p>Building a strong defense requires gathering exculpatory evidence. Access logs can establish alternative suspects, witness interviews can provide alibi evidence, and challenging digital evidence authenticity can create reasonable doubt.</p>
+                    </div>
+                </div>
+                
+                <!-- Question 14 -->
+                <div class="question-container section-b">
+                    <div class="question-header">
+                        <span class="question-number">14</span>
+                        <span class="question-text">[Multi-Select] Which of the following are legally relevant considerations when challenging the prosecution's evidence?</span>
+                    </div>
+                    <div class="answer-section">
+                        <div class="user-answer">
+                            <div class="answer-title">Your Answer:</div>
+                            <p>A) Chain of custody of the CCTV footage, D) Time-stamping accuracy of digital evidence, E) Maintenance records of surveillance equipment</p>
+                        </div>
+                        <div class="correct-answer">
+                            <div class="answer-title">Correct Answer:</div>
+                            <p>A) Chain of custody of the CCTV footage, D) Time-stamping accuracy of digital evidence, E) Maintenance records of surveillance equipment</p>
+                        </div>
+                    </div>
+                    <div class="explanation">
+                        <div class="explanation-title">Explanation:</div>
+                        <p>Challenging evidence requires focusing on legally relevant factors. Chain of custody ensures evidence integrity, timestamp accuracy affects reliability, and maintenance records can reveal equipment malfunctions that compromise evidence quality.</p>
+                    </div>
+                </div>
+                
+                <!-- Question 15 -->
+                <div class="question-container section-b">
+                    <div class="question-header">
+                        <span class="question-number">15</span>
+                        <span class="question-text">[Multi-Select] Which factors would support an argument that the accused is not a flight risk?</span>
+                    </div>
+                    <div class="answer-section">
+                        <div class="user-answer">
+                            <div class="answer-title">Your Answer:</div>
+                            <p>A) Employment history of 5 years with the company, B) Family dependents residing with the accused, C) Surrender of passport to authorities, E) Community ties and social connections</p>
+                        </div>
+                        <div class="correct-answer">
+                            <div class="answer-title">Correct Answer:</div>
+                            <p>A) Employment history of 5 years with the company, B) Family dependents residing with the accused, C) Surrender of passport to authorities, E) Community ties and social connections</p>
+                        </div>
+                    </div>
+                    <div class="explanation">
+                        <div class="explanation-title">Explanation:</div>
+                        <p>Factors indicating strong community ties, stable employment, and family connections demonstrate that the accused has compelling reasons to remain in the jurisdiction. Surrendering travel documents further shows compliance with legal proceedings.</p>
+                    </div>
+                </div>
+                
+                <!-- Question 16 -->
+                <div class="question-container section-b">
+                    <div class="question-header">
+                        <span class="question-number">16</span>
+                        <span class="question-text">[Case-Based Reasoning] The prosecution claims the accused had "motive and opportunity." You discovered that: The laptop was a personal device, not company property; The accused had recently received a performance bonus; Access logs show 3 other employees entered the room that evening. Construct the strongest counter-argument. What is your PRIMARY line of defense?</span>
+                    </div>
+                    <div class="answer-section">
+                        <div class="user-answer">
+                            <div class="answer-title">Your Answer:</div>
+                            <p>Structures argument logically with evidence references</p>
+                        </div>
+                        <div class="correct-answer">
+                            <div class="answer-title">Correct Answer:</div>
+                            <p>Structures argument logically with evidence references</p>
+                        </div>
+                    </div>
+                    <div class="explanation">
+                        <div class="explanation-title">Explanation:</div>
+                        <p>The strongest counter-argument focuses on structuring a logical defense based on evidence. By systematically presenting facts that challenge the prosecution's narrative and establishing a coherent alternative explanation, attorneys can effectively undermine the case against their client.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="ethical_judgment_section" style="display: none;">
+                <h2 class="section-title">Section C: Ethical Judgment (25%)</h2>
+                
+                <!-- Question 17 -->
+                <div class="question-container section-c">
+                    <div class="question-header">
+                        <span class="question-number">17</span>
+                        <span class="question-text">[Situational Judgment] During case preparation, your client mentions: "I know who actually took the laptop, but revealing it would get my colleague fired. Can we just blame the poor CCTV quality?" Rank these responses from MOST to LEAST appropriate:</span>
+                    </div>
+                    <div class="answer-section">
+                        <div class="user-answer">
+                            <div class="answer-title">Your Answer:</div>
+                            <p>B) "Let me investigate independently. If there's alibi evidence, we use it; but I cannot knowingly present false defenses."</p>
+                        </div>
+                        <div class="correct-answer">
+                            <div class="answer-title">Correct Answer:</div>
+                            <p>B) "Let me investigate independently. If there's alibi evidence, we use it; but I cannot knowingly present false defenses."</p>
+                        </div>
+                    </div>
+                    <div class="explanation">
+                        <div class="explanation-title">Explanation:</div>
+                        <p>Ethical legal practice requires balancing client advocacy with professional responsibility. While protecting client confidentiality is important, knowingly presenting false defenses violates professional conduct rules.</p>
+                    </div>
+                </div>
+                
+                <!-- Question 18 -->
+                <div class="question-container section-c">
+                    <div class="question-header">
+                        <span class="question-number">18</span>
+                        <span class="question-text">You discover the CCTV timestamp was altered by 15 minutes, potentially exonerating your client. However, exposing this might reveal your client accessed the security system without authorization earlier that day. Do you:</span>
+                    </div>
+                    <div class="answer-section">
+                        <div class="user-answer">
+                            <div class="answer-title">Your Answer:</div>
+                            <p>A) Disclose the timestamp issue and address the access separately</p>
+                        </div>
+                        <div class="correct-answer">
+                            <div class="answer-title">Correct Answer:</div>
+                            <p>A) Disclose the timestamp issue and address the access separately</p>
+                        </div>
+                    </div>
+                    <div class="explanation">
+                        <div class="explanation-title">Explanation:</div>
+                        <p>Duty to correct false evidence outweighs collateral consequences. Client must be advised of risks associated with unauthorized access, but the primary obligation is to ensure accurate evidence is presented.</p>
+                    </div>
+                </div>
+                
+                <!-- Question 19 -->
+                <div class="question-container section-c">
+                    <div class="question-header">
+                        <span class="question-number">19</span>
+                        <span class="question-text">[Situational Judgment] The judge appears skeptical of your bail arguments and suggests you're merely trying to delay justice. How should you respond?</span>
+                    </div>
+                    <div class="answer-section">
+                        <div class="user-answer">
+                            <div class="answer-title">Your Answer:</div>
+                            <p>B) Respectfully explain the legal basis for bail considerations</p>
+                        </div>
+                        <div class="correct-answer">
+                            <div class="answer-title">Correct Answer:</div>
+                            <p>B) Respectfully explain the legal basis for bail considerations</p>
+                        </div>
+                    </div>
+                    <div class="explanation">
+                        <div class="explanation-title">Explanation:</div>
+                        <p>Maintaining professionalism and educating the court on legal standards is the appropriate response. Aggressive challenges can harm the client's case, while withdrawal abandons professional responsibility.</p>
+                    </div>
+                </div>
+                
+                <!-- Question 20 -->
+                <div class="question-container section-c">
+                    <div class="question-header">
+                        <span class="question-number">20</span>
+                        <span class="question-text">[Situational Judgment] Another lawyer offers to share confidential information about the prosecution's witnesses in exchange for information about your defense strategy. What is your response?</span>
+                    </div>
+                    <div class="answer-section">
+                        <div class="user-answer">
+                            <div class="answer-title">Your Answer:</div>
+                            <p>D) Decline and explain professional conduct rules</p>
+                        </div>
+                        <div class="correct-answer">
+                            <div class="answer-title">Correct Answer:</div>
+                            <p>D) Decline and explain professional conduct rules</p>
+                        </div>
+                    </div>
+                    <div class="explanation">
+                        <div class="explanation-title">Explanation:</div>
+                        <p>Accepting confidential information from opposing counsel violates professional conduct rules. Lawyers must maintain the integrity of the legal system by declining improper offers and, when appropriate, reporting violations.</p>
+                    </div>
+                </div>
+                
+                <!-- Question 21 -->
+                <div class="question-container section-c">
+                    <div class="question-header">
+                        <span class="question-number">21</span>
+                        <span class="question-text">[Situational Judgment] The client's family offers you a "gratitude bonus" of ₹50,000 if bail is granted. Your response should be:</span>
+                    </div>
+                    <div class="answer-section">
+                        <div class="user-answer">
+                            <div class="answer-title">Your Answer:</div>
+                            <p>B) Decline and explain fee arrangements must be predetermined</p>
+                        </div>
+                        <div class="correct-answer">
+                            <div class="answer-title">Correct Answer:</div>
+                            <p>B) Decline and explain fee arrangements must be predetermined</p>
+                        </div>
+                    </div>
+                    <div class="explanation">
+                        <div class="explanation-title">Explanation:</div>
+                        <p>Contingent fees tied to case outcomes are generally prohibited in criminal matters. Fee arrangements must be established in advance to avoid conflicts of interest and maintain professional integrity.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="argument_quality_section" style="display: none;">
+                <h2 class="section-title">Section D: Argument Quality Review (25%)</h2>
+                
+                <!-- Question 22 -->
+                <div class="question-container section-d">
+                    <div class="question-header">
+                        <span class="question-number">22</span>
+                        <span class="question-text">[Argument Deconstruction] Read this bail argument excerpt: "Your Honor, my client is innocent. The CCTV footage is unclear, and the police investigation was rushed. Many people have access to that room. Bail should be granted because the evidence is weak." Identify THREE specific weaknesses and rewrite the argument to address them.</span>
+                    </div>
+                    <div class="answer-section">
+                        <div class="user-answer">
+                            <div class="answer-title">Your Answer:</div>
+                            <p>Asserts innocence (inappropriate at bail stage), Lacks specific legal standard for bail, No affirmative facts supporting client's reliability</p>
+                        </div>
+                        <div class="correct-answer">
+                            <div class="answer-title">Correct Answer:</div>
+                            <p>Asserts innocence (inappropriate at bail stage), Lacks specific legal standard for bail, No affirmative facts supporting client's reliability</p>
+                        </div>
+                    </div>
+                    <div class="explanation">
+                        <div class="explanation-title">Explanation:</div>
+                        <p>Effective bail arguments focus on legal standards rather than factual innocence. They should present affirmative facts about the client's ties to the community, employment history, and compliance record to demonstrate they are not a flight risk.</p>
+                    </div>
+                </div>
+                
+                <!-- Question 23 -->
+                <div class="question-container section-d">
+                    <div class="question-header">
+                        <span class="question-number">23</span>
+                        <span class="question-text">[Reflective Practice] During the scenario, you chose to [USER'S ACTUAL CHOICE: e.g., "aggressively cross-examine the security guard"]. Explain: Why you made this decision (strategic reasoning); What legal principle or tactical advantage you sought; How you would adjust this approach if the judge had warned against aggressive tactics.</span>
+                    </div>
+                    <div class="answer-section">
+                        <div class="user-answer">
+                            <div class="answer-title">Your Answer:</div>
+                            <p>Sample response for open-ended question</p>
+                        </div>
+                        <div class="correct-answer">
+                            <div class="answer-title">Sample Answer:</div>
+                            <p>Effective legal practice requires strategic decision-making based on case facts. Cross-examination can challenge witness credibility, but must be balanced with judicial expectations and client interests. Alternative approaches might include redirect examination or written submissions.</p>
+                        </div>
+                    </div>
+                    <div class="explanation">
+                        <div class="explanation-title">Explanation:</div>
+                        <p>Reflective practice is essential for professional development. Attorneys should evaluate their tactical decisions, consider alternative approaches, and adapt strategies based on judicial feedback to best serve client interests.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="btn-container">
+                <a href="assessment_results.html" class="btn btn-primary">Back to Results</a>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Dharmasikhara Legal Competency Assessment System</p>
+            <div class="contact-info">
+                <p>Contact: kkavyaammulu@gmail.com | +91 7019357082</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Show section function
+        function showSection(sectionId) {
+            // Hide all sections
+            document.getElementById('legal_knowledge_section').style.display = 'none';
+            document.getElementById('case_analysis_section').style.display = 'none';
+            document.getElementById('ethical_judgment_section').style.display = 'none';
+            document.getElementById('argument_quality_section').style.display = 'none';
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected section
+            switch(sectionId) {
+                case 'legal_knowledge':
+                    document.getElementById('legal_knowledge_section').style.display = 'block';
+                    document.querySelector('.tab.section-a').classList.add('active');
+                    break;
+                case 'case_analysis':
+                    document.getElementById('case_analysis_section').style.display = 'block';
+                    document.querySelector('.tab.section-b').classList.add('active');
+                    break;
+                case 'ethical_judgment':
+                    document.getElementById('ethical_judgment_section').style.display = 'block';
+                    document.querySelector('.tab.section-c').classList.add('active');
+                    break;
+                case 'argument_quality':
+                    document.getElementById('argument_quality_section').style.display = 'block';
+                    document.querySelector('.tab.section-d').classList.add('active');
+                    break;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ethical Judgment - Dharmasikhara Assessment</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #c0392b;
+            --gray-color: #95a5a6;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f7fa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--dark-color));
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .assessment-info {
+            display: flex;
+            justify-content: space-between;
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .timer, .progress {
+            font-weight: bold;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background-color: #eee;
+            border-radius: 5px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary-color), var(--accent-color));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .content-area {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--secondary-color);
+        }
+        
+        .question-container {
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+        
+        .question-text {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        
+        .options-container {
+            margin-top: 15px;
+        }
+        
+        .option {
+            display: block;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .option:hover {
+            background-color: #e3f2fd;
+            border-color: var(--secondary-color);
+        }
+        
+        .option.selected {
+            background-color: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+        
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-prev {
+            background-color: var(--gray-color);
+            color: white;
+        }
+        
+        .btn-next {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .clue-btn {
+            background-color: var(--warning-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+        
+        .clue-btn:hover {
+            opacity: 0.9;
+        }
+        
+        .clue-warning {
+            display: none;
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 10px;
+            color: #856404;
+        }
+        
+        .clue-content {
+            display: none;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 10px;
+            color: #155724;
+        }
+        
+        .incorrect-answer {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: var(--gray-color);
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .assessment-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Dharmasikhara Legal Competency Assessment</h1>
+            <div class="subtitle">Section C: Ethical Judgment</div>
+        </header>
+        
+        <div class="assessment-info">
+            <div class="timer">
+                Time Remaining: <span id="time-display">10:00</span>
+            </div>
+            <div class="progress">
+                Progress: <span id="progress-text">0/5</span>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-area">
+            <h2 class="section-title">Ethical Judgment (25% of total assessment)</h2>
+            
+            <div class="question-container">
+                <div class="question-text">
+                    Q1. [Situational Judgment] During case preparation, your client mentions: "I know who actually took the laptop, but revealing it would get my colleague fired. Can we just blame the poor CCTV quality?" Rank these responses from MOST to LEAST appropriate:
+                </div>
+                <div class="options-container">
+                    <div class="option" data-question="q1" data-value="0">
+                        A) "I cannot build a defense on concealing exculpatory evidence. We must discuss ethical disclosure."
+                    </div>
+                    <div class="option" data-question="q1" data-value="1">
+                        B) "Let me investigate independently. If there's alibi evidence, we use it; but I cannot knowingly present false defenses."
+                    </div>
+                    <div class="option" data-question="q1" data-value="2">
+                        C) "Your loyalty is admirable, but withholding this information could result in your conviction. Let's explore options."
+                    </div>
+                    <div class="option" data-question="q1" data-value="3">
+                        D) "If you instruct me not to reveal it, I'm bound by client confidentiality. We'll focus only on CCTV weaknesses."
+                    </div>
+                </div>
+                <button class="clue-btn" data-question="q1">Show Clue</button>
+                <div class="clue-warning" id="clue-warning-q1">
+                    <strong>Warning:</strong> Using this clue will result in receiving only half marks for this question.
+                    <button class="btn" onclick="showClue('q1')">Continue</button>
+                    <button class="btn btn-prev" onclick="hideClueWarning('q1')">Cancel</button>
+                </div>
+                <div class="clue-content" id="clue-content-q1">
+                    <strong>Clue:</strong> Consider the ethical obligations of an advocate regarding truth and client confidentiality.
+                </div>
+            </div>
+            
+            <div class="question-container">
+                <div class="question-text">
+                    Q2. You discover the CCTV timestamp was altered by 15 minutes, potentially exonerating your client. However, exposing this might reveal your client accessed the security system without authorization earlier that day. Do you:
+                </div>
+                <div class="options-container">
+                    <div class="option" data-question="q2" data-value="0">
+                        A) Disclose the timestamp issue and address the access separately
+                    </div>
+                    <div class="option" data-question="q2" data-value="1">
+                        B) Remain silent to protect your client from additional charges
+                    </div>
+                    <div class="option" data-question="q2" data-value="2">
+                        C) Anonymously tip the court about the timestamp discrepancy
+                    </div>
+                    <div class="option" data-question="q2" data-value="3">
+                        D) Negotiate with prosecution to drop charges in exchange for non-disclosure
+                    </div>
+                </div>
+                <button class="clue-btn" data-question="q2">Show Clue</button>
+                <div class="clue-warning" id="clue-warning-q2">
+                    <strong>Warning:</strong> Using this clue will result in receiving only half marks for this question.
+                    <button class="btn" onclick="showClue('q2')">Continue</button>
+                    <button class="btn btn-prev" onclick="hideClueWarning('q2')">Cancel</button>
+                </div>
+                <div class="clue-content" id="clue-content-q2">
+                    <strong>Clue:</strong> Think about the advocate's duty to the court and the principle of full disclosure.
+                </div>
+            </div>
+            
+            <div class="question-container">
+                <div class="question-text">
+                    Q3. The judge appears skeptical of your bail arguments and suggests you're merely trying to delay justice. How should you respond?
+                </div>
+                <div class="options-container">
+                    <div class="option" data-question="q3" data-value="0">
+                        A) Aggressively challenge the judge's characterization
+                    </div>
+                    <div class="option" data-question="q3" data-value="1">
+                        B) Respectfully explain the legal basis for bail considerations
+                    </div>
+                    <div class="option" data-question="q3" data-value="2">
+                        C) Withdraw your bail application to avoid conflict
+                    </div>
+                    <div class="option" data-question="q3" data-value="3">
+                        D) Request a recess to reconsider your approach
+                    </div>
+                </div>
+                <button class="clue-btn" data-question="q3">Show Clue</button>
+                <div class="clue-warning" id="clue-warning-q3">
+                    <strong>Warning:</strong> Using this clue will result in receiving only half marks for this question.
+                    <button class="btn" onclick="showClue('q3')">Continue</button>
+                    <button class="btn btn-prev" onclick="hideClueWarning('q3')">Cancel</button>
+                </div>
+                <div class="clue-content" id="clue-content-q3">
+                    <strong>Clue:</strong> Consider the appropriate professional demeanor and advocacy techniques.
+                </div>
+            </div>
+            
+            <div class="question-container">
+                <div class="question-text">
+                    Q4. Another lawyer offers to share confidential information about the prosecution's witnesses in exchange for information about your defense strategy. What is your response?
+                </div>
+                <div class="options-container">
+                    <div class="option" data-question="q4" data-value="0">
+                        A) Accept the offer as it benefits your client
+                    </div>
+                    <div class="option" data-question="q4" data-value="1">
+                        B) Decline but ask for non-confidential information
+                    </div>
+                    <div class="option" data-question="q4" data-value="2">
+                        C) Report the offer to the Bar Council
+                    </div>
+                    <div class="option" data-question="q4" data-value="3">
+                        D) Decline and explain professional conduct rules
+                    </div>
+                </div>
+                <button class="clue-btn" data-question="q4">Show Clue</button>
+                <div class="clue-warning" id="clue-warning-q4">
+                    <strong>Warning:</strong> Using this clue will result in receiving only half marks for this question.
+                    <button class="btn" onclick="showClue('q4')">Continue</button>
+                    <button class="btn btn-prev" onclick="hideClueWarning('q4')">Cancel</button>
+                </div>
+                <div class="clue-content" id="clue-content-q4">
+                    <strong>Clue:</strong> Think about professional conduct rules and ethical obligations.
+                </div>
+            </div>
+            
+            <div class="question-container">
+                <div class="question-text">
+                    Q5. The client's family offers you a "gratitude bonus" of ₹50,000 if bail is granted. Your response should be:
+                </div>
+                <div class="options-container">
+                    <div class="option" data-question="q5" data-value="0">
+                        A) Accept but donate to legal aid to avoid conflict
+                    </div>
+                    <div class="option" data-question="q5" data-value="1">
+                        B) Decline and explain fee arrangements must be predetermined
+                    </div>
+                    <div class="option" data-question="q5" data-value="2">
+                        C) Accept only if bail is granted based on merit
+                    </div>
+                    <div class="option" data-question="q5" data-value="3">
+                        D) Defer decision until after case conclusion
+                    </div>
+                </div>
+                <button class="clue-btn" data-question="q5">Show Clue</button>
+                <div class="clue-warning" id="clue-warning-q5">
+                    <strong>Warning:</strong> Using this clue will result in receiving only half marks for this question.
+                    <button class="btn" onclick="showClue('q5')">Continue</button>
+                    <button class="btn btn-prev" onclick="hideClueWarning('q5')">Cancel</button>
+                </div>
+                <div class="clue-content" id="clue-content-q5">
+                    <strong>Clue:</strong> Consider the rules regarding fees and gifts to advocates.
+                </div>
+            </div>
+            
+            <div class="btn-container">
+                <button class="btn btn-prev" id="prev-section">Previous Section</button>
+                <button class="btn btn-next" id="next-section" disabled>Next Section</button>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Dharmasikhara Legal Competency Assessment System</p>
+            <p>Contact: kkavyaammulu@gmail.com | +91 7019357082</p>
+        </footer>
+    </div>
+
+    <script>
+        // Initialize section state
+        const sectionState = {
+            totalQuestions: 5,
+            answeredQuestions: 0,
+            responses: {},
+            cluesUsed: {},
+            timeRemaining: 25 * 60 // 25 minutes in seconds for Ethical Judgment section
+        };
+
+        // DOM elements
+        const timeDisplay = document.getElementById('time-display');
+        const progressText = document.getElementById('progress-text');
+        const progressFill = document.getElementById('progress-fill');
+        const prevSectionBtn = document.getElementById('prev-section');
+        const nextSectionBtn = document.getElementById('next-section');
+        const optionElements = document.querySelectorAll('.option');
+        const clueButtons = document.querySelectorAll('.clue-btn');
+        const textareas = document.querySelectorAll('textarea');
+
+        // Initialize the section
+        function initSection() {
+            // Set up option selection
+            optionElements.forEach(option => {
+                option.addEventListener('click', handleOptionSelect);
+            });
+
+            // Set up textarea input
+            textareas.forEach(textarea => {
+                textarea.addEventListener('input', handleTextareaInput);
+            });
+
+            // Set up clue buttons
+            clueButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const questionId = this.dataset.question;
+                    showClueWarning(questionId);
+                });
+            });
+
+            // Set up navigation buttons
+            prevSectionBtn.addEventListener('click', goToPreviousSection);
+            nextSectionBtn.addEventListener('click', goToNextSection);
+
+            // Start timer
+            startTimer();
+            
+            // Load previous responses if any
+            const savedResponses = localStorage.getItem('ethical_judgment_responses');
+            if (savedResponses) {
+                sectionState.responses = JSON.parse(savedResponses);
+                // Restore UI selections
+                Object.keys(sectionState.responses).forEach(questionId => {
+                    if (questionId === 'q5') {
+                        // Textarea question
+                        document.getElementById('q5-textarea').value = sectionState.responses[questionId];
+                    } else if (Array.isArray(sectionState.responses[questionId])) {
+                        // Multi-select question
+                        sectionState.responses[questionId].forEach(value => {
+                            const option = document.querySelector(`[data-question="${questionId}"][data-value="${value}"]`);
+                            if (option) {
+                                option.classList.add('selected');
+                            }
+                        });
+                    } else {
+                        // Single-select question
+                        const value = sectionState.responses[questionId];
+                        const option = document.querySelector(`[data-question="${questionId}"][data-value="${value}"]`);
+                        if (option) {
+                            option.classList.add('selected');
+                        }
+                    }
+                });
+                updateProgress();
+            }
+            
+            // Load clues used if any
+            const savedClues = localStorage.getItem('ethical_judgment_clues');
+            if (savedClues) {
+                sectionState.cluesUsed = JSON.parse(savedClues);
+                // Show clues that were previously used
+                Object.keys(sectionState.cluesUsed).forEach(questionId => {
+                    if (sectionState.cluesUsed[questionId]) {
+                        document.getElementById(`clue-content-${questionId}`).style.display = 'block';
+                        // Hide the clue button
+                        const clueBtn = document.querySelector(`.clue-btn[data-question="${questionId}"]`);
+                        if (clueBtn) clueBtn.style.display = 'none';
+                    }
+                });
+            }
+        }
+
+        // Handle option selection
+        function handleOptionSelect(event) {
+            const option = event.target;
+            const questionId = option.dataset.question;
+            
+            // Deselect others in the same question
+            const siblings = document.querySelectorAll(`[data-question="${questionId}"]`);
+            siblings.forEach(sib => sib.classList.remove('selected'));
+            
+            option.classList.add('selected');
+            sectionState.responses[questionId] = parseInt(option.dataset.value);
+            
+            updateProgress();
+        }
+
+        // Handle textarea input
+        function handleTextareaInput(event) {
+            const textarea = event.target;
+            const questionId = textarea.dataset.question;
+            
+            sectionState.responses[questionId] = textarea.value;
+            
+            updateProgress();
+        }
+
+        // Show clue warning
+        function showClueWarning(questionId) {
+            document.getElementById(`clue-warning-${questionId}`).style.display = 'block';
+        }
+
+        // Hide clue warning
+        function hideClueWarning(questionId) {
+            document.getElementById(`clue-warning-${questionId}`).style.display = 'none';
+        }
+
+        // Show clue content
+        function showClue(questionId) {
+            document.getElementById(`clue-warning-${questionId}`).style.display = 'none';
+            document.getElementById(`clue-content-${questionId}`).style.display = 'block';
+            
+            // Mark that clue was used for this question
+            sectionState.cluesUsed[questionId] = true;
+            
+            // Hide the clue button
+            const clueBtn = document.querySelector(`.clue-btn[data-question="${questionId}"]`);
+            if (clueBtn) clueBtn.style.display = 'none';
+        }
+
+        // Update progress tracking
+        function updateProgress() {
+            sectionState.answeredQuestions = Object.keys(sectionState.responses).length;
+            progressText.textContent = `${sectionState.answeredQuestions}/${sectionState.totalQuestions}`;
+            const progressPercent = (sectionState.answeredQuestions / sectionState.totalQuestions) * 100;
+            progressFill.style.width = `${progressPercent}%`;
+            
+            // Enable next button when all questions are answered
+            if (sectionState.answeredQuestions === sectionState.totalQuestions) {
+                nextSectionBtn.disabled = false;
+            }
+        }
+
+        // Timer functionality
+        function startTimer() {
+            const timer = setInterval(() => {
+                sectionState.timeRemaining--;
+                
+                // Update display
+                const minutes = Math.floor(sectionState.timeRemaining / 60);
+                const seconds = sectionState.timeRemaining % 60;
+                timeDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                
+                // Change color when time is running low (less than 2 minutes)
+                if (sectionState.timeRemaining < 2 * 60) {
+                    timeDisplay.style.color = '#e74c3c'; // Red color for urgency
+                    timeDisplay.style.fontWeight = 'bold';
+                }
+                
+                // Auto-submit when time runs out
+                if (sectionState.timeRemaining <= 0) {
+                    clearInterval(timer);
+                    alert('Time is up! Your answers have been automatically saved. Moving to the next section.');
+                    goToNextSection(true); // true indicates time expired
+                }
+            }, 1000);
+        }
+
+        // Go to previous section
+        function goToPreviousSection() {
+            // Check if the previous section is accessible
+            const caseAnalysisCompleted = localStorage.getItem('case_analysis_completed');
+            if (caseAnalysisCompleted === 'true') {
+                alert("You have already completed the Case Analysis section and cannot return to it.");
+                return;
+            }
+            
+            // Save responses and clues used to localStorage
+            localStorage.setItem('ethical_judgment_responses', JSON.stringify(sectionState.responses));
+            localStorage.setItem('ethical_judgment_clues', JSON.stringify(sectionState.cluesUsed));
+            
+            // Redirect to previous section
+            window.location.href = 'section_case_analysis.html';
+        }
+
+        // Go to next section with confirmation
+        function goToNextSection(timeExpired = false) {
+            // If time has expired, proceed automatically without confirmation
+            if (timeExpired) {
+                // Save responses and clues used to localStorage
+                localStorage.setItem('ethical_judgment_responses', JSON.stringify(sectionState.responses));
+                localStorage.setItem('ethical_judgment_clues', JSON.stringify(sectionState.cluesUsed));
+                // Mark this section as completed
+                localStorage.setItem('ethical_judgment_completed', 'true');
+                // Redirect to next section
+                window.location.href = 'section_argument_quality.html';
+                return;
+            }
+            
+            // Show confirmation dialog
+            if (confirm("Are you sure you want to proceed to the next section? You will not be able to return to this section once you leave.")) {
+                // Save responses and clues used to localStorage
+                localStorage.setItem('ethical_judgment_responses', JSON.stringify(sectionState.responses));
+                localStorage.setItem('ethical_judgment_clues', JSON.stringify(sectionState.cluesUsed));
+                // Mark this section as completed
+                localStorage.setItem('ethical_judgment_completed', 'true');
+                // Redirect to next section
+                window.location.href = 'section_argument_quality.html';
+            }
+        }
+        
+        // Check if user is trying to access a completed section
+        function checkSectionAccess() {
+            // Check if the required previous sections are completed
+            const legalKnowledgeCompleted = localStorage.getItem('legal_knowledge_completed');
+            const caseAnalysisCompleted = localStorage.getItem('case_analysis_completed');
+            
+            if (legalKnowledgeCompleted === 'true' && caseAnalysisCompleted === 'true') {
+                // User has completed both previous sections, they can access this section
+                return true;
+            }
+            // User hasn't completed the required previous sections
+            return false;
+        }
+
+        // Initialize the section when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user can access this section
+            if (!checkSectionAccess()) {
+                // Redirect to the last completed section or the first section
+                const legalKnowledgeCompleted = localStorage.getItem('legal_knowledge_completed');
+                const caseAnalysisCompleted = localStorage.getItem('case_analysis_completed');
+                
+                if (caseAnalysisCompleted === 'true') {
+                    window.location.href = 'section_case_analysis.html';
+                } else if (legalKnowledgeCompleted === 'true') {
+                    window.location.href = 'section_legal_knowledge.html';
+                } else {
+                    // This shouldn't happen, but redirect to first section just in case
+                    window.location.href = 'section_legal_knowledge.html';
+                }
+                return;
+            }
+            
+            initSection();
+        });
+
+    </script>
+</body>
+</html>

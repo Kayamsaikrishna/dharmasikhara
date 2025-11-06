@@ -16,7 +16,6 @@ const ClientInterview: React.FC = () => {
   const zoomedDocRef = useRef<any>(null);
   const [status, setStatus] = useState<string>('Ready');
   const [showWelcome, setShowWelcome] = useState<boolean>(true);
-  const [isAnimating, setIsAnimating] = useState<boolean>(false);
   const [currentDialogue, setCurrentDialogue] = useState<{ speaker: string; text: string }>({ speaker: '', text: '' });
   const [showDialogue, setShowDialogue] = useState<boolean>(false);
   const [zoomedDoc, setZoomedDoc] = useState<any>(null);
@@ -172,6 +171,52 @@ const ClientInterview: React.FC = () => {
     }, 3000);
   };
 
+  // Optimize Three.js rendering performance
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (canvas) {
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+      const renderer = new THREE.WebGLRenderer({ canvas });
+
+      // Set up lights
+      const ambientLight = new THREE.AmbientLight(0x404040);
+      const pointLight = new THREE.PointLight(0xffffff, 1, 100);
+      pointLight.position.set(50, 50, 50);
+
+      scene.add(ambientLight);
+      scene.add(pointLight);
+
+      lightsRef.current = { ambientLight, pointLight };
+      lightsBaselineRef.current = { ambientLight: ambientLight.clone(), pointLight: pointLight.clone() };
+
+      camera.position.z = cameraDistanceRef.current;
+      camera.position.y = cameraAngleRef.current;
+
+      cameraRef.current = camera;
+      rendererRef.current = renderer;
+
+      const animate = () => {
+        requestAnimationFrame(animate);
+        renderer.render(scene, camera);
+      };
+
+      animate();
+
+      const handleResize = () => {
+        camera.aspect = canvas.clientWidth / canvas.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+      };
+
+      window.addEventListener('resize', handleResize);
+
+      return () => {
+        window.removeEventListener('resize', handleResize);
+      };
+    }
+  }, []);
+
   // Add a debug function to simulate interview completion
   const simulateInterviewCompletion = () => {
     // Update progress in localStorage
@@ -231,8 +276,6 @@ const ClientInterview: React.FC = () => {
     rendererRef.current = renderer;
 
     const clock = new THREE.Clock();
-    let mouseX = 0, mouseY = 0;
-    let documents: any[] = [];
     let laptop: any, recorder: any;
 
     // Lighting
@@ -749,8 +792,8 @@ const ClientInterview: React.FC = () => {
     createRoom();
     createTable();
 
-    const chair1 = createChair(0, -2.2, 0);
-    const chair2 = createChair(0, 2.2, Math.PI);
+    createChair(0, -2.2, 0);
+    createChair(0, 2.2, Math.PI);
 
     lawyerRef.current = createHuman(0x1a1a2a, [0, 0.6, -1.8], true);
     clientRef.current = createHuman(0x3a3a4a, [0, 0.6, 1.8], false);
@@ -1192,7 +1235,8 @@ const ClientInterview: React.FC = () => {
       if (now - lastTime < 1000 / 30) return;
       lastTime = now;
       
-      const delta = clock.getDelta();
+      // Remove unused variable: delta
+      clock.getDelta();
       const time = clock.getElapsedTime();
 
       // Update camera position based on distance and angle
@@ -1254,7 +1298,7 @@ const ClientInterview: React.FC = () => {
       window.removeEventListener('keydown', onKeyDown);
       if (rendererRef.current) rendererRef.current.dispose();
     };
-  }, []);
+  }, [userInput]); // Add userInput to the dependency array
 
   const handleSpeechInput = () => {
     if (recognitionRef.current) {
@@ -1529,49 +1573,49 @@ const ClientInterview: React.FC = () => {
           <div className="bg-gray-800 p-4 rounded-lg">
             <h3 className="font-bold text-lg mb-2">{zoomedDoc.text || zoomedDoc.type}</h3>
             {zoomedDoc.type === 'case_file' && (
-              <div className="mt-4 text-sm space-y-2">
+              <div className="mt-4 text-base space-y-2">
                 <p><strong>Document Type:</strong> Case File</p>
                 <p><strong>Classification:</strong> Confidential</p>
                 <p><strong>Status:</strong> Active</p>
               </div>
             )}
             {zoomedDoc.type === 'evidence' && (
-              <div className="mt-4 text-sm space-y-2">
+              <div className="mt-4 text-base space-y-2">
                 <p><strong>Evidence ID:</strong> EV-2024-456</p>
                 <p><strong>Category:</strong> Physical Evidence</p>
                 <p><strong>Chain of Custody:</strong> Verified</p>
               </div>
             )}
             {zoomedDoc.type === 'witness' && (
-              <div className="mt-4 text-sm space-y-2">
+              <div className="mt-4 text-base space-y-2">
                 <p><strong>Witness:</strong> Jane Smith</p>
                 <p><strong>Statement Date:</strong> October 15, 2025</p>
                 <p><strong>Reliability:</strong> High</p>
               </div>
             )}
             {zoomedDoc.type === 'contract' && (
-              <div className="mt-4 text-sm space-y-2">
+              <div className="mt-4 text-base space-y-2">
                 <p><strong>Contract Type:</strong> Legal Agreement</p>
                 <p><strong>Parties:</strong> Multiple</p>
                 <p><strong>Status:</strong> Under Review</p>
               </div>
             )}
             {zoomedDoc.type === 'crime_scene' && (
-              <div className="mt-4 text-sm space-y-2">
+              <div className="mt-4 text-base space-y-2">
                 <p><strong>Location:</strong> 123 Main Street</p>
                 <p><strong>Date Captured:</strong> October 10, 2025</p>
                 <p><strong>Photographer:</strong> CSI Team A</p>
               </div>
             )}
             {zoomedDoc.type === 'suspect' && (
-              <div className="mt-4 text-sm space-y-2">
+              <div className="mt-4 text-base space-y-2">
                 <p><strong>Subject:</strong> Person of Interest</p>
                 <p><strong>ID Status:</strong> Confirmed</p>
                 <p><strong>Relevance:</strong> Primary</p>
               </div>
             )}
             {zoomedDoc.type === 'evidence_item' && (
-              <div className="mt-4 text-sm space-y-2">
+              <div className="mt-4 text-base space-y-2">
                 <p><strong>Item:</strong> Physical Evidence</p>
                 <p><strong>Collected:</strong> October 12, 2025</p>
                 <p><strong>Analysis:</strong> Complete</p>

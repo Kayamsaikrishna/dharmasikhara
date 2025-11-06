@@ -1,8 +1,8 @@
 const app = require('./app');
 const databaseService = require('./services/database');
 
-// Use port 5002 as default to align with project configuration
-const PORT = process.env.PORT || 5002;
+// Use port 5003 as default to align with project configuration
+const PORT = process.env.PORT || 5003;
 
 // Connect to all databases before starting the server
 databaseService.connectAll()

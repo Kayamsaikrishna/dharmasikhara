@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useUser } from '../contexts/UserContext';
+import { getUserProgress } from '../utils/progressApi';
 
 const SimulationEntrance = () => {
   const navigate = useNavigate();
+  const { user } = useUser();
   const [currentStep, setCurrentStep] = useState(0);
   const [savedProgress, setSavedProgress] = useState<any>(null);
   const [showProgressView, setShowProgressView] = useState(false);
   const [shouldShowProgressView, setShouldShowProgressView] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const steps = [
     {
@@ -41,6 +45,14 @@ const SimulationEntrance = () => {
       icon: "⚖️",
       time: "12-18 min",
       skills: ["Oral Advocacy", "Quick Thinking", "Professional Conduct"]
+    },
+    {
+      id: 'assessment',
+      title: "Legal Competency Assessment",
+      description: "Complete assessment to evaluate your legal knowledge and skills",
+      icon: "🎓",
+      time: "45 min",
+      skills: ["Legal Knowledge", "Case Analysis", "Ethical Judgment", "Argument Quality"]
     }
   ];
 
@@ -69,14 +81,53 @@ const SimulationEntrance = () => {
       title: "Court Hearing",
       description: "Present oral arguments before the magistrate.",
       icon: "⚖️"
+    },
+    {
+      title: "Legal Competency Assessment",
+      description: "Complete assessment to evaluate your legal knowledge and skills.",
+      icon: "🎓"
     }
   ];
 
   useEffect(() => {
-    // Check for saved progress
-    const progress = localStorage.getItem('scenario-progress-the-inventory-that-changed-everything');
-    if (progress) {
-      setSavedProgress(JSON.parse(progress));
+    // Check for saved progress from backend
+    const fetchProgress = async () => {
+      if (user) {
+        try {
+          setLoading(true);
+          // Use the scenario ID for "the inventory that changed everything"
+          const progress = await getUserProgress('the-inventory-that-changed-everything');
+          if (progress) {
+            setSavedProgress(progress);
+          }
+        } catch (error) {
+          console.error('Error fetching progress:', error);
+          // Fallback to localStorage for backward compatibility
+          const localProgress = localStorage.getItem('scenario-progress-the-inventory-that-changed-everything');
+          if (localProgress) {
+            setSavedProgress(JSON.parse(localProgress));
+          }
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        // For non-authenticated users, check localStorage
+        const progress = localStorage.getItem('scenario-progress-the-inventory-that-changed-everything');
+        if (progress) {
+          setSavedProgress(JSON.parse(progress));
+        }
+        setLoading(false);
+      }
+    };
+    
+    fetchProgress();
+  }, [user]);
+
+  useEffect(() => {
+    // If shouldShowProgressView is true, show progress view immediately
+    if (shouldShowProgressView) {
+      setShowProgressView(true);
+      return;
     }
     
     // Run the intro animation
@@ -112,6 +163,9 @@ const SimulationEntrance = () => {
       case 'court-hearing':
         navigate('/courtroom');
         break;
+      case 'assessment':
+        window.location.href = '/scenario1/Assessment of Dharmasikhara/assessment_start.html';
+        break;
       default:
         navigate('/client-interview');
     }
@@ -124,10 +178,20 @@ const SimulationEntrance = () => {
   };
 
   const handleShowProgress = () => {
-    // Reset animation and show progress view after animation completes
-    setCurrentStep(0);
-    setShowProgressView(false);
+    // Show progress view directly without animation
+    setShowProgressView(true);
     setShouldShowProgressView(true);
+  };
+  
+  // Check if assessment is completed
+  const isAssessmentCompleted = () => {
+    // Check if assessment is completed by looking at the progress data
+    if (savedProgress && savedProgress.completedStages) {
+      return savedProgress.completedStages.includes('assessment');
+    }
+    // Fallback to localStorage for backward compatibility
+    const assessmentScore = localStorage.getItem('assessment_total_score');
+    return !!assessmentScore;
   };
 
   // Show progress view only when animation is complete and shouldShowProgressView is true
@@ -161,7 +225,9 @@ const SimulationEntrance = () => {
 
             <div className="space-y-6">
               {steps.map((step, index) => {
-                const isCompleted = completedStages.includes(step.id);
+                const isCompleted = step.id === 'assessment' 
+                  ? isAssessmentCompleted() 
+                  : completedStages.includes(step.id);
                 const isCurrent = currentStage === step.id;
                 const isUnlocked = index === 0 || completedStages.includes(steps[index - 1].id);
                 
@@ -330,7 +396,7 @@ const SimulationEntrance = () => {
                 className="space-y-6"
               >
                 <p className="text-lg text-amber-200">
-                  This feature is currently in development and will be fully implemented in the next phase.
+                  You've completed the introduction to the legal simulation. Continue to the client interview to begin your journey, or pick up where you left off if you've made progress already.
                 </p>
                 
                 <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">

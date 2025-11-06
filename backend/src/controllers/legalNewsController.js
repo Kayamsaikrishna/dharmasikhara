@@ -668,6 +668,7 @@ const fetchBillsData = async () => {
 // Get latest legal news
 const getLegalNews = async (req, res) => {
   try {
+    console.log('Legal news request received');
     const { category, limit = 50 } = req.query;
     
     // Fetch legal news

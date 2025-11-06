@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useUser } from '../contexts/UserContext';
+import { getUserProgress } from '../utils/progressApi';
 import { 
   Clock, BookOpen, Users, Star, Play, Award, Target, FileText, 
   Scale, Eye, Lock, AlertTriangle, ChevronDown, ChevronUp,
@@ -9,30 +11,63 @@ import {
 
 const EnhancedScenarioDetail = () => {
   const navigate = useNavigate();
+  const { user } = useUser();
   const [expandedSections, setExpandedSections] = useState({
     caseOverview: true,
     characters: false,
     evidence: false,
     timeline: false
   });
-  // Load progress from localStorage
+  // Load progress from backend or localStorage
   const [userProgress, setUserProgress] = useState<{
     started: boolean;
     currentStage: string | null;
     completedStages: string[];
     lastAccessed: string | null;
-  }>(() => {
-    const savedProgress = localStorage.getItem('scenario-progress-the-inventory-that-changed-everything');
-    return savedProgress ? JSON.parse(savedProgress) : {
-      started: false,
-      currentStage: null,
-      completedStages: [],
-      lastAccessed: null
-    };
+  }>({
+    started: false,
+    currentStage: null,
+    completedStages: [],
+    lastAccessed: null
   });
 
+  // Fetch progress from backend or localStorage
   useEffect(() => {
-    // Save progress to localStorage whenever it changes
+    const fetchProgress = async () => {
+      if (user) {
+        try {
+          // For authenticated users, fetch from backend
+          const progress = await getUserProgress('the-inventory-that-changed-everything');
+          if (progress) {
+            setUserProgress({
+              started: true,
+              currentStage: progress.currentStage || null,
+              completedStages: progress.completedStages || [],
+              lastAccessed: progress.lastAccessed || null
+            });
+          }
+        } catch (error) {
+          console.error('Error fetching progress from backend:', error);
+          // Fallback to localStorage
+          const savedProgress = localStorage.getItem('scenario-progress-the-inventory-that-changed-everything');
+          if (savedProgress) {
+            setUserProgress(JSON.parse(savedProgress));
+          }
+        }
+      } else {
+        // For non-authenticated users, get from localStorage
+        const savedProgress = localStorage.getItem('scenario-progress-the-inventory-that-changed-everything');
+        if (savedProgress) {
+          setUserProgress(JSON.parse(savedProgress));
+        }
+      }
+    };
+
+    fetchProgress();
+  }, [user]);
+
+  useEffect(() => {
+    // Save progress to localStorage whenever it changes (for backward compatibility)
     localStorage.setItem('scenario-progress-the-inventory-that-changed-everything', JSON.stringify(userProgress));
   }, [userProgress]);
 
@@ -43,12 +78,28 @@ const EnhancedScenarioDetail = () => {
     }));
   };
 
-  const handleStageClick = (stage: string) => {
-    const progress = localStorage.getItem('scenario-progress-the-inventory-that-changed-everything');
-    let userProgress = progress ? JSON.parse(progress) : null;
+  const handleStageClick = async (stage: string) => {
+    let progress = null;
+    
+    if (user) {
+      try {
+        // For authenticated users, fetch from backend
+        const userProgress = await getUserProgress('the-inventory-that-changed-everything');
+        progress = userProgress;
+      } catch (error) {
+        console.error('Error fetching progress from backend:', error);
+        // Fallback to localStorage
+        const savedProgress = localStorage.getItem('scenario-progress-the-inventory-that-changed-everything');
+        progress = savedProgress ? JSON.parse(savedProgress) : null;
+      }
+    } else {
+      // For non-authenticated users, get from localStorage
+      const savedProgress = localStorage.getItem('scenario-progress-the-inventory-that-changed-everything');
+      progress = savedProgress ? JSON.parse(savedProgress) : null;
+    }
     
     // If no progress exists, redirect to simulation entrance
-    if (!userProgress) {
+    if (!progress) {
       navigate('/simulation-entrance');
       return;
     }

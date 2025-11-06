@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realistic 3D Virtual Courtroom</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow: hidden; background: #000; }
+        #container { width: 100vw; height: 100vh; position: relative; }
+        #canvas-container { width: 100%; height: 100%; }
+        
+        .header { 
+            position: absolute; top: 0; left: 0; right: 0; z-index: 50; 
+            background: linear-gradient(90deg, rgba(120,53,15,0.95), rgba(146,64,14,0.95)); 
+            backdrop-filter: blur(15px); border-bottom: 3px solid #d97706; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.7); padding: 16px 32px; 
+            display: flex; justify-content: space-between; align-items: center; 
+        }
+        .header-left { display: flex; align-items: center; gap: 16px; }
+        .logo { 
+            width: 56px; height: 56px; background: linear-gradient(135deg, #d97706, #b45309); 
+            border-radius: 12px; display: flex; align-items: center; justify-content: center; 
+            font-size: 28px; box-shadow: 0 6px 20px rgba(217,119,6,0.6); 
+        }
+        .header h1 { color: white; font-size: 24px; font-weight: 700; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+        .header p { color: #fcd34d; font-size: 13px; }
+        .header-right { display: flex; gap: 12px; }
+        .btn { 
+            padding: 10px 20px; border: none; border-radius: 10px; 
+            font-weight: 600; cursor: pointer; transition: all 0.3s; 
+            font-size: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); 
+        }
+        .btn-primary { background: linear-gradient(135deg, #d97706, #b45309); color: white; }
+        .btn-primary:hover { background: linear-gradient(135deg, #b45309, #92400e); transform: translateY(-2px); }
+        
+        .control-panel { 
+            position: absolute; right: 24px; top: 100px; 
+            background: linear-gradient(145deg, rgba(30,41,59,0.98), rgba(15,23,42,0.98)); 
+            border-radius: 20px; border: 2px solid #d97706; 
+            box-shadow: 0 25px 60px rgba(0,0,0,0.9); padding: 28px; 
+            width: 340px; max-height: calc(100vh - 160px); overflow-y: auto; z-index: 40; 
+        }
+        .control-panel.hidden { display: none; }
+        .control-section { margin-bottom: 28px; }
+        .control-title { 
+            color: #fbbf24; font-weight: 700; font-size: 17px; 
+            margin-bottom: 18px; display: flex; align-items: center; gap: 10px; 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5); 
+        }
+        .control-btn { 
+            width: 100%; padding: 14px 18px; border: none; border-radius: 12px; 
+            font-weight: 600; cursor: pointer; transition: all 0.3s; 
+            margin-bottom: 12px; display: flex; justify-content: space-between; 
+            align-items: center; font-size: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); 
+        }
+        .control-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.5); }
+        .control-btn.active { box-shadow: 0 0 20px rgba(59,130,246,0.6); }
+        .control-btn.yellow { background: linear-gradient(135deg, #ca8a04, #a16207); color: white; }
+        .control-btn.yellow:hover { background: linear-gradient(135deg, #a16207, #854d0e); }
+        .control-btn.blue { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; }
+        .control-btn.blue:hover { background: linear-gradient(135deg, #1d4ed8, #1e40af); }
+        .control-btn.purple { background: linear-gradient(135deg, #9333ea, #7e22ce); color: white; }
+        .control-btn.purple:hover { background: linear-gradient(135deg, #7e22ce, #6b21a8); }
+        .control-btn.green { background: linear-gradient(135deg, #16a34a, #15803d); color: white; }
+        .control-btn.green:hover { background: linear-gradient(135deg, #15803d, #166534); }
+        .control-btn.red { background: linear-gradient(135deg, #dc2626, #b91c1c); color: white; }
+        .control-btn.red:hover { background: linear-gradient(135deg, #b91c1c, #991b1b); }
+        .control-btn.gray { background: linear-gradient(135deg, #4b5563, #374151); color: white; }
+        .control-btn.gray:hover { background: linear-gradient(135deg, #374151, #1f2937); }
+        .control-btn.indigo { background: linear-gradient(135deg, #4338ca, #3730a3); color: white; }
+        .control-btn.indigo:hover { background: linear-gradient(135deg, #3730a3, #312e81); }
+        .control-btn.amber { background: linear-gradient(135deg, #d97706, #b45309); color: white; }
+        .control-btn.amber:hover { background: linear-gradient(135deg, #b45309, #92400e); }
+        .control-btn.teal { background: linear-gradient(135deg, #0d9488, #0f766e); color: white; }
+        .control-btn.teal:hover { background: linear-gradient(135deg, #0f766e, #115e59); }
+        
+        .camera-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .camera-btn { 
+            padding: 10px; border: none; border-radius: 8px; 
+            font-weight: 600; cursor: pointer; transition: all 0.3s; 
+            font-size: 12px; background: rgba(217,119,6,0.2); 
+            color: #fbbf24; border: 1px solid #d97706; 
+        }
+        .camera-btn:hover { background: rgba(217,119,6,0.4); transform: scale(1.05); }
+        
+        .keyboard-shortcuts { 
+            background: rgba(30,41,59,0.8); padding: 18px; 
+            border-radius: 12px; border: 1px solid #475569; 
+        }
+        .keyboard-shortcuts h4 { color: #fbbf24; font-size: 14px; margin-bottom: 14px; font-weight: 700; }
+        .shortcuts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px; color: #cbd5e1; }
+        kbd { 
+            background: linear-gradient(135deg, #475569, #334155); 
+            padding: 3px 8px; border-radius: 6px; font-family: monospace; 
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3); 
+        }
+        
+        .status-bar { 
+            position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%); 
+            background: rgba(15,23,42,0.98); backdrop-filter: blur(15px); 
+            padding: 14px 36px; border-radius: 999px; border: 2px solid #d97706; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.9); display: flex; 
+            align-items: center; gap: 28px; font-size: 14px; z-index: 30; 
+        }
+        .status-item { display: flex; align-items: center; gap: 10px; color: #cbd5e1; font-weight: 500; }
+        .status-dot { 
+            width: 10px; height: 10px; border-radius: 50%; 
+            box-shadow: 0 0 10px currentColor; 
+        }
+        .status-dot.yellow { background: #eab308; color: #eab308; }
+        .status-dot.blue { background: #3b82f6; color: #3b82f6; animation: pulse 2s infinite; }
+        .status-dot.green { background: #22c55e; color: #22c55e; }
+        .status-dot.red { background: #ef4444; color: #ef4444; }
+        .status-dot.gray { background: #6b7280; color: #6b7280; }
+        .status-dot.amber { background: #f59e0b; color: #f59e0b; }
+        .status-dot.indigo { background: #6366f1; color: #6366f1; }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.2); } }
+        
+        .info-panel { 
+            position: absolute; bottom: 28px; left: 28px; 
+            background: rgba(15,23,42,0.95); backdrop-filter: blur(15px); 
+            padding: 20px; border-radius: 16px; border: 1px solid #d97706; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.9); z-index: 30; 
+        }
+        .info-item { 
+            display: flex; align-items: center; gap: 10px; 
+            margin-bottom: 10px; font-size: 13px; color: #cbd5e1; font-weight: 500; 
+        }
+        .info-item:last-child { margin-bottom: 0; }
+        .color-dot { 
+            width: 14px; height: 14px; border-radius: 50%; 
+            box-shadow: 0 0 8px currentColor; 
+        }
+        
+        .welcome-panel { 
+            position: absolute; top: 100px; left: 28px; 
+            background: rgba(15,23,42,0.95); backdrop-filter: blur(15px); 
+            padding: 24px; border-radius: 16px; border: 2px solid #f59e0b; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.9); max-width: 420px; z-index: 30; 
+        }
+        .welcome-panel h3 { color: #fbbf24; font-size: 20px; margin-bottom: 10px; font-weight: 700; }
+        .welcome-panel p { color: white; font-size: 14px; margin-bottom: 14px; line-height: 1.5; }
+        .welcome-list { color: #cbd5e1; font-size: 13px; line-height: 1.8; }
+        .welcome-list p { margin-bottom: 6px; }
+        
+        .loading { 
+            position: absolute; inset: 0; display: flex; 
+            align-items: center; justify-content: center; 
+            background: linear-gradient(135deg, #0a0a0a, #1a1a1a); z-index: 100; 
+        }
+        .loading.hidden { display: none; }
+        .loading-content { text-align: center; }
+        .spinner { 
+            width: 80px; height: 80px; border: 5px solid #d97706; 
+            border-top-color: transparent; border-radius: 50%; 
+            animation: spin 1s linear infinite; margin: 0 auto 20px; 
+            box-shadow: 0 0 30px rgba(217,119,6,0.5); 
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading h2 { color: white; font-size: 28px; margin-bottom: 12px; font-weight: 700; }
+        .loading p { color: #fbbf24; font-size: 16px; }
+        
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: rgba(255,255,255,0.1); border-radius: 6px; }
+        ::-webkit-scrollbar-thumb { background: rgba(217,119,6,0.7); border-radius: 6px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(217,119,6,0.9); }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="loading" class="loading">
+            <div class="loading-content">
+                <div class="spinner"></div>
+                <h2>Loading Realistic Courtroom...</h2>
+                <p>Preparing 3D Environment & Assets</p>
+            </div>
+        </div>
+        
+        <div id="canvas-container"></div>
+        
+        <div class="header">
+            <div class="header-left">
+                <div class="logo">⚖️</div>
+                <div>
+                    <h1>Realistic 3D Virtual Courtroom</h1>
+                    <p>Cinematic Indian Court Simulation</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <button id="soundBtn" class="btn btn-primary" onclick="toggleSound()">🔊 Sound ON</button>
+                <button id="controlsBtn" class="btn btn-primary" onclick="toggleControls()">Hide Controls</button>
+            </div>
+        </div>
+        
+        <div id="controlPanel" class="control-panel">
+            <div class="control-section">
+                <div class="control-title"><span>🌍</span> Environment Controls</div>
+                <button id="lightsBtn" class="control-btn yellow active" onclick="toggleLights()">
+                    <span>☀️ Lights</span><span id="lightsStatus">ON</span>
+                </button>
+                <button id="fansBtn" class="control-btn blue active" onclick="toggleFans()">
+                    <span>🌀 Ceiling Fans</span><span id="fansStatus">ON</span>
+                </button>
+                <button id="nightBtn" class="control-btn indigo" onclick="toggleNightMode()">
+                    <span>🌙 Night Mode</span><span id="nightStatus">OFF</span>
+                </button>
+                <button id="doorBtn" class="control-btn gray" onclick="toggleDoor()">
+                    <span>🚪 Door</span><span id="doorStatus">CLOSED</span>
+                </button>
+            </div>
+            
+            <div class="control-section">
+                <div class="control-title"><span>⚖️</span> Courtroom Actions</div>
+                <button class="control-btn purple" onclick="triggerGavel()">
+                    <span>🔨 Bang Gavel</span>
+                </button>
+                <button id="witnessBtn" class="control-btn red" onclick="toggleWitness()">
+                    <span>👥 Witness Entry</span><span id="witnessStatus">ABSENT</span>
+                </button>
+            </div>
+            
+            <div class="control-section">
+                <div class="control-title"><span>📹</span> Camera Views</div>
+                <div class="camera-grid">
+                    <button class="camera-btn" onclick="setCameraView('judge')">⚖️ Judge</button>
+                    <button class="camera-btn" onclick="setCameraView('witness')">🎤 Witness</button>
+                    <button class="camera-btn" onclick="setCameraView('audience')">👥 Audience</button>
+                    <button class="camera-btn" onclick="setCameraView('free')">🎮 Free</button>
+                </div>
+                <button class="control-btn amber" onclick="resetCamera()" style="margin-top:12px;">
+                    <span>🏠 Reset View</span>
+                </button>
+            </div>
+            
+            <div class="keyboard-shortcuts">
+                <h4>⌨️ Keyboard Shortcuts</h4>
+                <div class="shortcuts-grid">
+                    <div><kbd>L</kbd> Lights</div>
+                    <div><kbd>F</kbd> Fans</div>
+                    <div><kbd>G</kbd> Gavel</div>
+                    <div><kbd>W</kbd> Witness</div>
+                    <div><kbd>D</kbd> Door</div>
+                    <div><kbd>N</kbd> Night</div>
+                    <div><kbd>R</kbd> Reset</div>
+                    <div><kbd>M</kbd> Mute</div>
+                    <div><kbd>1</kbd> Judge View</div>
+                    <div><kbd>2</kbd> Witness View</div>
+                    <div><kbd>3</kbd> Audience View</div>
+                    <div><kbd>4</kbd> Free View</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="status-bar">
+            <div class="status-item">
+                <div id="lightsIndicator" class="status-dot yellow"></div>
+                <span>Lights</span>
+            </div>
+            <div style="color:#475569;">|</div>
+            <div class="status-item">
+                <div id="fansIndicator" class="status-dot blue"></div>
+                <span>Fans</span>
+            </div>
+            <div style="color:#475569;">|</div>
+            <div class="status-item">
+                <div id="witnessIndicator" class="status-dot red"></div>
+                <span>Witness</span>
+            </div>
+            <div style="color:#475569;">|</div>
+            <div class="status-item">
+                <div id="modeIndicator" class="status-dot amber"></div>
+                <span id="modeText">Day</span>
+            </div>
+        </div>
+        
+        <div class="info-panel">
+            <div class="info-item">
+                <div class="color-dot" style="background:#d97706; color:#d97706;"></div>
+                <span>Judge's Bench</span>
+            </div>
+            <div class="info-item">
+                <div class="color-dot" style="background:#3b82f6; color:#3b82f6;"></div>
+                <span>Defense Table</span>
+            </div>
+            <div class="info-item">
+                <div class="color-dot" style="background:#ef4444; color:#ef4444;"></div>
+                <span>Prosecution Table</span>
+            </div>
+            <div class="info-item">
+                <div class="color-dot" style="background:#22c55e; color:#22c55e;"></div>
+                <span>Witness Stand</span>
+            </div>
+            <div class="info-item">
+                <div class="color-dot" style="background:#6b7280; color:#6b7280;"></div>
+                <span>Public Gallery</span>
+            </div>
+        </div>
+        
+        <div id="welcomePanel" class="welcome-panel">
+            <h3>👁️ Welcome to Realistic Virtual Courtroom</h3>
+            <p>Experience a cinematic, photorealistic 3D Indian courtroom environment with advanced lighting, animations, and interactive controls.</p>
+            <div class="welcome-list">
+                <p>✓ Drag to rotate camera (360°)</p>
+                <p>✓ Scroll to zoom in/out</p>
+                <p>✓ Press 'G' for realistic gavel sound</p>
+                <p>✓ Use number keys (1-4) for camera presets</p>
+                <p>✓ Toggle lights, fans, and witness entry</p>
+                <p>✓ Switch between day and night modes</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // ==================== CONFIGURATION ====================
+        const CONFIG = {
+            // Camera presets
+            cameras: {
+                judge: { pos: [0, 6, -20], target: [0, 4, -30] },
+                witness: { pos: [8, 5, -10], target: [12, 2, -15] },
+                audience: { pos: [0, 8, 20], target: [0, 3, -10] },
+                free: { pos: [0, 8, 25], target: [0, 3, -15] }
+            },
+            // Sound paths (replace with actual audio file URLs)
+            sounds: {
+                gavel: null, // Use oscillator for now
+                ambient: null
+            },
+            // Animation speeds
+            animation: {
+                gavelDuration: 0.4,
+                witnessDuration: 2.5,
+                doorDuration: 1.0,
+                lightTransition: 0.8
+            }
+        };
+        
+        // ==================== GLOBAL VARIABLES ====================
+        let scene, camera, renderer, clock;
+        let lights = [], fans = [], gavelObj, gavelHandle, witnessObj, doorObj;
+        let isDragging = false, previousMousePosition = { x: 0, y: 0 };
+        let audienceMembers = [];
+        let animationFrameId;
+        
+        let state = {
+            lightsOn: true,
+            fansOn: true,
+            witnessVisible: false,
+            soundOn: true,
+            doorOpen: false,
+            nightMode: false,
+            controlsVisible: true,
+            currentView: 'free'
+        };
+        
+        // ==================== INITIALIZATION ====================
+        function init() {
+            const container = document.getElementById('canvas-container');
+            
+            // Scene setup
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x1a1a1a);
+            scene.fog = new THREE.Fog(0x1a1a1a, 60, 180);
+            
+            // Camera setup
+            camera = new THREE.PerspectiveCamera(
+                50,
+                window.innerWidth / window.innerHeight,
+                0.1,
+                1000
+            );
+            camera.position.set(0, 8, 25);
+            camera.lookAt(0, 3, -15);
+            
+            // Renderer setup with enhanced settings
+            renderer = new THREE.WebGLRenderer({ 
+                antialias: true,
+                alpha: false
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.3;
+            renderer.outputEncoding = THREE.sRGBEncoding;
+            container.appendChild(renderer.domElement);
+            
+            clock = new THREE.Clock();
+            
+            // Build the courtroom
+            buildRealisticCourtroom();
+            setupAdvancedLighting();
+            setupControls();
+            
+            // Start animation loop
+            animate();
+            
+            // Window resize handler
+            window.addEventListener('resize', onWindowResize);
+            
+            // Hide loading screen
+            setTimeout(() => {
+                document.getElementById('loading').classList.add('hidden');
+            }, 500);
+        }
+        
+        // ==================== ANIMATION LOOP ====================
+        function animate() {
+            animationFrameId = requestAnimationFrame(animate);
+            
+            const delta = clock.getDelta();
+            
+            // Animate fans
+            if (state.fansOn) {
+                fans.forEach(fan => {
+                    if (fan) fan.rotation.y += 0.08;
+                });
+            }
+            
+            // Animate audience idle movements
+            audienceMembers.forEach((member, i) => {
+                if (member.head) {
+                    const time = clock.getElapsedTime();
+                    member.head.rotation.y = Math.sin(time * 0.5 + i * 0.3) * 0.1;
+                    member.head.rotation.x = Math.sin(time * 0.3 + i * 0.5) * 0.05;
+                }
+            });
+            
+            renderer.render(scene, camera);
+        }
+        
+        // ==================== COURTROOM CONSTRUCTION ====================
+        function buildRealisticCourtroom() {
+            // Floor - Polished marble with reflection
+            const floorGeometry = new THREE.PlaneGeometry(70, 90);
+            const floorMaterial = new THREE.MeshStandardMaterial({
+                color: 0x8B7355,
+                roughness: 0.3,
+                metalness: 0.4,
+                envMapIntensity: 0.5
+            });
+            const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+            floor.rotation.x = -Math.PI / 2;
+            floor.receiveShadow = true;
+            scene.add(floor);
+            
+            // Walls with texture
+            const wallMaterial = new THREE.MeshStandardMaterial({
+                color: 0xC8B895,
+                roughness: 0.85,
+                metalness: 0.05
+            });
+            
+            // Back wall
+            const backWall = new THREE.Mesh(
+                new THREE.BoxGeometry(70, 18, 1),
+                wallMaterial
+            );
+            backWall.position.set(0, 9, -45);
+            backWall.receiveShadow = true;
+            scene.add(backWall);
+            
+            // Side walls
+            const leftWall = new THREE.Mesh(
+                new THREE.BoxGeometry(1, 18, 90),
+                wallMaterial
+            );
+            leftWall.position.set(-35, 9, 0);
+            leftWall.receiveShadow = true;
+            scene.add(leftWall);
+            
+            const rightWall = new THREE.Mesh(
+                new THREE.BoxGeometry(1, 18, 90),
+                wallMaterial
+            );
+            rightWall.position.set(35, 9, 0);
+            rightWall.receiveShadow = true;
+            scene.add(rightWall);
+            
+            // Ceiling
+            const ceiling = new THREE.Mesh(
+                new THREE.PlaneGeometry(70, 90),
+                new THREE.MeshStandardMaterial({ 
+                    color: 0xF5F5DC, 
+                    roughness: 0.9,
+                    side: THREE.DoubleSide 
+                })
+            );
+            ceiling.rotation.x = Math.PI / 2;
+            ceiling.position.y = 18;
+            ceiling.receiveShadow = true;
+            scene.add(ceiling);
+            
+            // Build courtroom elements
+            createRealisticJudgeBench();
+            createRealisticWitnessStand();
+            createRealisticLawyerTable(-10, -10, 0x3b82f6, "Defense");
+            createRealisticLawyerTable(10, -10, 0xef4444, "Prosecution");
+            createRealisticAudienceGallery();
+            createRealisticCeilingFans();
+            createRealisticDoor();
+            createIndianEmblem();
+            createLadyJusticeStatue();
+            createJuryBoxes();
+            createAVScreen();
+            createPillars();
+        }
+        
+        // ==================== JUDGE'S BENCH ====================
+        function createRealisticJudgeBench() {
+            const group = new THREE.Group();
+            
+            // Main platform - elevated
+            const platformGeometry = new THREE.BoxGeometry(22, 2, 10);
+            const woodMaterial = new THREE.MeshStandardMaterial({
+                color: 0x5D4037,
+                roughness: 0.6,
+                metalness: 0.3
+            });
+            const platform = new THREE.Mesh(platformGeometry, woodMaterial);
+            platform.position.y = 1;
+            platform.castShadow = true;
+            platform.receiveShadow = true;
+            group.add(platform);
+            
+            // Desk top
+            const deskTop = new THREE.Mesh(
+                new THREE.BoxGeometry(20, 0.4, 8),
+                new THREE.MeshStandardMaterial({
+                    color: 0x6D4C41,
+                    roughness: 0.4,
+                    metalness: 0.4
+                })
+            );
+            deskTop.position.set(0, 2.8, 0);
+            deskTop.castShadow = true;
+            group.add(deskTop);
+            
+            // Front panel with carvings
+            const frontPanel = new THREE.Mesh(
+                new THREE.BoxGeometry(20, 1.6, 0.4),
+                new THREE.MeshStandardMaterial({
+                    color: 0x5D4037,
+                    roughness: 0.7
+                })
+            );
+            frontPanel.position.set(0, 2, 3.8);
+            group.add(frontPanel);
+            
+            // Decorative carvings
+            for (let i = -8; i <= 8; i += 4) {
+                const carving = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.3, 1.2, 0.3),
+                    new THREE.MeshStandardMaterial({ color: 0x3E2723 })
+                );
+                carving.position.set(i, 2, 4);
+                group.add(carving);
+            }
+            
+            // Judge's chair
+            const chairBase = new THREE.Mesh(
+                new THREE.BoxGeometry(2.5, 0.3, 2.5),
+                new THREE.MeshStandardMaterial({ color: 0x2C1810 })
+            );
+            chairBase.position.set(0, 2.5, -2.5);
+            chairBase.castShadow = true;
+            group.add(chairBase);
+            
+            const chairBack = new THREE.Mesh(
+                new THREE.BoxGeometry(2.5, 3, 0.4),
+                new THREE.MeshStandardMaterial({ color: 0x1A1A1A })
+            );
+            chairBack.position.set(0, 4, -3.5);
+            chairBack.castShadow = true;
+            group.add(chairBack);
+            
+            // Judge figure - body
+            const judgeBody = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.7, 0.9, 2.8, 12),
+                new THREE.MeshStandardMaterial({ color: 0x1A1A1A })
+            );
+            judgeBody.position.set(0, 4.2, -2.5);
+            judgeBody.castShadow = true;
+            group.add(judgeBody);
+            
+            // Judge head
+            const judgeHead = new THREE.Mesh(
+                new THREE.SphereGeometry(0.6, 20, 20),
+                new THREE.MeshStandardMaterial({ 
+                    color: 0xFFDBB4,
+                    roughness: 0.8 
+                })
+            );
+            judgeHead.position.set(0, 5.8, -2.5);
+            judgeHead.castShadow = true;
+            group.add(judgeHead);
+            
+            // Gavel handle
+            gavelHandle = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.12, 0.12, 1.4, 12),
+                new THREE.MeshStandardMaterial({ 
+                    color: 0x6D4C41,
+                    roughness: 0.5,
+                    metalness: 0.2
+                })
+            );
+            gavelHandle.position.set(4, 3.1, 1);
+            gavelHandle.rotation.z = Math.PI / 2;
+            group.add(gavelHandle);
+            
+            // Gavel head
+            gavelObj = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.3, 0.35, 0.7, 12),
+                new THREE.MeshStandardMaterial({ 
+                    color: 0x5D4037,
+                    roughness: 0.6,
+                    metalness: 0.3
+                })
+            );
+            gavelObj.position.set(4.7, 3.1, 1);
+            gavelObj.rotation.z = Math.PI / 2;
+            gavelObj.castShadow = true;
+            group.add(gavelObj);
+            
+            // Gavel sound block
+            const soundBlock = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.8, 0.8, 0.3, 16),
+                new THREE.MeshStandardMaterial({ color: 0x3E2723 })
+            );
+            soundBlock.position.set(4.5, 2.95, 1);
+            soundBlock.rotation.x = Math.PI / 2;
+            group.add(soundBlock);
+            
+            // Bhagavad Gita book
+            const gita = new THREE.Mesh(
+                new THREE.BoxGeometry(0.6, 0.15, 0.9),
+                new THREE.MeshStandardMaterial({ 
+                    color: 0x8B0000,
+                    roughness: 0.7
+                })
+            );
+            gita.position.set(-3, 3.15, 0.5);
+            gita.rotation.y = 0.3;
+            gita.castShadow = true;
+            group.add(gita);
+            
+            // Brass lamp
+            const lampBase = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.2, 0.3, 0.3, 16),
+                new THREE.MeshStandardMaterial({ 
+                    color: 0xDAA520,
+                    roughness: 0.3,
+                    metalness: 0.8
+                })
+            );
+            lampBase.position.set(-4.5, 3.1, 0.5);
+            group.add(lampBase);
+            
+            const lampFlame = new THREE.Mesh(
+                new THREE.SphereGeometry(0.15, 8, 8),
+                new THREE.MeshStandardMaterial({ 
+                    color: 0xFFA500,
+                    emissive: 0xFF6600,
+                    emissiveIntensity: 0.8
+                })
+            );
+            lampFlame.position.set(-4.5, 3.4, 0.5);
+            group.add(lampFlame);
+            
+            // Police/Bodyguards
+            for (let i = 0; i < 2; i++) {
+                const xPos = i === 0 ? -8 : 8;
+                const guardBody = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.6, 0.7, 2.5, 12),
+                    new THREE.MeshStandardMaterial({ color: 0x1C3D5A })
+                );
+                guardBody.position.set(xPos, 3.2, -3.5);
+                guardBody.castShadow = true;
+                group.add(guardBody);
+                
+                const guardHead = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.45, 16, 16),
+                    new THREE.MeshStandardMaterial({ color: 0xFFDBB4 })
+                );
+                guardHead.position.set(xPos, 4.5, -3.5);
+                guardHead.castShadow = true;
+                group.add(guardHead);
+            }
+            
+            group.position.set(0, 0, -32);
+            scene.add(group);
+        }
+        
+        // ==================== WITNESS STAND ====================
+        function createRealisticWitnessStand() {
+            const group = new THREE.Group();
+            
+            // Platform
+            const platform = new THREE.Mesh(
+                new THREE.BoxGeometry(4, 0.4, 4),
+                new THREE.MeshStandardMaterial({ 
+                    color: 0x6D4C41,
+                    roughness: 0.5,
+                    metalness: 0.3
+                })
+            );
+            platform.position.y = 0.2;
+            platform.castShadow = true;
+            group.add(platform);
+            
+            // Witness box walls
+            const wallMat = new THREE.MeshStandardMaterial({ 
+                color: 0x5D4037,
+                roughness: 0.7
+            });
+            
+            const backWall = new THREE.Mesh(
+                new THREE.BoxGeometry(4, 2.5, 0.3),
+                wallMat
+            );
+            backWall.position.set(0, 1.5, -1.85);
+            group.add(backWall);
+            
+            const leftWall = new THREE.Mesh(
+                new THREE.BoxGeometry(0.3, 2.5, 4),
+                wallMat
+            );
+            leftWall.position.set(-1.85, 1.5, 0);
+            group.add(leftWall);
+            
+            const frontRail = new THREE.Mesh(
+                new THREE.BoxGeometry(4, 0.2, 0.2),
+                wallMat
+            );
+            frontRail.position.set(0, 1.5, 1.9);
+            group.add(frontRail);
+            
+            // Witness figure (initially hidden)
+            const witnessBody = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.55, 0.65, 2.5, 12),
+                new THREE.MeshStandardMaterial({ color: 0x2C3E50 })
+            );
+            witnessBody.position.set(0, 1.7, 0);
+            witnessBody.castShadow = true;
+            witnessBody.visible = false;
+            group.add(witnessBody);
+            
+            const witnessHead = new THREE.Mesh(
+                new THREE.SphereGeometry(0.45, 16, 16),
+                new THREE.MeshStandardMaterial({ color: 0xFFDBB4 })
+            );
+            witnessHead.position.set(0, 3.2, 0);
+            witnessHead.castShadow = true;
+            witnessHead.visible = false;
+            group.add(witnessHead);
+            
+            witnessObj = { body: witnessBody, head: witnessHead, group: group };
+            
+            group.position.set(14, 0, -16);
+            scene.add(group);
+        }
+        
+        // ==================== LAWYER TABLES ====================
+        function createRealisticLawyerTable(x, z, color, label) {
+            const group = new THREE.Group();
+            
+            // Table top
+            const tableTop = new THREE.Mesh(
+                new THREE.BoxGeometry(7, 0.25, 5),
+                new THREE.MeshStandardMaterial({ 
+                    color: 0x6D4C41,
+                    roughness: 0.4,
+                    metalness: 0.4
+                })
+            );
+            tableTop.position.y = 1.2;
+            tableTop.castShadow = true;
+            group.add(tableTop);
+            
+            // Table legs
+            const legPositions = [
+                [-3, 0.6, -2],
+                [3, 0.6, -2],
+                [-3, 0.6, 2],
+                [3, 0.6, 2]
+            ];
+            legPositions.forEach(pos => {
+                const leg = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.25, 1.2, 0.25),
+                    new THREE.MeshStandardMaterial({ color: 0x5D4037 })
+                );
+                leg.position.set(pos[0], pos[1], pos[2]);
+                leg.castShadow = true;
+                group.add(leg);
+            });
+            
+            // Laptop
+            const laptop = new THREE.Mesh(
+                new THREE.BoxGeometry(1.2, 0.05, 0.9),
+                new THREE.MeshStandardMaterial({ color: 0x333333 })
+            );
+            laptop.position.set(-1.5, 1.35, -0.5);
+            laptop.castShadow = true;
+            group.add(laptop);
+            
+            // Paper stacks
+            for (let i = 0; i < 2; i++) {
+                const papers = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.8, 0.2, 1.1),
+                    new THREE.MeshStandardMaterial({ color: 0xFFFAF0 })
+                );
+                papers.position.set(1 + i * 1.5, 1.35, -0.3);
+                papers.castShadow = true;
+                group.add(papers);
+            }
+            
+            // Chair
+            const chairSeat = new THREE.Mesh(
+                new THREE.BoxGeometry(1.5, 0.2, 1.5),
+                new THREE.MeshStandardMaterial({ color: 0x5D4037 })
+            );
+            chairSeat.position.set(0, 1, 3);
+            chairSeat.castShadow = true;
+            group.add(chairSeat);
+            
+            const chairBack = new THREE.Mesh(
+                new THREE.BoxGeometry(1.5, 2, 0.3),
+                new THREE.MeshStandardMaterial({ color: 0x5D4037 })
+            );
+            chairBack.position.set(0, 2, 3.6);
+            chairBack.castShadow = true;
+            group.add(chairBack);
+            
+            // Lawyer figure
+            const lawyerBody = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.6, 0.7, 2.5, 12),
+                new THREE.MeshStandardMaterial({ color: 0x1A1A1A })
+            );
+            lawyerBody.position.set(0, 2.5, 3);
+            lawyerBody.castShadow = true;
+            group.add(lawyerBody);
+            
+            const lawyerHead = new THREE.Mesh(
+                new THREE.SphereGeometry(0.45, 16, 16),
+                new THREE.MeshStandardMaterial({ color: 0xFFDBB4 })
+            );
+            lawyerHead.position.set(0, 3.8, 3);
+            lawyerHead.castShadow = true;
+            group.add(lawyerHead);
+            
+            // File folders
+            const folder = new THREE.Mesh(
+                new THREE.BoxGeometry(1, 0.15, 1.3),
+                new THREE.MeshStandardMaterial({ color: color })
+            );
+            folder.position.set(-2, 1.4, 0.5);
+            folder.castShadow = true;
+            group.add(folder);
+            
+            group.position.set(x, 0, z);
+            scene.add(group);
+        }
+        
+        // ==================== AUDIENCE GALLERY ====================
+        function createRealisticAudienceGallery() {
+            for (let row = 0; row < 5; row++) {
+                for (let seat = 0; seat < 10; seat++) {
+                    const x = (seat - 4.5) * 2;
+                    const z = 12 + row * 2.5;
+                    
+                    // Seat
+                    const seatMesh = new THREE.Mesh(
+                        new THREE.BoxGeometry(1.4, 0.3, 1.4),
+                        new THREE.MeshStandardMaterial({ 
+                            color: 0x6D4C41,
+                            roughness: 0.6
+                        })
+                    );
+                    seatMesh.position.set(x, 0.15, z);
+                    seatMesh.castShadow = true;
+                    scene.add(seatMesh);
+                    
+                    // Backrest
+                    const backrest = new THREE.Mesh(
+                        new THREE.BoxGeometry(1.4, 1.8, 0.2),
+                        new THREE.MeshStandardMaterial({ color: 0x5D4037 })
+                    );
+                    backrest.position.set(x, 1.1, z - 0.6);
+                    backrest.castShadow = true;
+                    scene.add(backrest);
+                    
+                    // Audience member (random occupancy)
+                    if (Math.random() > 0.25) {
+                        const colors = [0x2C3E50, 0x34495E, 0x5D6D7E, 0x1C2833];
+                        const bodyColor = colors[Math.floor(Math.random() * colors.length)];
+                        
+                        const body = new THREE.Mesh(
+                            new THREE.CylinderGeometry(0.4, 0.5, 1.8, 12),
+                            new THREE.MeshStandardMaterial({ color: bodyColor })
+                        );
+                        body.position.set(x, 1.3, z);
+                        body.castShadow = true;
+                        scene.add(body);
+                        
+                        const head = new THREE.Mesh(
+                            new THREE.SphereGeometry(0.35, 16, 16),
+                            new THREE.MeshStandardMaterial({ color: 0xFFDBB4 })
+                        );
+                        head.position.set(x, 2.3, z);
+                        head.castShadow = true;
+                        scene.add(head);
+                        
+                        audienceMembers.push({ body, head });
+                    }
+                }
+            }
+        }
+        
+        // ==================== CEILING FANS ====================
+        function createRealisticCeilingFans() {
+            const positions = [
+                [-12, 16.5, -22],
+                [12, 16.5, -22],
+                [-12, 16.5, 0],
+                [12, 16.5, 0]
+            ];
+            
+            positions.forEach(pos => {
+                const group = new THREE.Group();
+                
+                // Motor housing
+                const motor = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.6, 0.7, 1, 20),
+                    new THREE.MeshStandardMaterial({ 
+                        color: 0x444444,
+                        roughness: 0.4,
+                        metalness: 0.6
+                    })
+                );
+                group.add(motor);
+                
+                // Fan blades
+                for (let i = 0; i < 4; i++) {
+                    const blade = new THREE.Mesh(
+                        new THREE.BoxGeometry(3.5, 0.12, 0.7),
+                        new THREE.MeshStandardMaterial({ 
+                            color: 0x6D4C41,
+                            roughness: 0.5
+                        })
+                    );
+                    blade.rotation.y = (i * Math.PI) / 2;
+                    blade.position.y = -0.6;
+                    blade.castShadow = true;
+                    group.add(blade);
+                }
+                
+                group.position.set(pos[0], pos[1], pos[2]);
+                scene.add(group);
+                fans.push(group);
+            });
+        }
+        
+        // ==================== DOOR ====================
+        function createRealisticDoor() {
+            const group = new THREE.Group();
+            
+            // Door frame
+            const frame = new THREE.Mesh(
+                new THREE.BoxGeometry(4, 6, 0.4),
+                new THREE.MeshStandardMaterial({ color: 0x5D4037 })
+            );
+            group.add(frame);
+            
+            // Door panel
+            doorObj = new THREE.Mesh(
+                new THREE.BoxGeometry(3.5, 5.5, 0.3),
+                new THREE.MeshStandardMaterial({ 
+                    color: 0x6D4C41,
+                    roughness: 0.6
+                })
+            );
+            doorObj.position.z = 0.2;
+            doorObj.castShadow = true;
+            group.add(doorObj);
+            
+            // Door handle
+            const handle = new THREE.Mesh(
+                new THREE.BoxGeometry(0.3, 0.15, 0.3),
+                new THREE.MeshStandardMaterial({ 
+                    color: 0xDAA520,
+                    roughness: 0.3,
+                    metalness: 0.8
+                })
+            );
+            handle.position.set(1.2, 0, 0.4);
+            doorObj.add(handle);
+            
+            group.position.set(-30, 3, 40);
+            group.rotation.y = Math.PI / 2;
+            scene.add(group);
+        }
+        
+        // ==================== INDIAN EMBLEM ====================
+        function createIndianEmblem() {
+            const group = new THREE.Group();
+            
+            // Base
+            const base = new THREE.Mesh(
+                new THREE.CylinderGeometry(1.8, 1.8, 0.4, 32),
+                new THREE.MeshStandardMaterial({ 
+                    color: 0xFFD700,
+                    roughness: 0.2,
+                    metalness: 0.9
+                })
+            );
+            group.add(base);
+            
+            // Ashoka Pillar (simplified)
+            const pillar = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.6, 0.8, 2.5, 24),
+                new THREE.MeshStandardMaterial({ 
+                    color: 0xDAA520,
+                    roughness: 0.3,
+                    metalness: 0.8
+                })
+            );
+            pillar.position.y = 1.5;
+            group.add(pillar);
+            
+            // Lions (simplified as spheres)
+            for (let i = 0; i < 4; i++) {
+                const lion = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.4, 16, 16),
+                    new THREE.MeshStandardMaterial({ 
+                        color: 0xB8860B,
+                        roughness: 0.4,
+                        metalness: 0.7
+                    })
+                );
+                const angle = (i * Math.PI) / 2;
+                lion.position.set(
+                    Math.cos(angle) * 0.6,
+                    2.8,
+                    Math.sin(angle) * 0.6
+                );
+                group.add(lion);
+            }
+            
+            // Dharma Chakra on top
+            const chakra = new THREE.Mesh(
+                new THREE.TorusGeometry(0.5, 0.08, 16, 32),
+                new THREE.MeshStandardMaterial({ 
+                    color: 0x000080,
+                    roughness: 0.3,
+                    metalness: 0.8
+                })
+            );
+            chakra.position.y = 3.5;
+            chakra.rotation.x = Math.PI / 2;
+            group.add(chakra);
+            
+            group.position.set(0, 12, -44.5);
+            scene.add(group);
+        }
+        
+        // ==================== LADY JUSTICE STATUE ====================
+        function createLadyJusticeStatue() {
+            const group = new THREE.Group();
+            
+            // Pedestal
+            const pedestal = new THREE.Mesh(
+                new THREE.BoxGeometry(1.5, 2, 1.5),
+                new THREE.MeshStandardMaterial({ 
+                    color: 0xE0E0E0,
+                    roughness: 0.5,
+                    metalness: 0.3
+                })
+            );
+            pedestal.position.y = 1;
+            pedestal.castShadow = true;
+            group.add(pedestal);
+            
+            // Body
+            const body = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.4, 0.5, 2, 16),
+                new THREE.MeshStandardMaterial({ 
+                    color: 0xF5F5F5,
+                    roughness: 0.4,
+                    metalness: 0.4
+                })
+            );
+            body.position.y = 3.2;
+            body.castShadow = true;
+            group.add(body);
+            
+            // Head
+            const head = new THREE.Mesh(
+                new THREE.SphereGeometry(0.35, 16, 16),
+                new THREE.MeshStandardMaterial({ 
+                    color: 0xF5F5F5,
+                    roughness: 0.4
+                })
+            );
+            head.position.y = 4.5;
+            head.castShadow = true;
+            group.add(head);
+            
+            // Blindfold
+            const blindfold = new THREE.Mesh(
+                new THREE.BoxGeometry(0.6, 0.15, 0.15),
+                new THREE.MeshStandardMaterial({ color: 0x333333 })
+            );
+            blindfold.position.set(0, 4.5, 0.2);
+            group.add(blindfold);
+            
+            // Scales (left arm)
+            const scaleBase = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.05, 0.05, 0.8, 8),
+                new THREE.MeshStandardMaterial({ 
+                    color: 0xDAA520,
+                    metalness: 0.9
+                })
+            );
+            scaleBase.position.set(-0.6, 3.8, 0);
+            scaleBase.rotation.z = Math.PI / 2;
+            group.add(scaleBase);
+            
+            // Scale pans
+            [-1, -0.2].forEach(xOffset => {
+                const pan = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.2, 0.15, 0.1, 16),
+                    new THREE.MeshStandardMaterial({ 
+                        color: 0xDAA520,
+                        metalness: 0.9
+                    })
+                );
+                pan.position.set(xOffset, 3.8, 0);
+                group.add(pan);
+            });
+            
+            // Sword (right arm)
+            const sword = new THREE.Mesh(
+                new THREE.BoxGeometry(0.1, 1.2, 0.05),
+                new THREE.MeshStandardMaterial({ 
+                    color: 0xC0C0C0,
+                    metalness: 0.95,
+                    roughness: 0.1
+                })
+            );
+            sword.position.set(0.6, 3.2, 0);
+            sword.castShadow = true;
+            group.add(sword);
+            
+            group.position.set(-10, 0, -38);
+            scene.add(group);
+        }
+        
+        // ==================== JURY BOXES ====================
+        function createJuryBoxes() {
+            [-18, 18].forEach(xPos => {
+                const group = new THREE.Group();
+                
+                // Box structure
+                const box = new THREE.Mesh(
+                    new THREE.BoxGeometry(6, 2, 8),
+                    new THREE.MeshStandardMaterial({ 
+                        color: 0x5D4037,
+                        roughness: 0.7
+                    })
+                );
+                box.position.y = 1;
+                box.castShadow = true;
+                group.add(box);
+                
+                // Front railing
+                const railing = new THREE.Mesh(
+                    new THREE.BoxGeometry(6, 0.3, 0.3),
+                    new THREE.MeshStandardMaterial({ color: 0x6D4C41 })
+                );
+                railing.position.set(0, 1.5, 4);
+                group.add(railing);
+                
+                // Seats
+                for (let i = 0; i < 3; i++) {
+                    const seat = new THREE.Mesh(
+                        new THREE.BoxGeometry(1.5, 0.2, 1.5),
+                        new THREE.MeshStandardMaterial({ color: 0x6D4C41 })
+                    );
+                    seat.position.set(-2 + i * 2, 0.8, -2 + (i % 2) * 2);
+                    seat.castShadow = true;
+                    group.add(seat);
+                }
+                
+                group.position.set(xPos, 0, -20);
+                scene.add(group);
+            });
+        }
+        
+        // ==================== AV SCREEN ====================
+        function createAVScreen() {
+            const screenGroup = new THREE.Group();
+            
+            // Screen frame
+            const frame = new THREE.Mesh(
+                new THREE.BoxGeometry(8, 4.5, 0.2),
+                new THREE.MeshStandardMaterial({ color: 0x2C2C2C })
+            );
+            screenGroup.add(frame);
+            
+            // Screen display
+            const screen = new THREE.Mesh(
+                new THREE.PlaneGeometry(7.5, 4),
+                new THREE.MeshStandardMaterial({ 
+                    color: 0x1a1a2e,
+                    emissive: 0x0f3460,
+                    emissiveIntensity: 0.3
+                })
+            );
+            screen.position.z = 0.15;
+            screenGroup.add(screen);
+            
+            screenGroup.position.set(0, 8, -25);
+            scene.add(screenGroup);
+        }
+        
+        // ==================== PILLARS ====================
+        function createPillars() {
+            const positions = [
+                [-28, 0, -35],
+                [28, 0, -35],
+                [-28, 0, -10],
+                [28, 0, -10]
+            ];
+            
+            positions.forEach(pos => {
+                const pillar = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.8, 1, 16, 20),
+                    new THREE.MeshStandardMaterial({ 
+                        color: 0xC8B895,
+                        roughness: 0.7
+                    })
+                );
+                pillar.position.set(pos[0], pos[1] + 8, pos[2]);
+                pillar.castShadow = true;
+                pillar.receiveShadow = true;
+                scene.add(pillar);
+                
+                // Capital
+                const capital = new THREE.Mesh(
+                    new THREE.BoxGeometry(1.6, 0.8, 1.6),
+                    new THREE.MeshStandardMaterial({ color: 0xDAA520 })
+                );
+                capital.position.set(pos[0], 16.5, pos[2]);
+                scene.add(capital);
+            });
+        }
+        
+        // ==================== ADVANCED LIGHTING ====================
+        function setupAdvancedLighting() {
+            // Ambient light
+            const ambient = new THREE.AmbientLight(0xFFFFFF, 0.5);
+            scene.add(ambient);
+            lights.push(ambient);
+            
+            // Main directional light (sunlight)
+            const mainLight = new THREE.DirectionalLight(0xFFFFFF, 1.0);
+            mainLight.position.set(15, 25, 15);
+            mainLight.castShadow = true;
+            mainLight.shadow.camera.left = -50;
+            mainLight.shadow.camera.right = 50;
+            mainLight.shadow.camera.top = 50;
+            mainLight.shadow.camera.bottom = -50;
+            mainLight.shadow.camera.near = 0.5;
+            mainLight.shadow.camera.far = 100;
+            mainLight.shadow.mapSize.width = 2048;
+            mainLight.shadow.mapSize.height = 2048;
+            mainLight.shadow.bias = -0.0001;
+            scene.add(mainLight);
+            lights.push(mainLight);
+            
+            // Judge spotlight
+            const judgeSpot = new THREE.SpotLight(0xFFF5E1, 1.2, 60, Math.PI / 5, 0.4);
+            judgeSpot.position.set(0, 16, -25);
+            judgeSpot.target.position.set(0, 3, -32);
+            judgeSpot.castShadow = true;
+            judgeSpot.shadow.mapSize.width = 1024;
+            judgeSpot.shadow.mapSize.height = 1024;
+            scene.add(judgeSpot);
+            scene.add(judgeSpot.target);
+            lights.push(judgeSpot);
+            
+            // Witness spotlight
+            const witnessSpot = new THREE.SpotLight(0xFFF5E1, 1.0, 50, Math.PI / 5, 0.4);
+            witnessSpot.position.set(14, 16, -10);
+            witnessSpot.target.position.set(14, 2, -16);
+            witnessSpot.castShadow = true;
+            scene.add(witnessSpot);
+            scene.add(witnessSpot.target);
+            lights.push(witnessSpot);
+            
+            // Ceiling lights
+            const ceilingPositions = [
+                [-15, 16, -15],
+                [15, 16, -15],
+                [-15, 16, 10],
+                [15, 16, 10]
+            ];
+            
+            ceilingPositions.forEach(pos => {
+                const pointLight = new THREE.PointLight(0xFFFAF0, 0.6, 30);
+                pointLight.position.set(pos[0], pos[1], pos[2]);
+                pointLight.castShadow = true;
+                scene.add(pointLight);
+                lights.push(pointLight);
+            });
+            
+            // Fill lights for softer shadows
+            const fillLight1 = new THREE.DirectionalLight(0xFFE4B5, 0.3);
+            fillLight1.position.set(-20, 10, 10);
+            scene.add(fillLight1);
+            lights.push(fillLight1);
+            
+            const fillLight2 = new THREE.DirectionalLight(0xFFE4B5, 0.3);
+            fillLight2.position.set(20, 10, 10);
+            scene.add(fillLight2);
+            lights.push(fillLight2);
+        }
+        
+        // ==================== CONTROLS ====================
+        function setupControls() {
+            // Mouse drag controls
+            renderer.domElement.addEventListener('mousedown', e => {
+                isDragging = true;
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            });
+            
+            renderer.domElement.addEventListener('mousemove', e => {
+                if (!isDragging) return;
+                
+                const deltaX = e.clientX - previousMousePosition.x;
+                const deltaY = e.clientY - previousMousePosition.y;
+                
+                // Calculate spherical coordinates
+                const radius = Math.sqrt(
+                    Math.pow(camera.position.x, 2) + 
+                    Math.pow(camera.position.z, 2)
+                );
+                const angle = Math.atan2(camera.position.z, camera.position.x);
+                
+                // Update camera position
+                camera.position.x = radius * Math.cos(angle - deltaX * 0.005);
+                camera.position.z = radius * Math.sin(angle - deltaX * 0.005);
+                camera.position.y = Math.max(2, Math.min(25, camera.position.y - deltaY * 0.05));
+                
+                camera.lookAt(0, 3, -15);
+                
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            });
+            
+            renderer.domElement.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+            
+            renderer.domElement.addEventListener('mouseleave', () => {
+                isDragging = false;
+            });
+            
+            // Zoom with scroll
+            renderer.domElement.addEventListener('wheel', e => {
+                e.preventDefault();
+                
+                const direction = new THREE.Vector3();
+                camera.getWorldDirection(direction);
+                
+                const zoomSpeed = -e.deltaY * 0.01;
+                camera.position.addScaledVector(direction, zoomSpeed);
+                
+                // Limit zoom
+                const dist = camera.position.length();
+                if (dist < 5) {
+                    camera.position.normalize().multiplyScalar(5);
+                } else if (dist > 50) {
+                    camera.position.normalize().multiplyScalar(50);
+                }
+            }, { passive: false });
+            
+            // Keyboard controls
+            document.addEventListener('keydown', e => {
+                const key = e.key.toLowerCase();
+                
+                switch(key) {
+                    case 'l': toggleLights(); break;
+                    case 'f': toggleFans(); break;
+                    case 'g': case 'j': triggerGavel(); break;
+                    case 'w': toggleWitness(); break;
+                    case 'd': toggleDoor(); break;
+                    case 'n': toggleNightMode(); break;
+                    case 'r': resetCamera(); break;
+                    case 'm': toggleSound(); break;
+                    case '1': setCameraView('judge'); break;
+                    case '2': setCameraView('witness'); break;
+                    case '3': setCameraView('audience'); break;
+                    case '4': setCameraView('free'); break;
+                }
+            });
+        }
+        
+        // ==================== INTERACTION FUNCTIONS ====================
+        function toggleLights() {
+            state.lightsOn = !state.lightsOn;
+            
+            lights.forEach((light, i) => {
+                if (i === 0) { // Ambient
+                    light.intensity = state.lightsOn ? 0.5 : 0.15;
+                } else if (i === 1) { // Main directional
+                    light.intensity = state.lightsOn ? 1.0 : 0.3;
+                } else { // Spotlights and others
+                    light.intensity = state.lightsOn ? (light.intensity > 0.8 ? 1.2 : 0.6) : 0.2;
+                }
+            });
+            
+            document.getElementById('lightsStatus').textContent = state.lightsOn ? 'ON' : 'OFF';
+            document.getElementById('lightsBtn').classList.toggle('active', state.lightsOn);
+            document.getElementById('lightsIndicator').className = 'status-dot ' + (state.lightsOn ? 'yellow' : 'gray');
+        }
+        
+        function toggleFans() {
+            state.fansOn = !state.fansOn;
+            document.getElementById('fansStatus').textContent = state.fansOn ? 'ON' : 'OFF';
+            document.getElementById('fansBtn').classList.toggle('active', state.fansOn);
+            document.getElementById('fansIndicator').className = 'status-dot ' + (state.fansOn ? 'blue' : 'gray');
+        }
+        
+        function toggleWitness() {
+            state.witnessVisible = !state.witnessVisible;
+            
+            if (witnessObj) {
+                if (state.witnessVisible) {
+                    // Animate witness entering
+                    witnessObj.body.visible = true;
+                    witnessObj.head.visible = true;
+                    
+                    // Start from side position
+                    witnessObj.body.position.set(-5, 1.7, 0);
+                    witnessObj.head.position.set(-5, 3.2, 0);
+                    
+                    // Animate to center
+                    animateWitnessEntry();
+                } else {
+                    witnessObj.body.visible = false;
+                    witnessObj.head.visible = false;
+                }
+            }
+            
+            document.getElementById('witnessStatus').textContent = state.witnessVisible ? 'PRESENT' : 'ABSENT';
+            document.getElementById('witnessBtn').classList.remove('red', 'green');
+            document.getElementById('witnessBtn').classList.add(state.witnessVisible ? 'green' : 'red');
+            document.getElementById('witnessIndicator').className = 'status-dot ' + (state.witnessVisible ? 'green' : 'red');
+        }
+        
+        function animateWitnessEntry() {
+            const startX = -5;
+            const endX = 0;
+            const duration = CONFIG.animation.witnessDuration * 1000;
+            const startTime = Date.now();
+            
+            function animate() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = easeInOutCubic(progress);
+                
+                const currentX = startX + (endX - startX) * eased;
+                
+                if (witnessObj && witnessObj.body.visible) {
+                    witnessObj.body.position.x = currentX;
+                    witnessObj.head.position.x = currentX;
+                }
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                }
+            }
+            
+            animate();
+        }
+        
+        function toggleDoor() {
+            state.doorOpen = !state.doorOpen;
+            
+            if (doorObj) {
+                const targetRotation = state.doorOpen ? Math.PI / 2 : 0;
+                animateDoorRotation(doorObj.rotation.y, targetRotation);
+            }
+            
+            document.getElementById('doorStatus').textContent = state.doorOpen ? 'OPEN' : 'CLOSED';
+        }
+        
+        function animateDoorRotation(start, end) {
+            const duration = CONFIG.animation.doorDuration * 1000;
+            const startTime = Date.now();
+            
+            function animate() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = easeInOutCubic(progress);
+                
+                if (doorObj) {
+                    doorObj.rotation.y = start + (end - start) * eased;
+                }
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                }
+            }
+            
+            animate();
+        }
+        
+        function toggleNightMode() {
+            state.nightMode = !state.nightMode;
+            
+            // Animate background color
+            const startColor = new THREE.Color(state.nightMode ? 0x1a1a1a : 0x0a0a0a);
+            const endColor = new THREE.Color(state.nightMode ? 0x0a0a0a : 0x1a1a1a);
+            animateBackgroundColor(startColor, endColor);
+            
+            // Adjust lighting
+            lights.forEach((light, i) => {
+                if (i === 0) { // Ambient
+                    light.intensity = state.nightMode ? 0.15 : 0.5;
+                } else if (i === 1) { // Main directional
+                    light.intensity = state.nightMode ? 0.3 : 1.0;
+                    light.color.setHex(state.nightMode ? 0x4169E1 : 0xFFFFFF);
+                } else if (light.type === 'SpotLight') {
+                    light.intensity = state.nightMode ? 0.8 : 1.2;
+                    light.color.setHex(state.nightMode ? 0xFFE4B5 : 0xFFF5E1);
+                }
+            });
+            
+            scene.fog.color.setHex(state.nightMode ? 0x0a0a0a : 0x1a1a1a);
+            
+            document.getElementById('nightStatus').textContent = state.nightMode ? 'ON' : 'OFF';
+            document.getElementById('nightBtn').classList.toggle('active', state.nightMode);
+            document.getElementById('modeIndicator').className = 'status-dot ' + (state.nightMode ? 'indigo' : 'amber');
+            document.getElementById('modeText').textContent = state.nightMode ? 'Night' : 'Day';
+        }
+        
+        function animateBackgroundColor(startColor, endColor) {
+            const duration = CONFIG.animation.lightTransition * 1000;
+            const startTime = Date.now();
+            
+            function animate() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                scene.background.lerpColors(startColor, endColor, progress);
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                }
+            }
+            
+            animate();
+        }
+        
+        function triggerGavel() {
+            if (!gavelObj || !gavelHandle) return;
+            
+            // Store original positions
+            const origGavelY = gavelObj.position.y;
+            const origHandleY = gavelHandle.position.y;
+            
+            // Animate gavel strike
+            const duration = CONFIG.animation.gavelDuration * 1000;
+            const startTime = Date.now();
+            
+            function animate() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Strike down and up
+                let offset;
+                if (progress < 0.5) {
+                    offset = easeInOutCubic(progress * 2) * 0.4;
+                } else {
+                    offset = easeInOutCubic(2 - progress * 2) * 0.4;
+                }
+                
+                if (gavelObj) gavelObj.position.y = origGavelY + offset;
+                if (gavelHandle) gavelHandle.position.y = origHandleY + offset;
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                }
+            }
+            
+            animate();
+            
+            // Play sound
+            if (state.soundOn) {
+                playGavelSound();
+            }
+        }
+        
+        function playGavelSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Create realistic gavel bang sound
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                const filter = audioContext.createBiquadFilter();
+                
+                // Connect nodes
+                oscillator.connect(filter);
+                filter.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                // Configure sound
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(120, audioContext.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(50, audioContext.currentTime + 0.1);
+                
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(1000, audioContext.currentTime);
+                
+                gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+                
+                // Add echo effect
+                const delay = audioContext.createDelay();
+                const delayGain = audioContext.createGain();
+                
+                delay.delayTime.setValueAtTime(0.2, audioContext.currentTime);
+                delayGain.gain.setValueAtTime(0.3, audioContext.currentTime);
+                
+                gainNode.connect(delay);
+                delay.connect(delayGain);
+                delayGain.connect(audioContext.destination);
+                
+                // Play
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.5);
+            } catch (e) {
+                console.log('Audio playback not supported');
+            }
+        }
+        
+        function setCameraView(view) {
+            state.currentView = view;
+            const config = CONFIG.cameras[view];
+            
+            if (config) {
+                animateCameraTransition(
+                    camera.position.toArray(),
+                    config.pos,
+                    config.target
+                );
+            }
+        }
+        
+        function animateCameraTransition(startPos, endPos, targetPos) {
+            const duration = 1500;
+            const startTime = Date.now();
+            const startTarget = new THREE.Vector3(0, 3, -15);
+            const endTarget = new THREE.Vector3(...targetPos);
+            
+            function animate() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = easeInOutCubic(progress);
+                
+                camera.position.set(
+                    startPos[0] + (endPos[0] - startPos[0]) * eased,
+                    startPos[1] + (endPos[1] - startPos[1]) * eased,
+                    startPos[2] + (endPos[2] - startPos[2]) * eased
+                );
+                
+                const currentTarget = new THREE.Vector3().lerpVectors(startTarget, endTarget, eased);
+                camera.lookAt(currentTarget);
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                }
+            }
+            
+            animate();
+        }
+        
+        function resetCamera() {
+            setCameraView('free');
+        }
+        
+        function toggleSound() {
+            state.soundOn = !state.soundOn;
+            document.getElementById('soundBtn').innerHTML = state.soundOn ? '🔊 Sound ON' : '🔇 Sound OFF';
+        }
+        
+        function toggleControls() {
+            state.controlsVisible = !state.controlsVisible;
+            document.getElementById('controlPanel').classList.toggle('hidden', !state.controlsVisible);
+            document.getElementById('welcomePanel').style.display = state.controlsVisible ? 'block' : 'none';
+            document.getElementById('controlsBtn').textContent = state.controlsVisible ? 'Hide Controls' : 'Show Controls';
+        }
+        
+        // ==================== UTILITY FUNCTIONS ====================
+        function easeInOutCubic(t) {
+            return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        }
+        
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        
+        // ==================== START APPLICATION ====================
+        if (typeof THREE !== 'undefined') {
+            init();
+        } else {
+            console.error('Three.js not loaded');
+            document.getElementById('loading').innerHTML = 
+                '<div class="loading-content"><h2 style="color:red;">Error: Three.js failed to load</h2><p style="color:white;">Please refresh the page</p></div>';
+        }
+    </script>
+</body>
+</html>

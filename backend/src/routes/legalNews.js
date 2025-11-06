@@ -2,6 +2,11 @@ const express = require('express');
 const router = express.Router();
 const legalNewsController = require('../controllers/legalNewsController');
 
+// Test route to check if routes are working
+router.get('/test', (req, res) => {
+  res.json({ message: 'Legal news routes are working' });
+});
+
 // Get latest legal news
 router.get('/', legalNewsController.getLegalNews);
 

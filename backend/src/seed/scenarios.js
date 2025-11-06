@@ -117,6 +117,25 @@ const sampleScenarios = [
     price: 1000,
     tags: ["bail", "criminal", "hearing", "application"],
     status: "published"
+  },
+  {
+    title: "The Inventory That Changed Everything",
+    description: "A comprehensive legal simulation involving client interview, digital evidence review, bail application drafting, and courtroom hearing.",
+    practiceArea: "Criminal Law",
+    difficulty: "Advanced",
+    estimatedTime: 120,
+    learningObjectives: [
+      "Master client interviewing techniques",
+      "Analyze digital evidence effectively",
+      "Draft compelling legal documents",
+      "Develop courtroom advocacy skills"
+    ],
+    content: {
+      introduction: "You are representing Rajesh Kumar, a 28-year-old electronics store employee accused of theft. The case involves complex digital evidence and requires you to navigate through client interview, evidence analysis, document drafting, and courtroom advocacy."
+    },
+    price: 2000,
+    tags: ["simulation", "criminal", "bail", "evidence", "courtroom"],
+    status: "published"
   }
 ];
 

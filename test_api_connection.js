@@ -6,7 +6,7 @@ async function testApiConnection() {
     try {
         // Test the AI status endpoint (no authentication required)
         console.log('\n1. Testing AI Status endpoint...');
-        const statusResponse = await axios.get('http://localhost:5001/api/ai/status', {
+        const statusResponse = await axios.get('http://localhost:5000/api/ai/status', {
             timeout: 10000
         });
         
@@ -15,7 +15,7 @@ async function testApiConnection() {
         
         // Test the NPC response endpoint (no authentication required)
         console.log('\n2. Testing NPC Response endpoint...');
-        const npcResponse = await axios.post('http://localhost:5001/api/ai/npc-response', {
+        const npcResponse = await axios.post('http://localhost:5000/api/ai/npc-response', {
             query: 'What are the key provisions for bail in criminal cases under Indian law?'
         }, {
             timeout: 10000
@@ -27,7 +27,7 @@ async function testApiConnection() {
         // Test document analysis with authentication bypassed for now
         console.log('\n3. Testing Document Analysis endpoint...');
         try {
-            const documentAnalysisResponse = await axios.post('http://localhost:5001/api/ai/analyze-document', {
+            const documentAnalysisResponse = await axios.post('http://localhost:5003/api/ai/analyze-document', {
                 documentText: 'This is a sample legal document for testing purposes.'
             }, {
                 timeout: 10000
