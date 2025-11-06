@@ -28,6 +28,9 @@ const caseSpecificAIRoutes = require('./src/routes/caseSpecificAI');
 const marketingRoutes = require('./src/routes/marketing');
 const progressRoutes = require('./src/routes/progress');
 
+// Import database service
+const databaseService = require('./src/services/database');
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -124,7 +127,15 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// Start the server
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`DharmaSikhara AI Backend running on http://0.0.0.0:${PORT}`);
-});
+// Connect to all databases before starting the server
+databaseService.connectAll()
+  .then(() => {
+    // Start the server
+    app.listen(PORT, '0.0.0.0', () => {
+        console.log(`DharmaSikhara AI Backend running on http://0.0.0.0:${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error('Failed to start server due to database connection error:', error);
+    process.exit(1);
+  });
