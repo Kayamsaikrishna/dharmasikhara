@@ -11,6 +11,9 @@ router.get('/status', aiController.getAIStatus);
 // AI Document Analysis Endpoint
 router.post('/analyze-document', authenticateToken, aiController.analyzeDocument);
 
+// Test endpoint for document analysis without authentication
+router.post('/analyze-document-test', aiController.analyzeDocument);
+
 // Get legal assistant response
 router.post('/legal-assistant', aiController.getLegalAssistantResponse);
 

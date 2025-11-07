@@ -1,8 +1,17 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const cors = require('cors');
-const { PythonShell } = require('python-shell');
+const mongoose = require('mongoose');
+const Redis = require('redis');
+const { Client } = require('pg');
+const elasticsearch = require('elasticsearch');
+const dotenv = require('dotenv');
 const path = require('path');
+const fs = require('fs');
+const multer = require('multer');
+const bodyParser = require('body-parser');
+
+// Load environment variables
+dotenv.config();
 
 // Import controllers
 const aiController = require('./src/controllers/aiController');
@@ -34,10 +43,10 @@ const databaseService = require('./src/services/database');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
+// Increase payload limit for document uploads
 app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ limit: '50mb' }));  // Increased from default to 50mb
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));  // Increased from default to 50mb
 
 // AI Routes
 app.use('/api/ai', aiRoutes);

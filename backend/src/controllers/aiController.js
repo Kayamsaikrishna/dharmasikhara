@@ -140,14 +140,36 @@ class LegalAIController {
                 console.log('Python process closed');
             });
 
+            // Set a timeout for the Python process to prevent hanging
+            const timeout = setTimeout(() => {
+                pythonShell.kill();
+                console.log('Python process timed out');
+                reject(new Error('Document analysis timed out. The document may be too large or complex.'));
+            }, 60000); // 60 second timeout
+
             // Handle completion
             pythonShell.end((err) => {
+                // Clear the timeout
+                clearTimeout(timeout);
+                
                 if (err) {
                     console.error('Python script error:', err);
                     reject(new Error(`Python script error: ${err}`));
                 } else {
                     try {
                         console.log('Python output:', output);
+                        // Handle case where output is empty
+                        if (!output || output.trim() === '') {
+                            reject(new Error('Python script returned empty output. The document may be too large or there may be a processing error.'));
+                            return;
+                        }
+                        
+                        // Check if the output is HTML (indicating an error page)
+                        if (output.startsWith('<!DOCTYPE') || output.startsWith('<html')) {
+                            reject(new Error('Server returned an HTML error page instead of JSON. The document may be too large or there may be a server configuration issue.'));
+                            return;
+                        }
+                        
                         // Parse the JSON output from Python
                         const result = JSON.parse(output);
                         
@@ -324,14 +346,40 @@ class LegalAIController {
                 });
             }
             
+            // Check document size on the server side as well
+            if (documentText.length > 1000000) { // 1MB limit
+                return res.status(413).json({
+                    success: false,
+                    message: 'Document is too large. Please upload a document smaller than 1MB.'
+                });
+            }
+            
             const result = await this.analyzeDocumentMethod(documentText);
             
             if (result.error) {
-                return res.status(500).json({
-                    success: false,
-                    message: 'Failed to analyze document',
-                    error: result.error
-                });
+                // Log the specific error for debugging
+                console.error('Document analysis error:', result.error);
+                
+                // Return appropriate HTTP status codes based on the error
+                if (result.error.includes('timeout')) {
+                    return res.status(408).json({
+                        success: false,
+                        message: 'Document analysis timed out. The document may be too large or complex.',
+                        error: result.error
+                    });
+                } else if (result.error.includes('large')) {
+                    return res.status(413).json({
+                        success: false,
+                        message: 'Document is too large for processing.',
+                        error: result.error
+                    });
+                } else {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'Failed to analyze document',
+                        error: result.error
+                    });
+                }
             }
             
             res.json({
@@ -339,11 +387,29 @@ class LegalAIController {
                 data: result
             });
         } catch (error) {
-            res.status(500).json({
-                success: false,
-                message: 'Failed to analyze document',
-                error: error.message
-            });
+            // Log the error for debugging
+            console.error('Document analysis error:', error);
+            
+            // Return appropriate error response based on error type
+            if (error.message.includes('timeout')) {
+                return res.status(408).json({
+                    success: false,
+                    message: 'Document analysis timed out. The document may be too large or complex.',
+                    error: error.message
+                });
+            } else if (error.message.includes('large') || error.message.includes('413')) {
+                return res.status(413).json({
+                    success: false,
+                    message: 'Document is too large for processing.',
+                    error: error.message
+                });
+            } else {
+                return res.status(500).json({
+                    success: false,
+                    message: 'Failed to analyze document',
+                    error: error.message
+                });
+            }
         }
     }
     
