@@ -109,6 +109,9 @@ app.use('/api/marketing', marketingRoutes);
 // Progress Routes
 app.use('/api/progress', progressRoutes);
 
+// Serve static files from scenario 1 evidences folder
+app.use('/scenario%201/evidences%20folder', express.static(path.join(__dirname, '../scenario 1/evidences folder')));
+
 // AI Model Status Endpoint
 app.get('/api/ai/status', aiController.getAIStatus);
 

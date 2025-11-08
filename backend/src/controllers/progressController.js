@@ -1,4 +1,5 @@
 const UserProgress = require('../models/UserProgress');
+const mongoose = require('mongoose');
 
 // Save or update user progress for a scenario
 exports.saveUserProgress = async (req, res) => {
@@ -14,8 +15,14 @@ exports.saveUserProgress = async (req, res) => {
       });
     }
 
-    // Check if progress record already exists
-    let progressRecord = await UserProgress.findOne({ user: userId, scenario: scenarioId });
+    // Check if progress record already exists using either ObjectId or scenarioSlug
+    let progressRecord = await UserProgress.findOne({ 
+      user: userId, 
+      $or: [
+        { scenario: scenarioId },
+        { scenarioSlug: scenarioId }
+      ]
+    });
 
     if (progressRecord) {
       // Update existing record
@@ -33,16 +40,26 @@ exports.saveUserProgress = async (req, res) => {
       await progressRecord.save();
     } else {
       // Create new record
-      progressRecord = new UserProgress({
+      // Check if scenarioId is a valid ObjectId
+      let isObjectId = mongoose.Types.ObjectId.isValid(scenarioId);
+      
+      const progressData = {
         user: userId,
-        scenario: scenarioId,
         status: status || 'in_progress',
         progress: progress || 0,
         score: score,
         timeSpent: timeSpent || 0,
         feedback,
         startDate: Date.now()
-      });
+      };
+      
+      if (isObjectId) {
+        progressData.scenario = scenarioId; // Keep as string, let Mongoose handle conversion
+      } else {
+        progressData.scenarioSlug = scenarioId;
+      }
+      
+      progressRecord = new UserProgress(progressData);
       
       if (status === 'completed') {
         progressRecord.completionDate = Date.now();
@@ -78,10 +95,14 @@ exports.getUserProgress = async (req, res) => {
       });
     }
 
-    const progressRecord = await UserProgress.findOne({ 
+    // Try to find progress record by scenario ID (either ObjectId or string)
+    let progressRecord = await UserProgress.findOne({ 
       user: userId, 
-      scenario: scenarioId 
-    }).populate('scenario', 'title description');
+      $or: [
+        { scenario: scenarioId },
+        { scenarioSlug: scenarioId }
+      ]
+    });
 
     if (!progressRecord) {
       return res.status(404).json({ 

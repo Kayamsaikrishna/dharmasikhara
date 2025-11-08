@@ -7,9 +7,13 @@ const userProgressSchema = new mongoose.Schema({
     required: true
   },
   scenario: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.Mixed, // Allow both ObjectId and String
     ref: 'Scenario',
-    required: true
+    required: false // Made optional to allow string scenario IDs
+  },
+  scenarioSlug: {
+    type: String,
+    required: false // For string-based scenario identifiers
   },
   status: {
     type: String,
@@ -47,6 +51,15 @@ const userProgressSchema = new mongoose.Schema({
   updatedAt: {
     type: Date,
     default: Date.now
+  }
+});
+
+// Add a custom validation to ensure either scenario or scenarioSlug is provided
+userProgressSchema.pre('validate', function(next) {
+  if (!this.scenario && !this.scenarioSlug) {
+    next(new Error('Either scenario (ObjectId) or scenarioSlug (String) must be provided'));
+  } else {
+    next();
   }
 });
 
