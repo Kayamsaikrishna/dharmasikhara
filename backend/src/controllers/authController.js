@@ -1,9 +1,19 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const databaseService = require('../services/database');
 
 const register = async (req, res) => {
     try {
+        // Check if MongoDB is available
+        const mongoDB = databaseService.getMongoDB();
+        if (!mongoDB) {
+            return res.status(503).json({
+                success: false,
+                message: 'Registration temporarily unavailable due to database connectivity issues. Please try again later or use demo login (demo@example.com / demo123).' 
+            });
+        }
+        
         const { username, email, password, firstName, lastName, institution, year, specialization } = req.body;
         
         // Check if user already exists
@@ -84,9 +94,48 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
     try {
+        // Always allow login with default credentials for demo purposes
+        // This allows the application to function without database connections
         const { email, password } = req.body;
         
-        // Find user
+        // For demo purposes, allow login with default credentials
+        if (email === 'demo@example.com' && password === 'demo123') {
+            const token = jwt.sign(
+                { userId: 'demo', email: 'demo@example.com', role: 'client' },
+                process.env.JWT_SECRET || 'dharmasikhara_secret',
+                { expiresIn: '24h' }
+            );
+            
+            return res.json({
+                success: true,
+                message: 'Demo login successful',
+                data: {
+                    user: {
+                        id: 'demo',
+                        username: 'demo_user',
+                        email: 'demo@example.com',
+                        role: 'client',
+                        firstName: 'Demo',
+                        lastName: 'User',
+                        institution: 'Demo Institution',
+                        year: '2023',
+                        specialization: 'General Law'
+                    },
+                    token
+                }
+            });
+        }
+        
+        // Check if MongoDB is available
+        const mongoDB = databaseService.getMongoDB();
+        if (!mongoDB) {
+            return res.status(503).json({
+                success: false,
+                message: 'Login temporarily unavailable due to database connectivity issues. Please use demo credentials (demo@example.com / demo123) or try again later.'
+            });
+        }
+        
+        // Find user in database
         const user = await User.findOne({ email });
         if (!user) {
             return res.status(401).json({

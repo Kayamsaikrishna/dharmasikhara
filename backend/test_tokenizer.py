@@ -1,11 +1,12 @@
 import sys
 import json
 import os
-from transformers import AutoTokenizer, AutoModel
+from transformers import AutoTokenizer, LlamaForCausalLM
 import torch
 
 # Check if the model path exists and point to the correct snapshot
-model_path = r"C:\Users\ASUS\.cache\huggingface\hub\models--law-ai--InCaseLawBERT\snapshots\7f2c2a0c1ff4149e8c4a8c79ee9f24757ad5dacd"
+model_path = os.path.join(os.path.dirname(__file__), '..', 'models', 'InLegalLLaMA')
+
 if not os.path.exists(model_path):
     print(json.dumps({"error": f"Model path does not exist: {model_path}"}))
     sys.exit(1)
@@ -18,7 +19,7 @@ try:
     sys.stderr = open(os.devnull, 'w')
     
     tokenizer = AutoTokenizer.from_pretrained(model_path)
-    model = AutoModel.from_pretrained(model_path)
+    model = LlamaForCausalLM.from_pretrained(model_path)
     
     # Restore stderr
     sys.stderr.close()

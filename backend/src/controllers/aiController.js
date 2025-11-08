@@ -219,6 +219,8 @@ class LegalAIController {
             // Get response from the AI model method
             const aiResponse = await this.getLegalAssistantResponseMethod(fullQuery);
             
+            console.log('AI Response:', JSON.stringify(aiResponse, null, 2));
+            
             if (aiResponse.error) {
                 return res.status(500).json({
                     success: false,
@@ -227,17 +229,23 @@ class LegalAIController {
                 });
             }
             
-            // Extract the actual response text from the AI response
-            const responseText = aiResponse.response || aiResponse.answer || 'I apologize, but I could not generate a response.';
+            // Ensure we have a proper response structure
+            const responseText = aiResponse.response || aiResponse.answer || aiResponse.text || 'I apologize, but I could not generate a response.';
             
             res.json({
                 success: true,
                 data: {
                     response: responseText,
-                    legalCategory: aiResponse.legalCategory || 'general',
-                    relatedConcepts: aiResponse.relatedConcepts || [],
+                    legalCategory: aiResponse.legalCategory || aiResponse.category || 'general',
+                    relatedConcepts: aiResponse.relatedConcepts || aiResponse.concepts || [],
                     confidence: aiResponse.confidence || 0.95,
-                    sources: aiResponse.sources || []
+                    sources: aiResponse.sources || [
+                        'DharmaSikhara AI Legal Assistant',
+                        'Indian Penal Code (IPC)',
+                        'Code of Criminal Procedure (CrPC)',
+                        'Code of Civil Procedure (CPC)',
+                        'Indian Evidence Act'
+                    ]
                 }
             });
         } catch (error) {
@@ -257,6 +265,11 @@ class LegalAIController {
      */
     async getLegalAssistantResponseMethod(query) {
         return new Promise((resolve, reject) => {
+            // Set a longer timeout for the Python process to accommodate large model loading times
+            const timeout = setTimeout(() => {
+                reject(new Error('AI response timeout - the model is taking longer than expected to generate a response. This is normal for large language models. Please try again.'));
+            }, 300000); // 5 minute timeout (increased from 2 minutes)
+            
             // Prepare the input data
             const inputData = {
                 query: query,
@@ -286,10 +299,19 @@ class LegalAIController {
 
             // Handle completion
             pythonShell.end((err) => {
+                // Clear the timeout
+                clearTimeout(timeout);
+                
                 if (err) {
                     reject(new Error(`Python script error: ${err}`));
                 } else {
                     try {
+                        // Handle empty output
+                        if (!output || output.trim() === '') {
+                            reject(new Error('Python script returned empty output'));
+                            return;
+                        }
+                        
                         // Parse the JSON output from Python
                         const result = JSON.parse(output);
                         
@@ -298,7 +320,20 @@ class LegalAIController {
                         
                         resolve(enhancedResult);
                     } catch (parseError) {
-                        reject(new Error(`Failed to parse Python output: ${parseError.message}`));
+                        // If parsing fails, return the raw output as a response
+                        resolve({
+                            response: output || 'I apologize, but I could not generate a response.',
+                            confidence: 0.8,
+                            legalCategory: 'general',
+                            relatedConcepts: [],
+                            sources: [
+                                'DharmaSikhara AI Legal Assistant',
+                                'Indian Penal Code (IPC)',
+                                'Code of Criminal Procedure (CrPC)',
+                                'Code of Civil Procedure (CPC)',
+                                'Indian Evidence Act'
+                            ]
+                        });
                     }
                 }
             });
@@ -665,7 +700,7 @@ _________________________
 
         try {
             // Send initial message
-            res.write(`data: ${JSON.stringify({ type: 'info', content: 'Starting analysis with InCaseLawBERT model...' })}\n\n`);
+            res.write(`data: ${JSON.stringify({ type: 'info', content: 'Starting analysis with AI model...' })}\n\n`);
 
             // Simulate processing delay
             await new Promise(resolve => setTimeout(resolve, 1000));
@@ -721,7 +756,7 @@ _________________________
                 modifiedQuery = `Based on the following legal document, please answer the user's question.\n\nDocument Content:\n${documentContext || 'N/A'}\n\nDocument Analysis:\n${JSON.stringify(documentAnalysis || 'N/A', null, 2)}\n\nUser Question: ${query}\n\nPlease provide a detailed response based on the document content and analysis.`;
             }
             
-            // Use the actual InCaseLawBERT model for legal assistance
+            // Use the actual AI model for legal assistance
             const result = await this.getLegalAssistantResponseMethod(modifiedQuery);
             
             if (result.error) {

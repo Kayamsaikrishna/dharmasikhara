@@ -1,64 +1,25 @@
 import sys
 import json
 import os
-from transformers import AutoTokenizer, AutoModel
+from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
 import numpy as np
 
 # Add debug output at the very beginning
 print("DEBUG: Python script started", file=sys.stderr)
 
-# Check if the model path exists and point to the correct snapshot
-# Use a generalized path for the Hugging Face cache
-# First, try to get the Hugging Face cache directory from environment variable
-hf_cache_dir = os.environ.get('HF_HOME')
-if not hf_cache_dir:
-    # If HF_HOME is not set, use the default cache directory
-    hf_cache_dir = os.path.join(os.path.expanduser('~'), '.cache', 'huggingface')
-
-# Construct the model path using the cache directory
-model_base_path = os.path.join(hf_cache_dir, 'hub', 'models--law-ai--InCaseLawBERT')
-model_path = os.path.join(model_base_path, 'snapshots', '7f2c2a0c1ff4149e8c4a8c79ee9f24757ad5dacd')
-
-# Check if the primary snapshot exists
-if not os.path.exists(model_path):
-    # Fallback to the previous snapshot
-    model_path = os.path.join(model_base_path, 'snapshots', 'c1c7dfc81f3c953bb4edb4ab9411e128f9f220e6')
-    if not os.path.exists(model_path):
-        # If neither snapshot exists, try to find any snapshot
-        if os.path.exists(model_base_path):
-            snapshots_dir = os.path.join(model_base_path, 'snapshots')
-            if os.path.exists(snapshots_dir):
-                snapshots = os.listdir(snapshots_dir)
-                if snapshots:
-                    # Use the first available snapshot
-                    model_path = os.path.join(snapshots_dir, snapshots[0])
-                    print(f"DEBUG: Using fallback snapshot: {model_path}", file=sys.stderr)
-                else:
-                    print(json.dumps({"error": f"No snapshots found in: {snapshots_dir}"}))
-                    sys.exit(1)
-            else:
-                print(json.dumps({"error": f"Snapshots directory does not exist: {snapshots_dir}"}))
-                sys.exit(1)
-        else:
-            print(json.dumps({"error": f"Model base path does not exist: {model_base_path}"}))
-            sys.exit(1)
+# Use the local InLegalLLaMA model directory
+model_path = os.path.join(os.path.dirname(__file__), '..', 'models', 'InLegalLLaMA')
 
 print(f"DEBUG: Using model path: {model_path}", file=sys.stderr)
 
 try:
     # Load the tokenizer and model
-    # Suppress loading messages by redirecting stderr
-    import sys
-    original_stderr = sys.stderr
-    sys.stderr = open(os.devnull, 'w')
-    
     tokenizer = AutoTokenizer.from_pretrained(model_path)
-    model = AutoModel.from_pretrained(model_path)
-    
-    # Restore stderr
-    sys.stderr.close()
-    sys.stderr = original_stderr
+    # Add padding token if it doesn't exist
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
+    model = AutoModelForCausalLM.from_pretrained(model_path)
     
     print(f"DEBUG: Model loaded successfully from {model_path}", file=sys.stderr)
 except Exception as e:
@@ -67,7 +28,7 @@ except Exception as e:
 
 def analyze_legal_document(document_text):
     """
-    Analyze a legal document using the InCaseLawBERT model
+    Analyze a legal document using the InLegalLLaMA model
     """
     try:
         # Debug: Check the type and content of document_text
@@ -107,66 +68,99 @@ def analyze_legal_document(document_text):
         if not document_text:
             return {"error": "Document text is empty"}
         
-        # Tokenize the input text with proper truncation
-        # Add explicit error handling for the tokenizer
-        try:
-            inputs = tokenizer(
-                document_text, 
-                return_tensors="pt", 
-                truncation=True, 
-                padding=True, 
-                max_length=max_length,
-                return_overflowing_tokens=False
-            )
-        except Exception as tokenize_error:
-            print(f"DEBUG: Tokenizer error: {str(tokenize_error)}", file=sys.stderr)
-            # Try with a simpler approach
-            try:
-                # Force the input to be a string
-                simple_text = str(document_text)
-                inputs = tokenizer(
-                    simple_text, 
-                    return_tensors="pt", 
-                    truncation=True, 
-                    padding=True, 
-                    max_length=max_length,
-                    return_overflowing_tokens=False
-                )
-            except Exception as second_error:
-                return {"error": f"Failed to tokenize document: {str(second_error)}"}
+        # Create a prompt for document analysis
+        prompt = f"""
+        Please analyze the following legal document and provide a structured analysis:
         
-        # Get model outputs
+        Document:
+        {document_text}
+        
+        Provide the analysis in the following JSON format:
+        {{
+            "document_length": <integer>,
+            "document_type": "<string>",
+            "summary": "<string>",
+            "key_terms": ["<string>"],
+            "parties_involved": ["<string>"],
+            "key_dates": ["<string>"],
+            "monetary_values": ["<string>"],
+            "legal_provisions": ["<string>"],
+            "risk_assessment": [<object>],
+            "recommended_actions": ["<string>"],
+            "document_structure": <object>,
+            "confidence": <float>
+        }}
+        
+        Analysis:
+        """.strip()
+        
+        # Tokenize the prompt
+        inputs = tokenizer(
+            prompt, 
+            return_tensors="pt", 
+            truncation=True, 
+            padding=True, 
+            max_length=512
+        )
+        
+        # Generate response using the model
         with torch.no_grad():
-            outputs = model(**inputs)
+            outputs = model.generate(
+                **inputs,
+                max_length=2048,
+                num_return_sequences=1,
+                temperature=0.7,
+                do_sample=True,
+                pad_token_id=tokenizer.pad_token_id
+            )
         
-        # Get the last hidden states
-        last_hidden_states = outputs.last_hidden_state
+        # Decode the response
+        response_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
         
-        # Calculate average embeddings
-        avg_embedding = torch.mean(last_hidden_states, dim=1).squeeze().numpy()
+        # Remove the prompt from the response
+        if response_text.startswith(prompt):
+            response_text = response_text[len(prompt):].strip()
         
-        # Extract key information from the document
-        key_terms = extract_key_terms(document_text)
-        document_type = classify_document_type(document_text)
-        summary = generate_summary(document_text)
-        
-        # Enhanced analysis with more detailed information
-        analysis = {
-            "document_length": len(document_text),
-            "token_count": inputs['input_ids'].shape[1],
-            "embedding_shape": avg_embedding.shape,
-            "document_type": document_type,
-            "summary": summary,
-            "key_terms": key_terms,
-            "parties_involved": extract_parties(document_text),
-            "key_dates": extract_dates(document_text),
-            "monetary_values": extract_monetary_values(document_text),
-            "legal_provisions": extract_legal_provisions(document_text),
-            "risk_assessment": assess_risk(document_text),
-            "recommended_actions": generate_recommendations(document_text, document_type),
-            "document_structure": analyze_document_structure(document_text),
-            "confidence": 0.95
-        }
+        # Try to parse the response as JSON
+        try:
+            # Extract JSON from the response
+            import re
+            json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
+            if json_match:
+                json_str = json_match.group(0)
+                analysis = json.loads(json_str)
+            else:
+                # Fallback to manual analysis if JSON parsing fails
+                analysis = {
+                    "document_length": len(document_text),
+                    "document_type": "Legal Document",
+                    "summary": response_text[:500] + "..." if len(response_text) > 500 else response_text,
+                    "key_terms": [],
+                    "parties_involved": [],
+                    "key_dates": [],
+                    "monetary_values": [],
+                    "legal_provisions": [],
+                    "risk_assessment": [],
+                    "recommended_actions": [],
+                    "document_structure": {},
+                    "confidence": 0.8
+                }
+        except Exception as parse_error:
+            # Fallback to manual analysis if JSON parsing fails
+            analysis = {
+                "document_length": len(document_text),
+                "document_type": "Legal Document",
+                "summary": response_text[:500] + "..." if len(response_text) > 500 else response_text,
+                "key_terms": [],
+                "parties_involved": [],
+                "key_dates": [],
+                "monetary_values": [],
+                "legal_provisions": [],
+                "risk_assessment": [],
+                "recommended_actions": [],
+                "document_structure": {},
+                "confidence": 0.8
+            }
         
         return analysis
     except Exception as e:
@@ -367,34 +361,49 @@ def analyze_document_structure(document_text):
 
 def get_legal_assistant_response(query):
     """
-    Generate a legal assistant response using the InCaseLawBERT model
+    Generate a legal assistant response using the InLegalLLaMA model
     """
     try:
         # Check if this is a document-related query
         if "Document Content:" in query and "User Question:" in query:
             # This is a document-specific query, process it differently
-            return generate_document_specific_response(query)
+            return generate_document_specific_response_with_model(query)
         
-        # Tokenize the query with proper truncation
+        # Create a prompt for the legal assistant
+        prompt = f"""
+        You are an AI Legal Assistant specializing in Indian law. Please provide a detailed and accurate response to the following legal question:
+        
+        Question: {query}
+        
+        Please provide a comprehensive answer with relevant legal provisions, case law, and practical advice.
+        """.strip()
+        
+        # Tokenize the prompt
         inputs = tokenizer(
-            query, 
+            prompt, 
             return_tensors="pt", 
             truncation=True, 
             padding=True, 
-            max_length=512,
-            return_overflowing_tokens=False
+            max_length=512
         )
         
-        # Get model outputs
+        # Generate response using the model
         with torch.no_grad():
-            outputs = model(**inputs)
+            outputs = model.generate(
+                **inputs,
+                max_length=1024,
+                num_return_sequences=1,
+                temperature=0.7,
+                do_sample=True,
+                pad_token_id=tokenizer.pad_token_id
+            )
         
-        # Get the last hidden states
-        last_hidden_states = outputs.last_hidden_state
+        # Decode the response
+        response_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
         
-        # Generate a contextually relevant legal response based on the query
-        # Using the model's embeddings to understand the context better
-        response_text = generate_legal_response_with_embeddings(query, last_hidden_states)
+        # Remove the prompt from the response
+        if response_text.startswith(prompt):
+            response_text = response_text[len(prompt):].strip()
         
         return {
             "response": response_text,
@@ -404,22 +413,47 @@ def get_legal_assistant_response(query):
     except Exception as e:
         return {"error": f"Failed to generate response: {str(e)}"}
 
-def generate_document_specific_response(query):
+def generate_document_specific_response_with_model(query):
     """
-    Generate a response specifically for document-related queries
+    Generate a response specifically for document-related queries using the model
     """
     try:
-        # Extract the document content and user question
-        parts = query.split("User Question:")
-        if len(parts) < 2:
-            return generate_legal_response(query)
+        # Create a prompt for document analysis
+        prompt = f"""
+        You are an AI Legal Assistant. Please analyze the following legal document and answer the user's question according to the document content.
         
-        document_part = parts[0].replace("Based on the following legal document, please answer the user's question.\n\nDocument Content:\n", "")
-        user_question = parts[1].split("\n\nPlease provide a detailed response")[0].strip()
+        Document Content:
+        {query}
         
-        # For document-specific queries, we want to focus on the document content
-        # and the specific question being asked
-        response_text = generate_document_based_response(document_part, user_question)
+        Please provide a detailed and accurate response based on the document.
+        """.strip()
+        
+        # Tokenize the prompt
+        inputs = tokenizer(
+            prompt, 
+            return_tensors="pt", 
+            truncation=True, 
+            padding=True, 
+            max_length=512
+        )
+        
+        # Generate response using the model
+        with torch.no_grad():
+            outputs = model.generate(
+                **inputs,
+                max_length=1024,
+                num_return_sequences=1,
+                temperature=0.7,
+                do_sample=True,
+                pad_token_id=tokenizer.pad_token_id
+            )
+        
+        # Decode the response
+        response_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+        
+        # Remove the prompt from the response
+        if response_text.startswith(prompt):
+            response_text = response_text[len(prompt):].strip()
         
         return {
             "response": response_text,
@@ -641,7 +675,7 @@ def generate_summary(document_text):
 
 def generate_legal_response_with_embeddings(query, embeddings):
     """
-    Generate a legal response based on the query using the InCaseLawBERT model embeddings
+    Generate a legal response based on the query using the InLegalLLaMA model embeddings
     """
     # Use the model's embeddings to understand the legal context better
     # Calculate the average embedding to get a representation of the query
@@ -962,9 +996,59 @@ if __name__ == "__main__":
         else:
             result = {"error": "No query or document text provided"}
         
+        # Ensure result is a dictionary
+        if not isinstance(result, dict):
+            result = {"response": str(result)}
+        
+        # Add default values if missing
+        if "response" not in result and "error" not in result:
+            result["response"] = "I apologize, but I could not generate a response."
+        
+        if "confidence" not in result:
+            result["confidence"] = 0.95
+            
+        if "legalCategory" not in result:
+            result["legalCategory"] = "general"
+            
+        if "relatedConcepts" not in result:
+            result["relatedConcepts"] = []
+            
+        if "sources" not in result:
+            result["sources"] = [
+                "DharmaSikhara AI Legal Assistant",
+                "Indian Penal Code (IPC)",
+                "Code of Criminal Procedure (CrPC)",
+                "Code of Civil Procedure (CPC)",
+                "Indian Evidence Act"
+            ]
+        
         # Output the result as JSON to stdout
-        if result:
-            print(json.dumps(result))
+        print(json.dumps(result))
+        
+    except json.JSONDecodeError as e:
+        error_result = {"error": f"Invalid JSON input: {str(e)}"}
+        print(json.dumps(error_result))
+    except Exception as e:
+        error_result = {"error": f"Unexpected error: {str(e)}"}
+        print(json.dumps(error_result))
+            
+        if "legalCategory" not in result:
+            result["legalCategory"] = "general"
+            
+        if "relatedConcepts" not in result:
+            result["relatedConcepts"] = []
+            
+        if "sources" not in result:
+            result["sources"] = [
+                "DharmaSikhara AI Legal Assistant",
+                "Indian Penal Code (IPC)",
+                "Code of Criminal Procedure (CrPC)",
+                "Code of Civil Procedure (CPC)",
+                "Indian Evidence Act"
+            ]
+        
+        # Output the result as JSON to stdout
+        print(json.dumps(result))
         
     except json.JSONDecodeError as e:
         error_result = {"error": f"Invalid JSON input: {str(e)}"}

@@ -95,6 +95,10 @@ PYTHON_PATH=python
 
 ## Running the Backend
 
+### Quick Start (Minimal Setup)
+
+For a quick start with minimal setup, see [BACKEND_QUICK_START.md](../BACKEND_QUICK_START.md)
+
 ### Development Mode
 ```
 npm run dev

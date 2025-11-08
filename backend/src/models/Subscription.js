@@ -43,6 +43,14 @@ const subscriptionSchema = new mongoose.Schema({
     prioritySupport: {
       type: Boolean,
       default: false
+    },
+    storage: {
+      type: String,
+      default: '0 GB'
+    },
+    documentAnalysisLimit: {
+      type: String,
+      default: '0 per week'
     }
   }
 });

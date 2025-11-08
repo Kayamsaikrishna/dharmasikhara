@@ -23,6 +23,7 @@ class DatabaseService {
     } catch (error) {
       console.error('MongoDB connection error:', error.message);
       console.log('Continuing without MongoDB connection');
+      this.mongodb = null;
       return null;
     }
   }
@@ -45,6 +46,7 @@ class DatabaseService {
     } catch (error) {
       console.error('PostgreSQL connection error:', error.message);
       console.log('Continuing without PostgreSQL connection');
+      this.postgres = null;
       return null;
     }
   }
@@ -63,6 +65,7 @@ class DatabaseService {
     } catch (error) {
       console.error('Redis connection error:', error.message);
       console.log('Continuing without Redis connection');
+      this.redis = null;
       return null;
     }
   }
@@ -80,6 +83,7 @@ class DatabaseService {
     } catch (error) {
       console.error('Elasticsearch connection error:', error.message);
       console.log('Continuing without Elasticsearch connection');
+      this.elasticsearch = null;
       return null;
     }
   }

@@ -195,6 +195,8 @@ const getSubscription = async (req, res) => {
                 user: user._id,
                 plan: 'free',
                 status: 'active',
+                startDate: new Date(),
+                endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
                 features: getPlanFeatures('free')
             });
             

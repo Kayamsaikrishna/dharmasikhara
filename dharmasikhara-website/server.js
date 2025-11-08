@@ -443,7 +443,7 @@ app.get('/api/ai-status', async (req, res) => {
             success: true,
             data: {
                 modelAvailable: isAvailable,
-                modelName: 'InCaseLawBERT',
+                modelName: 'AI Legal Assistant',
                 status: isAvailable ? 'Ready' : 'Unavailable'
             }
         });

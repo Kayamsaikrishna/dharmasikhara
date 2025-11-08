@@ -78,47 +78,59 @@ const Navbar: React.FC = () => {
             </nav>
 
             <div className="flex items-center space-x-3">
-              {/* User Profile Icon */}
-              <div className="relative" ref={userMenuRef}>
-                <button 
-                  className="flex items-center space-x-2 text-white hover:bg-white/20 px-3 py-2 rounded-lg transition duration-300"
-                  onClick={() => setIsProfileOpen(!isProfileOpen)}
-                >
-                  <User className="w-5 h-5" />
-                  <span className="hidden md:inline">Profile</span>
-                </button>
-                
-                {/* User Menu Dropdown */}
-                {isProfileOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
-                    <Link 
-                      to="/account/profile" 
-                      className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
-                      onClick={() => setIsProfileOpen(false)}
-                    >
-                      Profile
-                    </Link>
-                    <Link 
-                      to="/account/subscription" 
-                      className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
-                      onClick={() => setIsProfileOpen(false)}
-                    >
-                      Subscription
-                    </Link>
-                    <div className="border-t my-2"></div>
-                    <button 
-                      onClick={() => {
-                        handleLogout();
-                        setIsProfileOpen(false);
-                      }}
-                      className="w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100 flex items-center"
-                    >
-                      <LogOut className="w-4 h-4 mr-2" />
-                      Logout
-                    </button>
-                  </div>
-                )}
-              </div>
+              {user ? (
+                /* User Profile Icon */
+                <div className="relative" ref={userMenuRef}>
+                  <button 
+                    className="flex items-center space-x-2 text-white hover:bg-white/20 px-3 py-2 rounded-lg transition duration-300"
+                    onClick={() => setIsProfileOpen(!isProfileOpen)}
+                  >
+                    <User className="w-5 h-5" />
+                    <span className="hidden md:inline">Profile</span>
+                  </button>
+                  
+                  {/* User Menu Dropdown */}
+                  {isProfileOpen && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
+                      <Link 
+                        to="/account/profile" 
+                        className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                        onClick={() => setIsProfileOpen(false)}
+                      >
+                        Profile
+                      </Link>
+                      <Link 
+                        to="/account/subscription" 
+                        className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                        onClick={() => setIsProfileOpen(false)}
+                      >
+                        Subscription
+                      </Link>
+                      <div className="border-t my-2"></div>
+                      <button 
+                        onClick={() => {
+                          handleLogout();
+                          setIsProfileOpen(false);
+                        }}
+                        className="w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100 flex items-center"
+                      >
+                        <LogOut className="w-4 h-4 mr-2" />
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                /* Login/Register Links for Desktop */
+                <div className="flex space-x-2">
+                  <Link 
+                    to="/login" 
+                    className="text-white hover:bg-white/20 px-3 py-2 rounded-lg font-medium transition duration-300"
+                  >
+                    Login
+                  </Link>
+                </div>
+              )}
               
               {/* Mobile Menu Button */}
               <button 

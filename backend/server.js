@@ -36,6 +36,7 @@ const expertSupportRoutes = require('./src/routes/expertSupport');
 const caseSpecificAIRoutes = require('./src/routes/caseSpecificAI');
 const marketingRoutes = require('./src/routes/marketing');
 const progressRoutes = require('./src/routes/progress');
+const authRoutes = require('./src/routes/auth');
 
 // Import database service
 const databaseService = require('./src/services/database');
@@ -59,6 +60,9 @@ app.use('/api/legal-news', legalNewsRoutes);
 
 // Account Routes
 app.use('/api/account', accountRoutes);
+
+// Auth Routes
+app.use('/api/auth', authRoutes);
 
 // Payment Routes
 app.use('/api/payments', paymentRoutes);
@@ -137,14 +141,19 @@ app.get('/api/health', (req, res) => {
 });
 
 // Connect to all databases before starting the server
+// Note: We continue starting the server even if database connections fail
+// to allow basic functionality without databases
 databaseService.connectAll()
   .then(() => {
-    // Start the server
-    app.listen(PORT, '0.0.0.0', () => {
-        console.log(`DharmaSikhara AI Backend running on http://0.0.0.0:${PORT}`);
-    });
+    console.log('Database connection attempts completed');
   })
   .catch((error) => {
-    console.error('Failed to start server due to database connection error:', error);
-    process.exit(1);
+    console.error('Database connection error (continuing without databases):', error);
+  })
+  .finally(() => {
+    // Start the server regardless of database connection status
+    app.listen(PORT, '0.0.0.0', () => {
+        console.log(`DharmaSikhara AI Backend running on http://0.0.0.0:${PORT}`);
+        console.log('WARNING: Some features may be limited due to missing database connections');
+    });
   });

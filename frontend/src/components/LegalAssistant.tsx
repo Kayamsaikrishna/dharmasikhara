@@ -61,7 +61,7 @@ const LegalAssistant: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: 'Hello! I am your AI Legal Assistant powered by InCaseLawBERT. How can I help you with your legal questions today?',
+      text: 'Hello! I am your AI Legal Assistant. How can I help you with your legal questions today?',
       sender: 'ai',
       timestamp: new Date()
     }
@@ -345,7 +345,9 @@ const LegalAssistant: React.FC = () => {
     setError('');
 
     try {
-      const requestBody: any = { query: inputText };
+      const requestBody: any = {
+        query: inputText
+      };
       
       // If we have document context, include it in the request
       if (documentContext) {
@@ -363,11 +365,18 @@ const LegalAssistant: React.FC = () => {
         headers['Authorization'] = `Bearer ${token}`;
       }
       
+      // Set a longer timeout for the request to accommodate large model processing times
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 300000); // 5 minute timeout (increased from 2 minutes)
+      
       const response = await fetch('/api/ai/legal-assistant', {
         method: 'POST',
         headers,
-        body: JSON.stringify(requestBody)
+        body: JSON.stringify(requestBody),
+        signal: controller.signal
       });
+
+      clearTimeout(timeoutId);
 
       const data = await response.json();
 
@@ -395,8 +404,12 @@ const LegalAssistant: React.FC = () => {
       } else {
         setError(data.message || 'Failed to get response from AI assistant');
       }
-    } catch (err) {
-      setError('Failed to connect to the server');
+    } catch (err: any) {
+      if (err.name === 'AbortError') {
+        setError('Request timeout - the AI is taking longer than expected to generate a response. This is normal for large language models and can take up to 2 minutes. Please try again.');
+      } else {
+        setError('Failed to connect to the server: ' + (err.message || 'Unknown error'));
+      }
       console.error('Send message error:', err);
     } finally {
       setIsLoading(false);
@@ -540,7 +553,7 @@ const LegalAssistant: React.FC = () => {
     setMessages([
       {
         id: '1',
-        text: 'Hello! I am your AI Legal Assistant powered by InCaseLawBERT. How can I help you with your legal questions today?',
+        text: 'Hello! I am your AI Legal Assistant. How can I help you with your legal questions today?',
         sender: 'ai',
         timestamp: new Date()
       }
@@ -569,7 +582,7 @@ const LegalAssistant: React.FC = () => {
           <h2 className="text-xl font-bold">Legal Assistant</h2>
           <div className="flex items-center space-x-4">
             <span className="text-xs bg-indigo-600 px-2 py-1 rounded-full">
-              Powered by InCaseLawBERT
+              AI-Powered Legal Assistance
             </span>
             {(token && !isTokenExpired()) && (
               <div className="flex space-x-2">

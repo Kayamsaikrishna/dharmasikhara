@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
 
 interface LegalNewsItem {
@@ -29,17 +30,12 @@ const LegalNewsFeed: React.FC = () => {
 
   const fetchLatestNews = async () => {
     try {
-      const response = await fetch('/api/legal-news?limit=3');
+      const response = await axios.get('/api/legal-news', {
+        params: { limit: 3 }
+      });
       
-      // Check if response is successful
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          setNews(data.data);
-        } else {
-          // Fallback to mock data if API fails
-          setNews(getMockNews());
-        }
+      if (response.data.success) {
+        setNews(response.data.data);
       } else {
         // Fallback to mock data if API fails
         setNews(getMockNews());

@@ -3,7 +3,7 @@ const path = require('path');
 
 // Test the enhanced legal assistant functionality
 async function testLegalAssistant() {
-    console.log('Testing Enhanced Legal Assistant with InCaseLawBERT Model');
+    console.log('Testing Enhanced Legal Assistant with AI Model');
     console.log('=' .repeat(50));
     
     // Test queries covering different legal domains

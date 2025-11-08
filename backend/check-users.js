@@ -1,35 +1,40 @@
 const mongoose = require('mongoose');
-
-// MongoDB connection
-const mongoURI = 'mongodb://localhost:27017/dharmasikhara';
-mongoose.connect(mongoURI);
-
 const User = require('./src/models/User');
+
+// Connect to MongoDB
+mongoose.connect('mongodb://localhost:27017/dharmasikhara', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
 async function checkUsers() {
   try {
-    // Check if the specific user exists
-    const user = await User.findOne({
-      $or: [
-        { email: 'kayamsaikrishna@gmail.com' },
-        { username: 'krishna' }
-      ]
-    });
+    // Find all users
+    const users = await User.find({});
     
-    if (user) {
-      console.log('User still exists:');
-      console.log(`- ${user.username} (${user.email})`);
+    console.log(`Found ${users.length} users`);
+    
+    if (users.length > 0) {
+      users.forEach((user, index) => {
+        console.log(`\nUser ${index + 1}:`);
+        console.log(`  ID: ${user._id}`);
+        console.log(`  Username: ${user.username}`);
+        console.log(`  Email: ${user.email}`);
+        console.log(`  Created At: ${user.createdAt}`);
+        console.log(`  First Name: ${user.firstName}`);
+        console.log(`  Last Name: ${user.lastName}`);
+        console.log(`  Institution: ${user.institution}`);
+        console.log(`  Year: ${user.year}`);
+        console.log(`  Specialization: ${user.specialization}`);
+      });
     } else {
-      console.log('User with email kayamsaikrishna@gmail.com or username krishna has been successfully removed');
+      console.log('No users found in the database');
     }
     
-    // Count total users
-    const totalUsers = await User.countDocuments();
-    console.log(`\nTotal users in database: ${totalUsers}`);
+    process.exit(0);
   } catch (error) {
-    console.error('Error:', error);
-  } finally {
-    mongoose.connection.close();
+    console.error('Error checking users:', error);
+    process.exit(1);
   }
 }
 
