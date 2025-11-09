@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { saveUserProgress } from '../utils/progressApi';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, XCircle, AlertCircle, Award, Trophy, RotateCw } from 'lucide-react';
 
@@ -65,6 +66,19 @@ const LegalAssessment: React.FC = () => {
           ],
           correctAnswers: [3], // Option D
           score: 5
+        },
+        {
+          id: 'q3',
+          text: 'Which of the following is a mandatory consideration for a magistrate when deciding a bail application under Section 437 CrPC?',
+          type: 'single-select',
+          options: [
+            'The accused\'s financial status',
+            'The nature and gravity of the accusation',
+            'The accused\'s political connections',
+            'The complainant\'s social standing'
+          ],
+          correctAnswers: [1], // Option B
+          score: 5
         }
       ]
     },
@@ -76,7 +90,7 @@ const LegalAssessment: React.FC = () => {
       weight: 30,
       questions: [
         {
-          id: 'q3',
+          id: 'q4',
           text: 'Review this excerpt from your witness interview with the security guard: "I saw someone matching the accused\'s height leaving the office around 7 PM. The lights were dim, and I was about 30 feet away. I\'m 70% sure it was him." Which THREE factors undermine the reliability of this identification?',
           type: 'multi-select',
           options: [
@@ -89,6 +103,19 @@ const LegalAssessment: React.FC = () => {
           ],
           correctAnswers: [0, 1, 2], // Options A, B, C
           score: 10
+        },
+        {
+          id: 'q5',
+          text: 'Which of the following pieces of evidence would be MOST damaging to the prosecution\'s case if successfully challenged?',
+          type: 'single-select',
+          options: [
+            'The complainant\'s testimony',
+            'The CCTV footage showing someone resembling the accused',
+            'The security guard\'s identification',
+            'The recovered laptop with the accused\'s fingerprints'
+          ],
+          correctAnswers: [3], // Option D
+          score: 10
         }
       ]
     },
@@ -100,9 +127,22 @@ const LegalAssessment: React.FC = () => {
       weight: 25,
       questions: [
         {
-          id: 'q4',
+          id: 'q6',
           text: 'During case preparation, your client mentions: "I know who actually took the laptop, but revealing it would get my colleague fired. Can we just blame the poor CCTV quality?" Rank these responses from MOST to LEAST appropriate:',
           type: 'text',
+          score: 10
+        },
+        {
+          id: 'q7',
+          text: 'You discover that the complainant has a history of making false accusations. What is the most appropriate course of action?',
+          type: 'single-select',
+          options: [
+            'Immediately inform the court about the complainant\'s history',
+            'Use this information to discredit the complainant during cross-examination',
+            'Ignore this information as it is not directly relevant to the current case',
+            'Confront the complainant privately to encourage withdrawal of the case'
+          ],
+          correctAnswers: [1], // Option B
           score: 10
         }
       ]
@@ -115,10 +155,36 @@ const LegalAssessment: React.FC = () => {
       weight: 25,
       questions: [
         {
-          id: 'q5',
+          id: 'q8',
           text: 'Read this bail argument excerpt: "Your Honor, my client is innocent. The CCTV footage is unclear, and the police investigation was rushed. Many people have access to that room. Bail should be granted because the evidence is weak." Identify THREE specific weaknesses and rewrite the argument to address them.',
           type: 'text',
           score: 10
+        },
+        {
+          id: 'q9',
+          text: 'Which of the following is the strongest argument for granting bail in this case?',
+          type: 'single-select',
+          options: [
+            'The accused has a stable job and family ties in the community',
+            'The accused has never been convicted of a crime before',
+            'The accused has a permanent address and is unlikely to flee',
+            'All of the above are strong arguments'
+          ],
+          correctAnswers: [3], // Option D
+          score: 10
+        },
+        {
+          id: 'q10',
+          text: 'What is the primary purpose of a bail hearing?',
+          type: 'single-select',
+          options: [
+            'To determine the guilt or innocence of the accused',
+            'To ensure the accused appears for trial and does not pose a threat to society',
+            'To punish the accused for the alleged crime',
+            'To provide an opportunity for the complainant to present evidence'
+          ],
+          correctAnswers: [1], // Option B
+          score: 5
         }
       ]
     }
@@ -277,9 +343,26 @@ const LegalAssessment: React.FC = () => {
     setResults(resultsData);
     setIsCompleted(true);
 
-    // Save to localStorage
+    // Save to localStorage for immediate access
     localStorage.setItem('assessment_total_score', `${percentage}%`);
     localStorage.setItem('assessment_performance_tier', performanceTier);
+
+    // Save progress with assessment results
+    const progressData = {
+      completedStages: ['bail-hearing', 'court-hearing', 'legal-assessment'],
+      currentStage: 'completed',
+      lastUpdated: new Date().toISOString(),
+      totalTimeSpent: 0,
+      assessmentScore: percentage
+    };
+
+    saveUserProgress('the-inventory-that-changed-everything', progressData)
+      .then(() => {
+        console.log('Assessment progress saved successfully');
+      })
+      .catch((error) => {
+        console.error('Failed to save assessment progress:', error);
+      });
   };
 
   const formatTime = (seconds: number) => {

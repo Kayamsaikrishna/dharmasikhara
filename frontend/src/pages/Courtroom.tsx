@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useUser } from '../contexts/UserContext';
 import { saveUserProgress } from '../utils/progressApi';
+import { useNavigate } from 'react-router-dom';
 
 // Define types for the bail hearing script
 interface Speaker {
@@ -36,7 +37,9 @@ interface BailHearingScript {
 
 const Courtroom: React.FC<{}> = () => {
   const { user } = useUser();
+  const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
+
   const sceneRef = useRef<any>(null);
   const cameraRef = useRef<any>(null);
   const rendererRef = useRef<any>(null);
@@ -2418,203 +2421,6 @@ const Courtroom: React.FC<{}> = () => {
         <div className="text-amber-400 text-3xl mb-2">👇</div>
         <p className="text-slate-300 text-xs mb-2">(Required by browser security policies)</p>
         <button 
-          onClick={() => {
-            // Try to initialize audio context
-            if ((window as any).appAudioContext) {
-              (window as any).appAudioContext.resume();
-            } else {
-              (window as any).appAudioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-            }
-            // Hide the prompt
-            const audioPrompt = document.getElementById('audio-prompt');
-            if (audioPrompt) {
-              audioPrompt.style.display = 'none';
-            }
-          }}
-          className="mt-2 px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors"
-        >
-          Enable Audio Now
-        </button>
-      </div>
-      
-      {/* Status Bar */}
-      <div className="absolute bottom-7 left-1/2 transform -translate-x-1/2 bg-[rgba(15,23,42,0.98)] backdrop-blur-xl p-3.5 rounded-full border-2 border-amber-600 shadow-2xl flex items-center gap-7 text-sm z-30">
-        <div className="flex items-center gap-2.5 text-slate-300 font-medium">
-          <div 
-            ref={lightsIndicatorRef}
-            className="w-2.5 h-2.5 rounded-full shadow-[0_0_10px_currentColor] bg-amber-400 text-amber-400"
-          ></div>
-          <span>Lights</span>
-        </div>
-        <div className="text-slate-600">|</div>
-        <div className="flex items-center gap-2.5 text-slate-300 font-medium">
-          <div 
-            ref={fansIndicatorRef}
-            className="w-2.5 h-2.5 rounded-full shadow-[0_0_10px_currentColor] bg-blue-500 text-blue-500 animate-pulse"
-          ></div>
-          <span>Fans</span>
-        </div>
-        <div className="text-slate-600">|</div>
-        <div className="flex items-center gap-2.5 text-slate-300 font-medium">
-          <div 
-            ref={witnessIndicatorRef}
-            className="w-2.5 h-2.5 rounded-full shadow-[0_0_10px_currentColor] bg-red-500 text-red-500"
-          ></div>
-          <span>Witness</span>
-        </div>
-        <div className="text-slate-600">|</div>
-        <div className="flex items-center gap-2.5 text-slate-300 font-medium">
-          <div 
-            ref={modeIndicatorRef}
-            className="w-2.5 h-2.5 rounded-full shadow-[0_0_10px_currentColor] bg-amber-500 text-amber-500"
-          ></div>
-          <span ref={modeTextRef}>Day</span>
-        </div>
-      </div>
-      
-      {/* Info Panel */}
-      <div className="absolute bottom-7 left-7 bg-[rgba(15,23,42,0.95)] backdrop-blur-xl p-5 rounded-xl border border-amber-600 shadow-2xl z-30">
-        <div className="flex items-center gap-2.5 mb-2.5 text-sm text-slate-300 font-medium">
-          <div className="w-3.5 h-3.5 rounded-full shadow-[0_0_8px_#d97706] bg-amber-600 text-amber-600"></div>
-          <span>Judge's Bench</span>
-        </div>
-        <div className="flex items-center gap-2.5 mb-2.5 text-sm text-slate-300 font-medium">
-          <div className="w-3.5 h-3.5 rounded-full shadow-[0_0_8px_#3b82f6] bg-blue-500 text-blue-500"></div>
-          <span>Defense Table</span>
-        </div>
-        <div className="flex items-center gap-2.5 mb-2.5 text-sm text-slate-300 font-medium">
-          <div className="w-3.5 h-3.5 rounded-full shadow-[0_0_8px_#ef4444] bg-red-500 text-red-500"></div>
-          <span>Prosecution Table</span>
-        </div>
-        <div className="flex items-center gap-2.5 mb-2.5 text-sm text-slate-300 font-medium">
-          <div className="w-3.5 h-3.5 rounded-full shadow-[0_0_8px_#22c55e] bg-green-500 text-green-500"></div>
-          <span>Witness Stand</span>
-        </div>
-        <div className="flex items-center gap-2.5 text-sm text-slate-300 font-medium">
-          <div className="w-3.5 h-3.5 rounded-full shadow-[0_0_8px_#6b7280] bg-gray-500 text-gray-500"></div>
-          <span>Public Gallery</span>
-        </div>
-      </div>
-      
-      {/* Welcome Panel */}
-      <div 
-        ref={welcomePanelRef}
-        className="absolute top-24 left-7 bg-[rgba(15,23,42,0.95)] backdrop-blur-xl p-6 rounded-xl border-2 border-amber-400 shadow-2xl max-w-xs z-30"
-      >
-        <h3 className="text-amber-400 text-lg mb-2.5 font-bold">👁️ Welcome to Realistic Virtual Courtroom</h3>
-        <p className="text-white text-sm mb-3.5 leading-normal">
-          Experience a cinematic, photorealistic 3D Indian courtroom environment with advanced lighting, animations, and interactive controls.
-        </p>
-        <div className="text-slate-300 text-xs leading-relaxed">
-          <p className="mb-1.5">✓ Drag to rotate camera (360°)</p>
-          <p className="mb-1.5">✓ Scroll to zoom in/out</p>
-          <p className="mb-1.5">✓ Press 'G' for realistic gavel sound</p>
-          <p className="mb-1.5">✓ Use number keys (1-4) for camera presets</p>
-          <p className="mb-1.5">✓ Toggle lights, fans, and witness entry</p>
-          <p className="mb-1.5">✓ Click anywhere to enable audio</p>
-          <p>✓ Switch between day and night modes</p>
-        </div>
-      </div>
-      
-      {/* Speaker Display Card */}
-      {bailHearingScript && currentSequence < [...bailHearingScript.court_session, ...bailHearingScript.post_hearing_procedures].length && (
-        <div className="absolute top-24 left-1/2 transform -translate-x-1/2 bg-[rgba(15,23,42,0.95)] backdrop-blur-xl p-5 rounded-xl border-2 border-amber-400 shadow-2xl z-30 w-96">
-          <div className="flex items-start gap-4">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center text-xl flex-shrink-0">
-              {speakersRef.current[[...bailHearingScript.court_session, ...bailHearingScript.post_hearing_procedures][currentSequence]?.speaker]?.name.charAt(0) || 'S'}
-            </div>
-            <div className="flex-1">
-              <h3 className="text-amber-400 font-bold text-lg">
-                {[...bailHearingScript.court_session, ...bailHearingScript.post_hearing_procedures][currentSequence]?.speaker}
-              </h3>
-              <p className="text-slate-300 text-sm mb-2">
-                {speakersRef.current[[...bailHearingScript.court_session, ...bailHearingScript.post_hearing_procedures][currentSequence]?.speaker]?.role}
-              </p>
-              <p className="text-white text-sm italic">
-                "{[...bailHearingScript.court_session, ...bailHearingScript.post_hearing_procedures][currentSequence]?.dialogue}"
-              </p>
-              {/* User turn indicator */}
-              {showUserOptions && (
-                <div className="mt-3 p-3 bg-gradient-to-r from-amber-600 to-amber-800 rounded-lg text-white text-sm animate-pulse">
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg">🗣️</span>
-                    <strong>Your turn to speak!</strong>
-                  </div>
-                  <p className="mt-1">Select an appropriate response from the options below.</p>
-                  {isListening && (
-                    <div className="mt-2 flex items-center gap-2 text-blue-200">
-                      <span className="w-3 h-3 bg-blue-400 rounded-full animate-pulse"></span>
-                      <span>Listening... Speak now</span>
-                    </div>
-                  )}
-                  {recognizedText && (
-                    <div className="mt-2 text-sm text-blue-200">
-                      <strong>Recognized:</strong> {recognizedText}
-                    </div>
-                  )}
-                </div>
-              )}
-              {/* Voice playing indicator */}
-              <div className="mt-2 p-3 bg-gradient-to-r from-amber-600 to-amber-800 rounded-lg text-white text-sm flex items-center gap-2 animate-pulse">
-                <span className="text-xl">🔊</span>
-                <div>
-                  <div className="font-bold">Voice playing for {[...bailHearingScript.court_session, ...bailHearingScript.post_hearing_procedures][currentSequence]?.speaker}</div>
-                  <div className="text-xs opacity-75">Click anywhere if you can't hear audio</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-      
-      {/* User Options Panel */}
-      {showUserOptions && (
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-[rgba(15,23,42,0.98)] backdrop-blur-xl p-6 rounded-xl border-2 border-amber-400 shadow-2xl z-50 w-96">
-          <h3 className="text-amber-400 font-bold text-lg mb-4">Your Turn to Respond</h3>
-          <p className="text-white text-sm mb-4">How would you like to respond?</p>
-          <div className="flex flex-col gap-3">
-            <button 
-              className="w-full p-3 bg-gradient-to-r from-green-600 to-green-800 text-white rounded-lg font-semibold hover:from-green-700 hover:to-green-900 transition-all"
-              onClick={() => handleUserResponse("agree")}
-            >
-              Agree and Confirm Understanding
-            </button>
-            <button 
-              className="w-full p-3 bg-gradient-to-r from-amber-600 to-amber-800 text-white rounded-lg font-semibold hover:from-amber-700 hover:to-amber-900 transition-all"
-              onClick={() => handleUserResponse("ask")}
-            >
-              Ask for Clarification
-            </button>
-            <button 
-              className="w-full p-3 bg-gradient-to-r from-red-600 to-red-800 text-white rounded-lg font-semibold hover:from-red-700 hover:to-red-900 transition-all"
-              onClick={() => handleUserResponse("object")}
-            >
-              Object to Conditions
-            </button>
-            <button 
-              className="w-full p-3 bg-gradient-to-r from-slate-600 to-slate-800 text-white rounded-lg font-semibold hover:from-slate-700 hover:to-slate-900 transition-all"
-              onClick={() => handleUserResponse("silent")}
-            >
-              Remain Silent
-            </button>
-            <div className="mt-4 pt-4 border-t border-slate-600">
-              <button 
-                className="w-full p-3 bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-blue-900 transition-all flex items-center justify-center gap-2"
-                onClick={startVoiceRecognition}
-              >
-                <span className="text-lg">🎤</span>
-                Speak Your Response
-              </button>
-              <p className="text-slate-400 text-xs mt-2 text-center">Click to speak your response using voice recognition</p>
-            </div>
-          </div>
-        </div>
-      )}
-      
-      {/* End Hearing Button */}
-      <div className="absolute bottom-7 right-7 z-30">
-        <button 
-          className="px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-800 text-white font-bold rounded-xl shadow-2xl hover:from-purple-700 hover:to-purple-900 transition-all flex items-center gap-2"
           onClick={() => {
             // Save progress before navigating to assessment
             if (user) {

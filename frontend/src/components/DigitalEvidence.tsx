@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { saveUserProgress } from '../utils/progressApi';
 
 const DigitalEvidence: React.FC = () => {
   const navigate = useNavigate();
@@ -11,22 +12,22 @@ const DigitalEvidence: React.FC = () => {
 
   // Update progress when component mounts
   useEffect(() => {
-    // Update progress in localStorage
-    const savedProgress = localStorage.getItem('scenario-progress-the-inventory-that-changed-everything');
-    if (savedProgress) {
-      const progress = JSON.parse(savedProgress);
-      // Add 'digital-evidence' to completed stages if not already present
-      const completedStages = progress.completedStages.includes('digital-evidence') 
-        ? progress.completedStages 
-        : [...progress.completedStages, 'digital-evidence'];
-      
-      const updatedProgress = {
-        ...progress,
-        currentStage: 'bail-draft',
-        completedStages: completedStages
-      };
-      localStorage.setItem('scenario-progress-the-inventory-that-changed-everything', JSON.stringify(updatedProgress));
-    }
+    // Save progress using the unified progress API
+    const progressData = {
+      completedStages: ['client-interview', 'digital-evidence'],
+      currentStage: 'bail-draft',
+      lastUpdated: new Date().toISOString(),
+      totalTimeSpent: 0,
+      assessmentScore: null
+    };
+    
+    saveUserProgress('the-inventory-that-changed-everything', progressData)
+      .then(() => {
+        console.log('Progress saved successfully');
+      })
+      .catch((error) => {
+        console.error('Failed to save progress:', error);
+      });
   }, []);
 
   // Evidence data with proper paths
@@ -592,13 +593,14 @@ const DigitalEvidence: React.FC = () => {
           </button>
           <button
             onClick={() => navigate('/bail-draft')}
-            className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all flex items-center"
+            className="ml-4 px-6 py-2 bg-gradient-to-r from-amber-600 to-orange-600 text-white rounded-lg hover:from-amber-700 hover:to-orange-700 transition-all flex items-center"
           >
-            Proceed to Bail Draft
-            <svg className="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
+            Proceed to Bail Draft
           </button>
+
         </div>
       </main>
     </div>

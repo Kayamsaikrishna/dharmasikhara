@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import RajeshConversationEngine from '../utils/RajeshConversationEngine';
 import rajeshTrainingData from '../utils/rajeshTrainingData';
 import { useNavigate } from 'react-router-dom';
+import { saveUserProgress } from '../utils/progressApi';
 
 const ClientInterview: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -147,22 +148,22 @@ const ClientInterview: React.FC = () => {
     setRecommendation('Client interview completed. Proceeding to digital evidence review phase.');
     setShowRecommendation(true);
     
-    // Update progress in localStorage
-    const savedProgress = localStorage.getItem('scenario-progress-the-inventory-that-changed-everything');
-    if (savedProgress) {
-      const progress = JSON.parse(savedProgress);
-      // Add 'client-interview' to completed stages if not already present
-      const completedStages = progress.completedStages.includes('client-interview') 
-        ? progress.completedStages 
-        : [...progress.completedStages, 'client-interview'];
-      
-      const updatedProgress = {
-        ...progress,
-        currentStage: 'digital-evidence',
-        completedStages: completedStages
-      };
-      localStorage.setItem('scenario-progress-the-inventory-that-changed-everything', JSON.stringify(updatedProgress));
-    }
+    // Save progress using the unified progress API
+    const progressData = {
+      completedStages: ['client-interview'],
+      currentStage: 'digital-evidence',
+      lastUpdated: new Date().toISOString(),
+      totalTimeSpent: 900 - interviewTimer,
+      assessmentScore: null
+    };
+    
+    saveUserProgress('the-inventory-that-changed-everything', progressData)
+      .then(() => {
+        console.log('Progress saved successfully');
+      })
+      .catch((error) => {
+        console.error('Failed to save progress:', error);
+      });
     
     setTimeout(() => {
       setShowRecommendation(false);
