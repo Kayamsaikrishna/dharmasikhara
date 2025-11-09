@@ -160,7 +160,7 @@ const Courtroom: React.FC<{}> = () => {
               case_title: "Rajesh Kumar vs State of Karnataka",
               court: "Court of Additional Chief Judicial Magistrate, Bangalore",
               date: "October 17, 2025",
-              offense: "IPC Section 379 - Theft",
+              offense: "BNS Section 303(1) - Theft",
               value_of_property: "₹45,000",
               presiding_officer: "Hon'ble Magistrate Smt. Kavitha Narayan"
             },
@@ -178,7 +178,7 @@ const Courtroom: React.FC<{}> = () => {
             case_title: "Rajesh Kumar vs State of Karnataka",
             court: "Court of Additional Chief Judicial Magistrate, Bangalore",
             date: "October 17, 2025",
-            offense: "IPC Section 379 - Theft",
+            offense: "BNS Section 303(1) - Theft",
             value_of_property: "₹45,000",
             presiding_officer: "Hon'ble Magistrate Smt. Kavitha Narayan"
           },
@@ -2083,10 +2083,10 @@ const Courtroom: React.FC<{}> = () => {
       // Save progress when hearing ends
       if (user) {
         const progressData = {
-          completedStages: ['bail-hearing', 'court-hearing'],
+          completedStages: ['bail-draft', 'court-hearing'],
           currentStage: 'legal-assessment',
           lastUpdated: new Date().toISOString(),
-          totalTimeSpent: 0, // Would need to track actual time in a real implementation
+          totalTimeSpent: 0,
           assessmentScore: null
         };
         
@@ -2525,7 +2525,7 @@ const Courtroom: React.FC<{}> = () => {
             // Save progress before navigating to assessment
             if (user) {
               const progressData = {
-                completedStages: ['bail-hearing', 'court-hearing'],
+                completedStages: ['bail-draft', 'court-hearing'],
                 currentStage: 'legal-assessment',
                 lastUpdated: new Date().toISOString(),
                 totalTimeSpent: 0,

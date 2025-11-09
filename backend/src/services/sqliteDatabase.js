@@ -78,6 +78,7 @@ class SQLiteDatabaseService {
               scenario_id INTEGER,
               status TEXT DEFAULT 'not_started',
               progress INTEGER DEFAULT 0,
+              completed_stages TEXT,
               score INTEGER,
               time_spent INTEGER DEFAULT 0,
               feedback TEXT,
@@ -250,12 +251,12 @@ class SQLiteDatabaseService {
   // Progress operations
   async saveUserProgress(progressData) {
     return new Promise((resolve, reject) => {
-      const { user_id, scenario_id, status, progress, score, time_spent, feedback, completion_date } = progressData;
+      const { userId, scenarioId, status, progress, completedStages, score, timeSpent, feedback, completionDate } = progressData;
       this.db.run(
         `INSERT OR REPLACE INTO user_progress 
-         (user_id, scenario_id, status, progress, score, time_spent, feedback, completion_date, updated_at) 
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
-        [user_id, scenario_id, status, progress, score, time_spent, feedback, completion_date],
+         (user_id, scenario_id, status, progress, completed_stages, score, time_spent, feedback, completion_date, updated_at) 
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
+        [userId, scenarioId, status, progress, JSON.stringify(completedStages || []), score, timeSpent, feedback, completionDate],
         function(err) {
           if (err) {
             reject(err);
@@ -276,6 +277,14 @@ class SQLiteDatabaseService {
           if (err) {
             reject(err);
           } else {
+            // Parse completed_stages if it exists
+            if (row && row.completed_stages) {
+              try {
+                row.completed_stages = JSON.parse(row.completed_stages);
+              } catch (e) {
+                row.completed_stages = [];
+              }
+            }
             resolve(row);
           }
         }
@@ -292,7 +301,18 @@ class SQLiteDatabaseService {
           if (err) {
             reject(err);
           } else {
-            resolve(rows);
+            // Parse completed_stages for each row if it exists
+            const parsedRows = rows.map(row => {
+              if (row && row.completed_stages) {
+                try {
+                  row.completed_stages = JSON.parse(row.completed_stages);
+                } catch (e) {
+                  row.completed_stages = [];
+                }
+              }
+              return row;
+            });
+            resolve(parsedRows);
           }
         }
       );

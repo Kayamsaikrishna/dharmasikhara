@@ -38,12 +38,12 @@ const LegalAssessment: React.FC = () => {
       id: 'legal-knowledge',
       title: 'Legal Knowledge & Procedure',
       description: 'Test your understanding of criminal law procedures and bail applications',
-      timeLimit: 10,
+      timeLimit: 15,
       weight: 20,
       questions: [
         {
           id: 'q1',
-          text: 'According to Section 437 of CrPC, which of the following is NOT a valid ground for granting bail in a theft case?',
+          text: 'According to Section 480 of BNSS, which of the following is NOT a valid ground for granting bail in a theft case?',
           type: 'single-select',
           options: [
             'The accused is unlikely to commit another offense while on bail',
@@ -69,13 +69,39 @@ const LegalAssessment: React.FC = () => {
         },
         {
           id: 'q3',
-          text: 'Which of the following is a mandatory consideration for a magistrate when deciding a bail application under Section 437 CrPC?',
+          text: 'Which of the following is a mandatory consideration for a magistrate when deciding a bail application under Section 480 BNSS?',
           type: 'single-select',
           options: [
             'The accused\'s financial status',
             'The nature and gravity of the accusation',
             'The accused\'s political connections',
             'The complainant\'s social standing'
+          ],
+          correctAnswers: [1], // Option B
+          score: 5
+        },
+        {
+          id: 'q24',
+          text: 'Under the new BNS, which section deals with causing death by negligence?',
+          type: 'single-select',
+          options: [
+            'Section 106',
+            'Section 107',
+            'Section 108',
+            'Section 109'
+          ],
+          correctAnswers: [1], // Option B
+          score: 5
+        },
+        {
+          id: 'q25',
+          text: 'Which of the following is a key feature of the Bharatiya Sakshya Adhiniyam regarding electronic evidence?',
+          type: 'single-select',
+          options: [
+            'Electronic evidence is inadmissible in court',
+            'Special provisions for digital and electronic evidence',
+            'Electronic evidence requires special verification',
+            'All electronic evidence is automatically admissible'
           ],
           correctAnswers: [1], // Option B
           score: 5
@@ -86,7 +112,7 @@ const LegalAssessment: React.FC = () => {
       id: 'case-analysis',
       title: 'Case Analysis & Reasoning',
       description: 'Evaluate your ability to analyze evidence and identify inconsistencies',
-      timeLimit: 15,
+      timeLimit: 20,
       weight: 30,
       questions: [
         {
@@ -116,6 +142,32 @@ const LegalAssessment: React.FC = () => {
           ],
           correctAnswers: [3], // Option D
           score: 10
+        },
+        {
+          id: 'q26',
+          text: 'In the context of the new BNSS, what is the maximum period for filing a chargesheet for summons cases?',
+          type: 'single-select',
+          options: [
+            '30 days',
+            '60 days',
+            '90 days',
+            '120 days'
+          ],
+          correctAnswers: [1], // Option B
+          score: 10
+        },
+        {
+          id: 'q27',
+          text: 'Which of the following offenses was newly added in the Bharatiya Nyaya Sanhita (BNS) compared to IPC?',
+          type: 'single-select',
+          options: [
+            'Murder',
+            'Theft',
+            'Organized crime',
+            'Robbery'
+          ],
+          correctAnswers: [2], // Option C
+          score: 10
         }
       ]
     },
@@ -123,7 +175,7 @@ const LegalAssessment: React.FC = () => {
       id: 'ethical-judgment',
       title: 'Ethical Judgment',
       description: 'Assess your ethical decision-making in challenging legal situations',
-      timeLimit: 10,
+      timeLimit: 15,
       weight: 25,
       questions: [
         {
@@ -144,6 +196,32 @@ const LegalAssessment: React.FC = () => {
           ],
           correctAnswers: [1], // Option B
           score: 10
+        },
+        {
+          id: 'q28',
+          text: 'Under the new BNS, what is the punishment for organized crime?',
+          type: 'single-select',
+          options: [
+            'Maximum 5 years imprisonment',
+            'Maximum 10 years imprisonment',
+            'Maximum 14 years imprisonment',
+            'Maximum 20 years imprisonment'
+          ],
+          correctAnswers: [2], // Option C
+          score: 10
+        },
+        {
+          id: 'q29',
+          text: 'Which of the following is a key principle of the new criminal laws (BNS, BNSS, BSA) regarding gender neutrality?',
+          type: 'single-select',
+          options: [
+            'Only men can be accused of sexual offenses',
+            'Laws now apply equally to all genders',
+            'Only women are protected under new laws',
+            'Gender-specific provisions have been removed'
+          ],
+          correctAnswers: [1], // Option B
+          score: 10
         }
       ]
     },
@@ -151,7 +229,7 @@ const LegalAssessment: React.FC = () => {
       id: 'argument-quality',
       title: 'Argument Quality Review',
       description: 'Evaluate your ability to construct and critique legal arguments',
-      timeLimit: 10,
+      timeLimit: 15,
       weight: 25,
       questions: [
         {
@@ -184,6 +262,227 @@ const LegalAssessment: React.FC = () => {
             'To provide an opportunity for the complainant to present evidence'
           ],
           correctAnswers: [1], // Option B
+          score: 5
+        },
+        {
+          id: 'q11',
+          text: 'Which of the following laws replaced the Indian Penal Code (IPC) in 2024?',
+          type: 'single-select',
+          options: [
+            'Bharatiya Sakshya Adhiniyam (BSA)',
+            'Bharatiya Nagarik Suraksha Sanhita (BNSS)',
+            'Bharatiya Nyaya Sanhita (BNS)',
+            'Bharatiya Adalat Adhiniyam (BAA)'
+          ],
+          correctAnswers: [2], // Option C
+          score: 5
+        },
+        {
+          id: 'q12',
+          text: 'Under the new BNS, theft by snatching is classified as:',
+          type: 'single-select',
+          options: [
+            'A separate offense from regular theft',
+            'The same as regular theft',
+            'A bailable offense regardless of value',
+            'Not an offense under BNS'
+          ],
+          correctAnswers: [0], // Option A
+          score: 5
+        },
+        {
+          id: 'q13',
+          text: 'Which section of BNSS replaced Section 437 of CrPC for bail provisions?',
+          type: 'single-select',
+          options: [
+            'Section 475',
+            'Section 480',
+            'Section 485',
+            'Section 490'
+          ],
+          correctAnswers: [1], // Option B
+          score: 5
+        },
+        {
+          id: 'q14',
+          text: 'Under BNS, which of the following offenses was removed compared to IPC?',
+          type: 'single-select',
+          options: [
+            'Theft',
+            'Adultery',
+            'Murder',
+            'Robbery'
+          ],
+          correctAnswers: [1], // Option B
+          score: 5
+        },
+        {
+          id: 'q15',
+          text: 'Which law replaced the Indian Evidence Act in 2024?',
+          type: 'single-select',
+          options: [
+            'Bharatiya Nyaya Sanhita',
+            'Bharatiya Nagarik Suraksha Sanhita',
+            'Bharatiya Sakshya Adhiniyam',
+            'Bharatiya Adalat Adhiniyam'
+          ],
+          correctAnswers: [2], // Option C
+          score: 5
+        },
+        {
+          id: 'q16',
+          text: 'Under BNSS, what special consideration is given for bail applications?',
+          type: 'single-select',
+          options: [
+            'Special consideration for government employees',
+            'Special consideration for women, children, and disabled persons',
+            'Special consideration for first-time offenders only',
+            'No special considerations'
+          ],
+          correctAnswers: [1], // Option B
+          score: 5
+        },
+        {
+          id: 'q17',
+          text: 'In the new BNS, theft is covered under which section?',
+          type: 'single-select',
+          options: [
+            'Section 303(1)',
+            'Section 379',
+            'Section 380',
+            'Section 305'
+          ],
+          correctAnswers: [0], // Option A
+          score: 5
+        },
+        {
+          id: 'q18',
+          text: 'What is a key difference between CrPC and BNSS regarding bail for first-time offenders?',
+          type: 'single-select',
+          options: [
+            'BNSS allows release after one-third of maximum period',
+            'BNSS requires stricter conditions',
+            'BNSS eliminates bail for first-time offenders',
+            'No difference in provisions'
+          ],
+          correctAnswers: [0], // Option A
+          score: 5
+        },
+        {
+          id: 'q19',
+          text: 'Which of the following is NOT a principle underlying the new criminal laws (BNS, BNSS, BSA)?',
+          type: 'single-select',
+          options: [
+            'Decolonization of legal framework',
+            'Citizen-centric approach',
+            'Retention of colonial terminology',
+            'Modernization of legal procedures'
+          ],
+          correctAnswers: [2], // Option C
+          score: 5
+        },
+        {
+          id: 'q20',
+          text: 'Under the new BNSS, when did the bail provisions come into effect?',
+          type: 'single-select',
+          options: [
+            'January 1, 2024',
+            'July 1, 2024',
+            'October 2, 2024',
+            'January 26, 2024'
+          ],
+          correctAnswers: [1], // Option B
+          score: 5
+        },
+        {
+          id: 'q21',
+          text: 'Which of the following is a key feature of the Bharatiya Sakshya Adhiniyam (BSA) regarding digital evidence?',
+          type: 'single-select',
+          options: [
+            'Excludes digital evidence from court proceedings',
+            'Provides specific provisions for electronic evidence',
+            'Treats digital evidence the same as physical evidence without distinction',
+            'Requires all digital evidence to be verified by government agencies'
+          ],
+          correctAnswers: [1], // Option B
+          score: 5
+        },
+        {
+          id: 'q22',
+          text: 'In the Rajesh Kumar case, what would be the appropriate charge under the new BNS?',
+          type: 'single-select',
+          options: [
+            'Section 303(1) - Theft',
+            'Section 379 - Theft (same as IPC)',
+            'Section 380 - Theft in dwelling house',
+            'Section 420 - Cheating'
+          ],
+          correctAnswers: [0], // Option A
+          score: 5
+        },
+        {
+          id: 'q23',
+          text: 'Under BNSS, what is the maximum period for which an undertrial can be detained without trial before being eligible for default bail?',
+          type: 'single-select',
+          options: [
+            '60 days for summary trials, 90 days for sessions trials',
+            'One-half of the maximum period of imprisonment for the offense',
+            'Two-thirds of the maximum period of imprisonment for the offense',
+            'There is no provision for default bail in BNSS'
+          ],
+          correctAnswers: [1], // Option B
+          score: 5
+        },
+        {
+          id: 'q30',
+          text: 'Which of the following is a key change in the definition of theft under BNS compared to IPC?',
+          type: 'single-select',
+          options: [
+            'The value threshold for theft has been increased',
+            'The definition now includes theft by snatching as a separate offense',
+            'The punishment for theft has been reduced',
+            'The definition of theft has been removed'
+          ],
+          correctAnswers: [1], // Option B
+          score: 5
+        },
+        {
+          id: 'q31',
+          text: 'Under the new BNSS, what is the time limit for completing investigation in warrant cases?',
+          type: 'single-select',
+          options: [
+            '30 days',
+            '60 days',
+            '90 days',
+            '120 days'
+          ],
+          correctAnswers: [2], // Option C
+          score: 5
+        },
+        {
+          id: 'q32',
+          text: 'Which of the following is a key feature of the new criminal laws regarding decolonization?',
+          type: 'single-select',
+          options: [
+            'Retention of British legal terminology',
+            'Use of Indian languages in legal proceedings',
+            'Removal of colonial nomenclature and terminology',
+            'Mandatory use of English in all proceedings'
+          ],
+          correctAnswers: [2], // Option C
+          score: 5
+        },
+        {
+          id: 'q33',
+          text: 'What is the maximum punishment for the offense of organized crime under BNS?',
+          type: 'single-select',
+          options: [
+            '5 years',
+            '10 years',
+            '14 years',
+            'Life imprisonment'
+          ],
+          correctAnswers: [2], // Option C
           score: 5
         }
       ]

@@ -11,24 +11,6 @@ const DigitalEvidence: React.FC = () => {
   const [filter, setFilter] = useState<'all' | 'cctv' | 'documents' | 'personal' | 'financial' | 'evidence' | 'analysis'>('all');
 
   // Update progress when component mounts
-  useEffect(() => {
-    // Save progress using the unified progress API
-    const progressData = {
-      completedStages: ['client-interview', 'digital-evidence'],
-      currentStage: 'bail-draft',
-      lastUpdated: new Date().toISOString(),
-      totalTimeSpent: 0,
-      assessmentScore: null
-    };
-    
-    saveUserProgress('the-inventory-that-changed-everything', progressData)
-      .then(() => {
-        console.log('Progress saved successfully');
-      })
-      .catch((error) => {
-        console.error('Failed to save progress:', error);
-      });
-  }, []);
 
   // Evidence data with proper paths
   const evidenceItems = [
@@ -132,6 +114,28 @@ const DigitalEvidence: React.FC = () => {
     // Use full backend URL instead of relative path
     const backendUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
     return `${backendUrl}/api/evidence/images/${encodeURIComponent(fileName)}`;
+  };
+
+  // Update the button click handler to save progress
+  const handleProceedToBailDraft = () => {
+    // Save progress using the unified progress API
+    const progressData = {
+      completedStages: ['client-interview', 'digital-evidence'],
+      currentStage: 'bail-draft',
+      lastUpdated: new Date().toISOString(),
+      totalTimeSpent: 0,
+      assessmentScore: null
+    };
+    
+    saveUserProgress('the-inventory-that-changed-everything', progressData)
+      .then(() => {
+        console.log('Progress saved successfully');
+        navigate('/bail-draft');
+      })
+      .catch((error) => {
+        console.error('Failed to save progress:', error);
+        navigate('/bail-draft');
+      });
   };
 
   return (
@@ -592,7 +596,7 @@ const DigitalEvidence: React.FC = () => {
             Back to Interview
           </button>
           <button
-            onClick={() => navigate('/bail-draft')}
+            onClick={handleProceedToBailDraft}
             className="ml-4 px-6 py-2 bg-gradient-to-r from-amber-600 to-orange-600 text-white rounded-lg hover:from-amber-700 hover:to-orange-700 transition-all flex items-center"
           >
             <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">

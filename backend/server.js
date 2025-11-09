@@ -2,7 +2,6 @@ const express = require('express');
 const cors = require('cors');
 const Redis = require('redis');
 const { Client } = require('pg');
-const elasticsearch = require('elasticsearch');
 const dotenv = require('dotenv');
 const path = require('path');
 const fs = require('fs');
@@ -34,18 +33,18 @@ const expertSupportRoutes = require('./src/routes/expertSupport');
 const caseSpecificAIRoutes = require('./src/routes/caseSpecificAI');
 const marketingRoutes = require('./src/routes/marketing');
 const progressRoutes = require('./src/routes/progress');
-const authRoutes = require('./src/routes/auth');
 
 // Import database service
 const databaseService = require('./src/services/database');
 
 const app = express();
-const PORT = process.env.PORT || 5000; // Use 5000 as requested
+// Use environment port or default to 5000
+const PORT = process.env.PORT || 5000;
 
 // Increase payload limit for document uploads
 app.use(cors());
-app.use(bodyParser.json({ limit: '50mb' }));  // Increased from default to 50mb
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));  // Increased from default to 50mb
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 // AI Routes
 app.use('/api/ai', aiRoutes);
@@ -53,13 +52,11 @@ app.use('/api/ai', aiRoutes);
 // Legal Research Routes
 app.use('/api/legal-research', legalResearchRoutes);
 
-// Legal News Routes
-
 // Account Routes
 app.use('/api/account', accountRoutes);
 
 // Auth Routes
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', require('./src/routes/auth'));
 
 // Payment Routes
 app.use('/api/payments', paymentRoutes);
@@ -137,7 +134,12 @@ app.post('/api/courtroom/response', (req, res) => {
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
-    res.json({ status: 'OK', timestamp: new Date().toISOString() });
+    res.json({ 
+        status: 'OK', 
+        timestamp: new Date().toISOString(),
+        port: PORT,
+        environment: process.env.NODE_ENV || 'development'
+    });
 });
 
 // Connect to SQLite database before starting the server
@@ -150,8 +152,13 @@ databaseService.connectAll()
   })
   .finally(() => {
     // Start the server
-    app.listen(PORT, '0.0.0.0', () => {
+    const server = app.listen(PORT, '0.0.0.0', () => {
         console.log(`DharmaSikhara AI Backend running on http://0.0.0.0:${PORT}`);
         console.log('SQLite database is ready for use');
+    });
+    
+    // Handle server errors
+    server.on('error', (err) => {
+        console.error('Server error:', err);
     });
   });

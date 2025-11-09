@@ -77,6 +77,8 @@ const CourtroomEntrance = () => {
   ];
 
   useEffect(() => {
+    let isMounted = true;
+    
     // Check for saved progress from backend
     const fetchProgress = async () => {
       if (user) {
@@ -84,37 +86,47 @@ const CourtroomEntrance = () => {
           setLoading(true);
           // Use the scenario ID for "the inventory that changed everything"
           const progress = await getUserProgress('the-inventory-that-changed-everything');
-          if (progress) {
+          if (isMounted && progress) {
             setSavedProgress(progress);
             // If there's saved progress, show the progress view directly
             setShowProgressView(true);
           }
         } catch (error) {
-          console.error('Error fetching progress:', error);
-          // Fallback to localStorage for backward compatibility
-          const localProgress = localStorage.getItem('scenario-progress-the-inventory-that-changed-everything');
-          if (localProgress) {
-            setSavedProgress(JSON.parse(localProgress));
-            // If there's saved progress, show the progress view directly
-            setShowProgressView(true);
+          if (isMounted) {
+            console.error('Error fetching progress:', error);
+            // Fallback to localStorage for backward compatibility
+            const localProgress = localStorage.getItem('scenario-progress-the-inventory-that-changed-everything');
+            if (localProgress) {
+              setSavedProgress(JSON.parse(localProgress));
+              // If there's saved progress, show the progress view directly
+              setShowProgressView(true);
+            }
           }
         } finally {
-          setLoading(false);
+          if (isMounted) {
+            setLoading(false);
+          }
         }
       } else {
         // For non-authenticated users, check localStorage
         const progress = localStorage.getItem('scenario-progress-the-inventory-that-changed-everything');
-        if (progress) {
+        if (isMounted && progress) {
           setSavedProgress(JSON.parse(progress));
           // If there's saved progress, show the progress view directly
           setShowProgressView(true);
         }
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
     
     fetchProgress();
-  }, [user]);
+    
+    return () => {
+      isMounted = false;
+    };
+  }, []); // Empty dependency array to prevent repeated calls
 
   useEffect(() => {
     // Run the intro animation

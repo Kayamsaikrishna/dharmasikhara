@@ -12,8 +12,9 @@ const {
 } = require('../controllers/progressController');
 
 // Progress routes
-router.post('/', authenticateToken, saveUserProgress);
-router.get('/:scenarioId', authenticateToken, getUserProgress);
-router.get('/', authenticateToken, getAllUserProgress);
+// Remove authentication middleware to allow unauthenticated access
+router.post('/', saveUserProgress);
+router.get('/:scenarioId', getUserProgress);
+router.get('/', getAllUserProgress);
 
 module.exports = router;

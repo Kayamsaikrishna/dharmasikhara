@@ -525,7 +525,7 @@ export default function BookViewer() {
                'Both arrived within the hour, offering whatever\n' +
                'it took to bring Rajesh home.\n\n' +
                'But the law was clear: theft of property valued\n' +
-               'over ₹5,000 is non-bailable under Indian law.\n\n' +
+               'over ₹5,000 is non-bailable under BNS 303(1).\n\n' +
                '═══════════════════════════════════════════',
       rightPage: '═══════════════════════════════════════════\n' +
                 'THE INVENTORY THAT CHANGED EVERYTHING\n' +
@@ -588,7 +588,7 @@ export default function BookViewer() {
                 '• Accused: Rajesh Kumar, 28 years\n' +
                 '• Position: Sales executive, 4 years at\n' +
                 '  Vijay Electronics\n' +
-                '• Offense: IPC 379 (Theft) of ₹45,000 laptop\n' +
+                '• Offense: BNS 303(1) (Theft) of ₹45,000 laptop\n' +
                 '• Claims: CCTV misinterpreted, was his charger\n' +
                 '• Witness: Colleague Prakash Mehta\n' +
                 '• Criminal history: None\n' +
@@ -951,11 +951,11 @@ export default function BookViewer() {
 
       <div className="flex-1 bg-gradient-to-b from-gray-800 to-gray-900 flex items-center justify-center px-4 py-3 gap-4 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 120px)' }}>
         <div className={`w-1/2 bg-yellow-50 rounded-lg shadow-xl p-6 overflow-y-auto transition-all duration-500 transform ${isFlipping ? 'opacity-50 -translate-x-8 rotate-y-30' : 'opacity-100 translate-x-0'} hover:shadow-amber-500/30 relative`} style={{ maxHeight: '75vh' }}>
-          <div className="text-gray-800 text-sm leading-relaxed font-mono whitespace-pre-wrap select-text">
+          <div className="text-gray-800 text-lg leading-relaxed font-mono whitespace-pre-wrap select-text">
             {expandedCaseData[currentPage].leftPage}
           </div>
           <div className="mt-4 pt-2 border-t border-gray-300 text-center">
-            <span className="text-xs text-gray-500 font-mono">Page {currentPage * 2 + 1}</span>
+            <span className="text-base text-gray-500 font-mono">Page {currentPage * 2 + 1}</span>
           </div>
           
           {isSpeechSupported && (
@@ -973,11 +973,11 @@ export default function BookViewer() {
         </div>
 
         <div className={`w-1/2 bg-yellow-50 rounded-lg shadow-xl p-6 overflow-y-auto transition-all duration-500 transform ${isFlipping ? 'opacity-50 translate-x-8 -rotate-y-30' : 'opacity-100 translate-x-0'} hover:shadow-amber-500/30 relative`} style={{ maxHeight: '75vh' }}>
-          <div className="text-gray-800 text-sm leading-relaxed font-mono whitespace-pre-wrap select-text">
+          <div className="text-gray-800 text-lg leading-relaxed font-mono whitespace-pre-wrap select-text">
             {expandedCaseData[currentPage].rightPage}
           </div>
           <div className="mt-4 pt-2 border-t border-gray-300 text-center">
-            <span className="text-xs text-gray-500 font-mono">Page {currentPage * 2 + 2}</span>
+            <span className="text-base text-gray-500 font-mono">Page {currentPage * 2 + 2}</span>
           </div>
           
           {isSpeechSupported && (
@@ -1007,7 +1007,7 @@ export default function BookViewer() {
 
         <div className="text-center text-white">
           <p className="font-bold text-sm">File {currentPage + 1} of {expandedCaseData.length}</p>
-          <p className="text-xs text-gray-400">Pages {currentPage * 2 + 1}-{currentPage * 2 + 2}</p>
+          <p className="text-base text-gray-400">Pages {currentPage * 2 + 1}-{currentPage * 2 + 2}</p>
         </div>
 
         <button

@@ -16,7 +16,7 @@ const SimulationEntrance = () => {
   const steps = [
     {
       id: 'client-interview',
-      title: "Client Counseling",
+      title: "Client Interview",
       description: "Meet Rajesh Kumar in custody and gather his version of events",
       icon: "👤",
       time: "10-15 min",
@@ -63,7 +63,7 @@ const SimulationEntrance = () => {
       icon: "🏛️"
     },
     {
-      title: "Client Counseling",
+      title: "Client Interview",
       description: "Prepare to interview your client, analyze evidence, and present your case.",
       icon: "👤"
     },
@@ -90,6 +90,8 @@ const SimulationEntrance = () => {
   ];
 
   useEffect(() => {
+    let isMounted = true;
+    
     // Check for saved progress from backend
     const fetchProgress = async () => {
       if (user) {
@@ -97,31 +99,41 @@ const SimulationEntrance = () => {
           setLoading(true);
           // Use the scenario ID for "the inventory that changed everything"
           const progress = await getUserProgress('the-inventory-that-changed-everything');
-          if (progress) {
+          if (isMounted && progress) {
             setSavedProgress(progress);
           }
         } catch (error) {
-          console.error('Error fetching progress:', error);
-          // Fallback to localStorage for backward compatibility
-          const localProgress = localStorage.getItem('scenario-progress-the-inventory-that-changed-everything');
-          if (localProgress) {
-            setSavedProgress(JSON.parse(localProgress));
+          if (isMounted) {
+            console.error('Error fetching progress:', error);
+            // Fallback to localStorage for backward compatibility
+            const localProgress = localStorage.getItem('scenario-progress-the-inventory-that-changed-everything');
+            if (localProgress) {
+              setSavedProgress(JSON.parse(localProgress));
+            }
           }
         } finally {
-          setLoading(false);
+          if (isMounted) {
+            setLoading(false);
+          }
         }
       } else {
         // For non-authenticated users, check localStorage
         const progress = localStorage.getItem('scenario-progress-the-inventory-that-changed-everything');
-        if (progress) {
+        if (isMounted && progress) {
           setSavedProgress(JSON.parse(progress));
         }
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
     
     fetchProgress();
-  }, [user]);
+    
+    return () => {
+      isMounted = false;
+    };
+  }, []); // Empty dependency array to prevent repeated calls
 
   useEffect(() => {
     // If shouldShowProgressView is true, show progress view immediately
@@ -404,7 +416,7 @@ const SimulationEntrance = () => {
                     onClick={handleStartSimulation}
                     className="px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-bold rounded-full shadow-lg hover:from-amber-600 hover:to-orange-700 transform hover:scale-105 transition-all duration-300 flex items-center justify-center"
                   >
-                    <span className="mr-2">🎭</span> Start Client Counseling
+                    <span className="mr-2">🎭</span> Start Client Interview
                   </button>
                   
                   {savedProgress && (

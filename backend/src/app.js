@@ -44,7 +44,7 @@ const progressRoutes = require('./routes/progress');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
-// Use port 5003 as default to align with project configuration
+// Use environment port or default to 5003
 const PORT = process.env.PORT || 5003;
 
 // Middleware
@@ -89,7 +89,9 @@ app.get('/api/health', (req, res) => {
     res.json({ 
         success: true, 
         message: 'DharmaSikhara Backend is running',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        port: PORT,
+        environment: process.env.NODE_ENV || 'development'
     });
 });
 

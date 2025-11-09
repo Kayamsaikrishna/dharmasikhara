@@ -1,15 +1,20 @@
 const app = require('./app');
 const databaseService = require('./services/database');
 
-// Use port 5003 as default to align with project configuration
+// Use environment port or default to 5003
 const PORT = process.env.PORT || 5003;
 
 // Connect to SQLite database before starting the server
 databaseService.connectAll()
   .then(() => {
-    app.listen(PORT, '0.0.0.0', () => {
+    const server = app.listen(PORT, '0.0.0.0', () => {
       console.log(`DharmaSikhara Backend running on http://0.0.0.0:${PORT}`);
       console.log('Using localized SQLite database at: backend/dharmasikhara.db');
+    });
+    
+    // Handle server errors
+    server.on('error', (err) => {
+      console.error('Server error:', err);
     });
   })
   .catch((error) => {

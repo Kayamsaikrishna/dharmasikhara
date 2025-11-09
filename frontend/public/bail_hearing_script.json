@@ -4,7 +4,7 @@
     "case_title": "Rajesh Kumar vs State of Karnataka",
     "court": "Court of Additional Chief Judicial Magistrate, Bangalore",
     "date": "October 17, 2025",
-    "offense": "IPC Section 379 - Theft",
+    "offense": "BNS Section 303(1) - Theft",
     "value_of_property": "₹45,000",
     "presiding_officer": "Hon'ble Magistrate Smt. Kavitha Narayan"
   },
@@ -14,7 +14,7 @@
       "sequence": 1,
       "speaker": "Court Clerk",
       "action": "ANNOUNCES",
-      "dialogue": "All rise! The Honourable Court is now in session. The Honourable Additional Chief Judicial Magistrate Smt. Kavitha Narayan presiding. Case number BAIL slash 2025 slash 3847. Rajesh Kumar versus State of Karnataka. Application for bail under Section 437 of the Code of Criminal Procedure."
+      "dialogue": "All rise! The Honourable Court is now in session. The Honourable Additional Chief Judicial Magistrate Smt. Kavitha Narayan presiding. Case number BAIL slash 2025 slash 3847. Rajesh Kumar versus State of Karnataka. Application for bail under Section 480 of the Bharatiya Nagarik Suraksha Sanhita."
     },
     {
       "sequence": 2,
@@ -38,7 +38,7 @@
       "sequence": 5,
       "speaker": "Defense Attorney",
       "action": "STANDS_AND_INTRODUCES",
-      "dialogue": "May it please Your Honour, I appear on behalf of the accused, Rajesh Kumar. Your Honour, I am here to move an application for bail under Section 437 of the Code of Criminal Procedure on behalf of my client, who has been falsely implicated in this case."
+      "dialogue": "May it please Your Honour, I appear on behalf of the accused, Rajesh Kumar. Your Honour, I am here to move an application for bail under Section 480 of the Bharatiya Nagarik Suraksha Sanhita on behalf of my client, who has been falsely implicated in this case."
     },
     {
       "sequence": 6,
@@ -50,7 +50,7 @@
       "sequence": 7,
       "speaker": "Defense Attorney",
       "action": "PRESENTS_FACTS",
-      "dialogue": "Much obliged, Your Honour. The facts of this case are as follows: My client, Rajesh Kumar, is a 28-year-old sales executive who has been employed at Vijay Electronics for the past four years. On October 15, 2025, during a routine monthly inventory check at his workplace, a Dell Inspiron laptop valued at rupees forty-five thousand was reported missing. My client was conducting the inventory along with his colleague, one Prakash Mehta. The store manager, Mr. Arvind Desai, reviewed CCTV footage and allegedly observed my client placing an object into his personal bag. Based solely on this grainy footage, my client was arrested on October 16, 2025, and has been in custody since then. He is charged under Section 379 of the Indian Penal Code."
+      "dialogue": "Much obliged, Your Honour. The facts of this case are as follows: My client, Rajesh Kumar, is a 28-year-old sales executive who has been employed at Vijay Electronics for the past four years. On October 15, 2025, during a routine monthly inventory check at his workplace, a Dell Inspiron laptop valued at rupees forty-five thousand was reported missing. My client was conducting the inventory along with his colleague, one Prakash Mehta. The store manager, Mr. Arvind Desai, reviewed CCTV footage and allegedly observed my client placing an object into his personal bag. Based solely on this grainy footage, my client was arrested on October 16, 2025, and has been in custody since then. He is charged under Section 303(1) of the Bharatiya Nyaya Sanhita."
     },
     {
       "sequence": 8,
@@ -104,7 +104,7 @@
       "sequence": 16,
       "speaker": "Defense Attorney",
       "action": "PROCEEDS_WITH_BAIL_GROUNDS",
-      "dialogue": "Yes, Your Honour. I now submit the following grounds for granting bail to my client. First and foremost, this is a case where the fundamental principle 'Bail is the rule, jail is the exception' must be applied. This principle has been consistently upheld by the Supreme Court in numerous judgments including Sanjay Chandra versus Central Bureau of Investigation, 2012."
+      "dialogue": "Yes, Your Honour. I now submit the following grounds for granting bail to my client. First and foremost, this is a case where the fundamental principle 'Bail is the rule, jail is the exception' must be applied. This principle has been consistently upheld by the Supreme Court in numerous judgments including Sanjay Chandra versus Central Bureau of Investigation, 2012. Under the new Bharatiya Nagarik Suraksha Sanhita, this principle is even more strongly emphasized."
     },
     {
       "sequence": 17,
@@ -266,7 +266,7 @@
       "sequence": 43,
       "speaker": "Public Prosecutor",
       "action": "FIRST_OBJECTION",
-      "dialogue": "First, Your Honour, this is a non-bailable offense. The property stolen is valued at rupees forty-five thousand, which is significantly above the threshold of five thousand rupees specified in Section 379 of the IPC. The legislature has deliberately categorized such offenses as non-bailable to reflect their seriousness."
+      "dialogue": "First, Your Honour, this is a non-bailable offense. The property stolen is valued at rupees forty-five thousand, which is significantly above the threshold specified in Section 303(1) of the Bharatiya Nyaya Sanhita. The legislature has deliberately categorized such offenses as non-bailable to reflect their seriousness."
     },
     {
       "sequence": 44,
@@ -632,7 +632,7 @@
       "sequence": 104,
       "speaker": "Magistrate",
       "action": "DICTATES_ORDER",
-      "dialogue": "ORDER. This is a bail application filed under Section 437 of the Code of Criminal Procedure on behalf of the accused Rajesh Kumar, who is arrested and in custody in connection with Crime Number 245 of 2025, registered at Jayanagar Police Station, Bangalore, for the offense punishable under Section 379 of the Indian Penal Code. After hearing the learned counsel for the accused and the learned Public Prosecutor for the state, and after perusing the case records, this court is satisfied that the accused has made out a case for bail. Accordingly, the accused Rajesh Kumar is enlarged on bail on the conditions specified herein above. The bail bond and sureties shall be furnished within 24 hours. The accused shall be released from custody forthwith upon furnishing the required bonds."
+      "dialogue": "ORDER. This is a bail application filed under Section 480 of the Bharatiya Nagarik Suraksha Sanhita on behalf of the accused Rajesh Kumar, who is arrested and in custody in connection with Crime Number 245 of 2025, registered at Jayanagar Police Station, Bangalore, for the offense punishable under Section 303(1) of the Bharatiya Nyaya Sanhita. After hearing the learned counsel for the accused and the learned Public Prosecutor for the state, and after perusing the case records, this court is satisfied that the accused has made out a case for bail. Accordingly, the accused Rajesh Kumar is enlarged on bail on the conditions specified herein above. The bail bond and sureties shall be furnished within 24 hours. The accused shall be released from custody forthwith upon furnishing the required bonds."
     },
     {
       "sequence": 105,

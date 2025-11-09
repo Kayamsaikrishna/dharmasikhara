@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
-import { getUserProgress } from '../utils/progressApi';
+import { getUserProgress, saveUserProgress } from '../utils/progressApi';
 import { 
   Clock, BookOpen, Users, Star, Play, Award, Target, FileText, 
   Scale, Eye, Lock, AlertTriangle, ChevronDown, ChevronUp,
@@ -33,43 +33,43 @@ const EnhancedScenarioDetail = () => {
 
   // Fetch progress from backend or localStorage
   useEffect(() => {
+    let isMounted = true;
+    
     const fetchProgress = async () => {
-      if (user) {
-        try {
-          // For authenticated users, fetch from backend
-          const progress = await getUserProgress('the-inventory-that-changed-everything');
-          if (progress) {
-            setUserProgress({
-              started: true,
-              currentStage: progress.currentStage || null,
-              completedStages: progress.completedStages || [],
-              lastAccessed: progress.lastAccessed || null
-            });
-          }
-        } catch (error) {
-          console.error('Error fetching progress from backend:', error);
+      try {
+        // Try to fetch progress regardless of authentication status
+        const progress = await getUserProgress('the-inventory-that-changed-everything');
+        if (isMounted && progress) {
+          setUserProgress({
+            started: true,
+            currentStage: progress.currentStage || null,
+            completedStages: progress.completedStages || [],
+            lastAccessed: progress.lastAccessed || null
+          });
+        }
+      } catch (error) {
+        if (isMounted) {
+          console.error('Error fetching progress:', error);
           // Fallback to localStorage
           const savedProgress = localStorage.getItem('scenario-progress-the-inventory-that-changed-everything');
           if (savedProgress) {
-            setUserProgress(JSON.parse(savedProgress));
+            try {
+              const parsedProgress = JSON.parse(savedProgress);
+              setUserProgress(parsedProgress);
+            } catch (parseError) {
+              console.error('Error parsing saved progress:', parseError);
+            }
           }
-        }
-      } else {
-        // For non-authenticated users, get from localStorage
-        const savedProgress = localStorage.getItem('scenario-progress-the-inventory-that-changed-everything');
-        if (savedProgress) {
-          setUserProgress(JSON.parse(savedProgress));
         }
       }
     };
 
     fetchProgress();
-  }, [user]);
-
-  useEffect(() => {
-    // Save progress to localStorage whenever it changes (for backward compatibility)
-    localStorage.setItem('scenario-progress-the-inventory-that-changed-everything', JSON.stringify(userProgress));
-  }, [userProgress]);
+    
+    return () => {
+      isMounted = false;
+    };
+  }, []); // Empty dependency array to prevent repeated calls
 
   const toggleSection = (section: keyof typeof expandedSections) => {
     setExpandedSections(prev => ({
@@ -81,19 +81,13 @@ const EnhancedScenarioDetail = () => {
   const handleStageClick = async (stage: string) => {
     let progress = null;
     
-    if (user) {
-      try {
-        // For authenticated users, fetch from backend
-        const userProgress = await getUserProgress('the-inventory-that-changed-everything');
-        progress = userProgress;
-      } catch (error) {
-        console.error('Error fetching progress from backend:', error);
-        // Fallback to localStorage
-        const savedProgress = localStorage.getItem('scenario-progress-the-inventory-that-changed-everything');
-        progress = savedProgress ? JSON.parse(savedProgress) : null;
-      }
-    } else {
-      // For non-authenticated users, get from localStorage
+    try {
+      // Try to fetch progress regardless of authentication status
+      const userProgress = await getUserProgress('the-inventory-that-changed-everything');
+      progress = userProgress;
+    } catch (error) {
+      console.error('Error fetching progress:', error);
+      // Fallback to localStorage
       const savedProgress = localStorage.getItem('scenario-progress-the-inventory-that-changed-everything');
       progress = savedProgress ? JSON.parse(savedProgress) : null;
     }
@@ -420,8 +414,25 @@ const EnhancedScenarioDetail = () => {
         completedStages: [] as string[],
         lastAccessed: null
       };
+      
+      // Also save the progress data in the format expected by the progress API
+      const progressApiData = {
+        currentStage: '',
+        progress: 0,
+        completedStages: [] as string[],
+        lastUpdated: new Date().toISOString(),
+        totalTimeSpent: 0,
+        assessmentScore: null,
+        feedback: ''
+      };
+      
       setUserProgress(resetProgressData);
-      localStorage.setItem('scenario-progress-the-inventory-that-changed-everything', JSON.stringify(resetProgressData));
+      
+      // Also save to backend if user is authenticated
+      saveUserProgress('the-inventory-that-changed-everything', progressApiData)
+        .catch(error => {
+          console.error('Error saving reset progress to backend:', error);
+        });
     }
   };
 

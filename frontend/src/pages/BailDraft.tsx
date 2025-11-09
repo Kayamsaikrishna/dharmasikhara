@@ -9,38 +9,20 @@ const BailDraft: React.FC = () => {
   const { user } = useUser();
 
   // Update progress when component mounts
-  useEffect(() => {
-    const updateProgress = async () => {
-      try {
-        if (user) {
-          // For authenticated users, save to backend
-          await saveUserProgress('the-inventory-that-changed-everything', {
-            status: 'in_progress',
-            progress: 60, // 60% for completing bail draft
-            currentStage: 'court-hearing',
-            completedStages: ['client-interview', 'digital-evidence', 'bail-draft']
-          });
-        } else {
-          // For non-authenticated users, fallback to localStorage
-          const savedProgress = localStorage.getItem('scenario-progress-the-inventory-that-changed-everything');
-          if (savedProgress) {
-            const progress = JSON.parse(savedProgress);
-            // Add 'bail-draft' to completed stages if not already present
-            const completedStages = progress.completedStages.includes('bail-draft') 
-              ? progress.completedStages 
-              : [...progress.completedStages, 'bail-draft'];
-            
-            const updatedProgress = {
-              ...progress,
-              currentStage: 'court-hearing',
-              completedStages: completedStages
-            };
-            localStorage.setItem('scenario-progress-the-inventory-that-changed-everything', JSON.stringify(updatedProgress));
-          }
-        }
-      } catch (error) {
-        console.error('Error saving progress:', error);
-        // Fallback to localStorage if backend fails
+
+  // Update the button click handler to save progress
+  const handleProceedToCourtroom = async () => {
+    try {
+      if (user) {
+        // For authenticated users, save to backend
+        await saveUserProgress('the-inventory-that-changed-everything', {
+          status: 'in_progress',
+          progress: 60, // 60% for completing bail draft
+          currentStage: 'court-hearing',
+          completedStages: ['client-interview', 'digital-evidence', 'bail-draft']
+        });
+      } else {
+        // For non-authenticated users, fallback to localStorage
         const savedProgress = localStorage.getItem('scenario-progress-the-inventory-that-changed-everything');
         if (savedProgress) {
           const progress = JSON.parse(savedProgress);
@@ -57,10 +39,29 @@ const BailDraft: React.FC = () => {
           localStorage.setItem('scenario-progress-the-inventory-that-changed-everything', JSON.stringify(updatedProgress));
         }
       }
-    };
-
-    updateProgress();
-  }, [user]);
+    } catch (error) {
+      console.error('Error saving progress:', error);
+      // Fallback to localStorage if backend fails
+      const savedProgress = localStorage.getItem('scenario-progress-the-inventory-that-changed-everything');
+      if (savedProgress) {
+        const progress = JSON.parse(savedProgress);
+        // Add 'bail-draft' to completed stages if not already present
+        const completedStages = progress.completedStages.includes('bail-draft') 
+          ? progress.completedStages 
+          : [...progress.completedStages, 'bail-draft'];
+        
+        const updatedProgress = {
+          ...progress,
+          currentStage: 'court-hearing',
+          completedStages: completedStages
+        };
+        localStorage.setItem('scenario-progress-the-inventory-that-changed-everything', JSON.stringify(updatedProgress));
+      }
+    }
+    
+    // Navigate to courtroom
+    navigate('/courtroom');
+  };
 
   return (
     <div className="h-screen flex flex-col">
@@ -72,7 +73,7 @@ const BailDraft: React.FC = () => {
           ← Back to Home
         </button>
         <button
-          onClick={() => navigate('/courtroom')}
+          onClick={handleProceedToCourtroom}
           className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-full hover:from-blue-700 hover:to-indigo-700 transition-all transform hover:scale-105"
         >
           Proceed to Courtroom →

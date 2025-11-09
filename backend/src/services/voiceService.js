@@ -2,13 +2,23 @@ const { PythonShell } = require('python-shell');
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
-const { v4: uuidv4 } = require('uuid');
+
+// Use dynamic import for uuid
+let uuidv4;
 
 class VoiceService {
     constructor() {
         // Check if we're on Windows or Unix-like system
         this.isWindows = os.platform() === 'win32';
         this.tempDir = os.tmpdir();
+        
+        // Initialize uuid
+        this.initUuid();
+    }
+    
+    async initUuid() {
+        const { v4 } = await import('uuid');
+        uuidv4 = v4;
     }
 
     /**
@@ -18,6 +28,11 @@ class VoiceService {
      * @returns {Promise<string>} - Path to the generated audio file
      */
     async textToSpeech(text, language = 'en') {
+        // Make sure uuid is initialized
+        if (!uuidv4) {
+            await this.initUuid();
+        }
+        
         return new Promise((resolve, reject) => {
             // Create a unique filename for the audio file
             const filename = `tts_${uuidv4()}.wav`;
