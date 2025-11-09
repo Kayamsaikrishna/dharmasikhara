@@ -2083,8 +2083,8 @@ const Courtroom: React.FC<{}> = () => {
       // Save progress when hearing ends
       if (user) {
         const progressData = {
-          completedStages: ['bail-hearing'],
-          currentStage: 'completed',
+          completedStages: ['bail-hearing', 'court-hearing'],
+          currentStage: 'legal-assessment',
           lastUpdated: new Date().toISOString(),
           totalTimeSpent: 0, // Would need to track actual time in a real implementation
           assessmentScore: null
@@ -2420,7 +2420,107 @@ const Courtroom: React.FC<{}> = () => {
         <p className="text-white text-sm mb-4">Click anywhere on the screen to enable voice playback</p>
         <div className="text-amber-400 text-3xl mb-2">👇</div>
         <p className="text-slate-300 text-xs mb-2">(Required by browser security policies)</p>
+      </div>
+      
+      {/* Speaker Display Card */}
+      {bailHearingScript && currentSequence < [...bailHearingScript.court_session, ...bailHearingScript.post_hearing_procedures].length && (
+        <div className="absolute top-24 left-1/2 transform -translate-x-1/2 bg-[rgba(15,23,42,0.95)] backdrop-blur-xl p-5 rounded-xl border-2 border-amber-400 shadow-2xl z-30 w-96">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center text-xl flex-shrink-0">
+              {speakersRef.current[[...bailHearingScript.court_session, ...bailHearingScript.post_hearing_procedures][currentSequence]?.speaker]?.name.charAt(0) || 'S'}
+            </div>
+            <div className="flex-1">
+              <h3 className="text-amber-400 font-bold text-lg">
+                {[...bailHearingScript.court_session, ...bailHearingScript.post_hearing_procedures][currentSequence]?.speaker}
+              </h3>
+              <p className="text-slate-300 text-sm mb-2">
+                {speakersRef.current[[...bailHearingScript.court_session, ...bailHearingScript.post_hearing_procedures][currentSequence]?.speaker]?.role}
+              </p>
+              <p className="text-white text-sm italic">
+                "{[...bailHearingScript.court_session, ...bailHearingScript.post_hearing_procedures][currentSequence]?.dialogue}"
+              </p>
+              {/* User turn indicator */}
+              {showUserOptions && (
+                <div className="mt-3 p-3 bg-gradient-to-r from-amber-600 to-amber-800 rounded-lg text-white text-sm animate-pulse">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">🗣️</span>
+                    <strong>Your turn to speak!</strong>
+                  </div>
+                  <p className="mt-1">Select an appropriate response from the options below.</p>
+                  {isListening && (
+                    <div className="mt-2 flex items-center gap-2 text-blue-200">
+                      <span className="w-3 h-3 bg-blue-400 rounded-full animate-pulse"></span>
+                      <span>Listening... Speak now</span>
+                    </div>
+                  )}
+                  {recognizedText && (
+                    <div className="mt-2 text-sm text-blue-200">
+                      <strong>Recognized:</strong> {recognizedText}
+                    </div>
+                  )}
+                </div>
+              )}
+              {/* Voice playing indicator */}
+              <div className="mt-2 p-3 bg-gradient-to-r from-amber-600 to-amber-800 rounded-lg text-white text-sm flex items-center gap-2 animate-pulse">
+                <span className="text-xl">🔊</span>
+                <div>
+                  <div className="font-bold">Voice playing for {[...bailHearingScript.court_session, ...bailHearingScript.post_hearing_procedures][currentSequence]?.speaker}</div>
+                  <div className="text-xs opacity-75">Click anywhere if you can't hear audio</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* User Options Panel */}
+      {showUserOptions && (
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-[rgba(15,23,42,0.98)] backdrop-blur-xl p-6 rounded-xl border-2 border-amber-400 shadow-2xl z-50 w-96">
+          <h3 className="text-amber-400 font-bold text-lg mb-4">Your Turn to Respond</h3>
+          <p className="text-white text-sm mb-4">How would you like to respond?</p>
+          <div className="flex flex-col gap-3">
+            <button 
+              className="w-full p-3 bg-gradient-to-r from-green-600 to-green-800 text-white rounded-lg font-semibold hover:from-green-700 hover:to-green-900 transition-all"
+              onClick={() => handleUserResponse("agree")}
+            >
+              Agree and Confirm Understanding
+            </button>
+            <button 
+              className="w-full p-3 bg-gradient-to-r from-amber-600 to-amber-800 text-white rounded-lg font-semibold hover:from-amber-700 hover:to-amber-900 transition-all"
+              onClick={() => handleUserResponse("ask")}
+            >
+              Ask for Clarification
+            </button>
+            <button 
+              className="w-full p-3 bg-gradient-to-r from-red-600 to-red-800 text-white rounded-lg font-semibold hover:from-red-700 hover:to-red-900 transition-all"
+              onClick={() => handleUserResponse("object")}
+            >
+              Object to Conditions
+            </button>
+            <button 
+              className="w-full p-3 bg-gradient-to-r from-slate-600 to-slate-800 text-white rounded-lg font-semibold hover:from-slate-700 hover:to-slate-900 transition-all"
+              onClick={() => handleUserResponse("silent")}
+            >
+              Remain Silent
+            </button>
+            <div className="mt-4 pt-4 border-t border-slate-600">
+              <button 
+                className="w-full p-3 bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-blue-900 transition-all flex items-center justify-center gap-2"
+                onClick={startVoiceRecognition}
+              >
+                <span className="text-lg">🎤</span>
+                Speak Your Response
+              </button>
+              <p className="text-slate-400 text-xs mt-2 text-center">Click to speak your response using voice recognition</p>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* End Hearing Button */}
+      <div className="absolute bottom-7 right-7 z-30">
         <button 
+          className="px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-800 text-white font-bold rounded-xl shadow-2xl hover:from-purple-700 hover:to-purple-900 transition-all flex items-center gap-2"
           onClick={() => {
             // Save progress before navigating to assessment
             if (user) {
@@ -2435,17 +2535,17 @@ const Courtroom: React.FC<{}> = () => {
               saveUserProgress('the-inventory-that-changed-everything', progressData)
                 .then(() => {
                   console.log('Progress saved successfully');
-                  // Navigate to legal assessment page
-                  window.location.hash = '/legal-assessment';
+                  // Navigate to legal assessment page using React Router
+                  navigate('/legal-assessment');
                 })
                 .catch((error) => {
                   console.error('Failed to save progress:', error);
                   // Still navigate even if save fails
-                  window.location.hash = '/legal-assessment';
+                  navigate('/legal-assessment');
                 });
             } else {
               // For non-authenticated users, still navigate
-              window.location.hash = '/legal-assessment';
+              navigate('/legal-assessment');
             }
           }}
         >
