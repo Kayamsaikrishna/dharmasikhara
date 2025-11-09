@@ -24,6 +24,7 @@ interface PerformanceMetrics {
 }
 
 const CourtroomAISimulation = () => {
+  const navigate = useNavigate();
   const [isActive, setIsActive] = useState(false);
   const [currentSequence, setCurrentSequence] = useState(0);
   const [elapsedTime, setElapsedTime] = useState(0);
@@ -152,7 +153,22 @@ const CourtroomAISimulation = () => {
   const processNextSequence = (seqIndex: number) => {
     if (seqIndex >= courtSequences.length) {
       setIsActive(false);
-      addToLog("System", "Simulation completed. Great work!");
+      addToLog("System", "Courtroom simulation completed. Redirecting to legal competency assessment...");
+      
+      // Update progress to mark court hearing as completed and assessment as current stage
+      const progressKey = 'scenario-progress-the-inventory-that-changed-everything';
+      const currentProgress = localStorage.getItem(progressKey);
+      if (currentProgress) {
+        const progress = JSON.parse(currentProgress);
+        progress.completedStages = [...(progress.completedStages || []), 'court-hearing'];
+        progress.currentStage = 'assessment';
+        localStorage.setItem(progressKey, JSON.stringify(progress));
+      }
+      
+      // Navigate to assessment after a short delay
+      setTimeout(() => {
+        navigate('/legal-assessment');
+      }, 3000);
       return;
     }
 

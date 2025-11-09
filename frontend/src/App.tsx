@@ -27,6 +27,7 @@ import DigitalEvidence from './components/DigitalEvidence';
 import BailDraft from './pages/BailDraft';
 import SimulationEntrance from './components/SimulationEntrance';
 import ProgressTest from './components/ProgressTest'; // Add this import
+import LegalAssessment from './components/LegalAssessment';
 import { UserProvider } from './contexts/UserContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 // import Navbar from './components/Navbar';
@@ -37,9 +38,6 @@ import CertificationPage from './pages/CertificationPage';
 import ExpertSupportPage from './pages/ExpertSupportPage';
 import CaseSpecificAIPage from './pages/CaseSpecificAIPage';
 import MarketingPage from './pages/MarketingPage';
-import LegalNewsPage from './pages/LegalNewsPage';
-// import Courtroom3D from './components/Courtroom3DSimulation';
-// import RealisticCourtroom from './components/RealisticCourtroom';
 
 function App() {
   return (
@@ -68,7 +66,7 @@ function App() {
               <Route path="/scenarios/:id" element={<ScenarioDetail />} />
               <Route path="/simulation-entrance" element={<SimulationEntrance />} />
               <Route path="/scenario-simulation" element={<ScenarioSimulationPage />} />
-              <Route path="/legal-news" element={<LegalNewsPage />} />
+              <Route path="/legal-assessment" element={<LegalAssessment />} />
               <Route path="/legal-research" element={<LegalResearchPage />} />
               <Route path="/legal-assistant" element={<LegalAssistant />} />
               <Route path="/multiplayer" element={<MultiplayerPage />} />

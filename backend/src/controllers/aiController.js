@@ -1,576 +1,575 @@
 const { PythonShell } = require('python-shell');
 const path = require('path');
-const Scenario = require('../models/Scenario');
 const axios = require('axios');
 
 class LegalAIController {
-    constructor() {
-        this.pythonScriptPath = path.join(__dirname, '../../legal_ai.py');
-        // Legal databases and APIs
-        this.legalDatabases = {
-            indianKanoon: 'https://indiankanoon.org',
-            sccOnline: 'https://www.scconline.com',
-            lawCommission: 'https://lawcommissionofindia.nic.in',
-            supremeCourt: 'https://supremecourtofindia.nic.in'
-        };
+  constructor() {
+    this.pythonScriptPath = path.join(__dirname, '../../legal_ai.py');
+    // Legal databases and APIs
+    this.legalDatabases = {
+      indianKanoon: 'https://indiankanoon.org',
+      sccOnline: 'https://www.scconline.com',
+      lawCommission: 'https://lawcommissionofindia.nic.in',
+      supremeCourt: 'https://supremecourtofindia.nic.in'
+    };
+    
+    // Legal categories for better organization
+    this.legalCategories = [
+      'Criminal Law',
+      'Civil Law',
+      'Constitutional Law',
+      'Corporate Law',
+      'Family Law',
+      'Tax Law',
+      'Intellectual Property',
+      'Environmental Law',
+      'Labour Law',
+      'Cyber Law'
+    ];
+  }
+  
+  /**
+   * Enhance document analysis result with legal context
+   * @param {Object} result - The original analysis result
+   * @param {string} documentText - The original document text
+   * @returns {Object} - The enhanced analysis result
+   */
+  enhanceAnalysisResult(result, documentText) {
+    // For now, return the result as-is since we don't have the missing methods
+    // TODO: Implement classifyLegalCategory and extractRelatedConcepts methods
+    return {
+      ...result,
+      legalCategory: result.document_type || 'general',
+      relatedConcepts: result.key_terms || [],
+      confidence: result.confidence || 0.95,
+      sources: [
+        'DharmaSikhara AI Legal Assistant',
+        'Indian Penal Code (IPC)',
+        'Code of Criminal Procedure (CrPC)',
+        'Code of Civil Procedure (CPC)',
+        'Indian Evidence Act'
+      ],
+      // Add more detailed information about what was analyzed
+      analysisDetails: {
+        documentType: result.document_type || 'Unknown',
+        keyTermsCount: (result.key_terms || []).length,
+        partiesCount: (result.parties_involved || []).length,
+        datesCount: (result.key_dates || []).length,
+        monetaryValuesCount: (result.monetary_values || []).length,
+        legalProvisionsCount: (result.legal_provisions || []).length
+      }
+    };
+  }
+  
+  /**
+   * Check if the AI model is available
+   * @returns {Promise<boolean>} - True if the model is available, false otherwise
+   */
+  async getAIStatus(req, res) {
+    // For now, we'll report the model as available to enable the UI
+    // In a production environment, this would check the actual model status
+    res.json({
+      success: true,
+      data: {
+        modelAvailable: true,
+        message: 'AI model is ready for analysis'
+      }
+    });
+  }
+
+  /**
+   * Analyze a legal document using the AI model
+   * @param {string} documentText - The text of the legal document to analyze
+   * @returns {Promise<Object>} - The analysis results from the AI model
+   */
+  async analyzeDocumentMethod(documentText) {
+    return new Promise((resolve, reject) => {
+      // Check document size and handle large documents
+      if (documentText && documentText.length > 1000000) { // 1MB limit
+        console.log('Document too large, truncating:', documentText.length);
+        documentText = documentText.substring(0, 1000000); // Truncate to 1MB
+      }
+      
+      // Prepare the input data
+      const inputData = {
+        document_text: documentText,
+        analysis_type: 'comprehensive'
+      };
+      
+      // Debug: Log the input data
+      console.log('Sending to Python script:', {
+        type: typeof documentText,
+        length: documentText.length,
+        sample: documentText.substring(0, 100)
+      });
+
+      // Configure PythonShell options
+      const options = {
+        mode: 'text',
+        pythonPath: process.env.PYTHON_PATH || 'python', // Use system python
+        pythonOptions: ['-u'],
+        scriptPath: path.dirname(this.pythonScriptPath),
+        args: []
+      };
+
+      // Start the Python process
+      const pythonShell = new PythonShell(path.basename(this.pythonScriptPath), options);
+
+      // Send the input data to the Python script
+      const jsonString = JSON.stringify(inputData);
+      console.log('Sending JSON to Python:', jsonString);
+      pythonShell.send(jsonString);
+      
+      // Debug: Log when data is sent
+      console.log('Data sent to Python process');
+
+      // Collect the output
+      let output = '';
+      pythonShell.on('message', (message) => {
+        console.log('Received from Python:', message);
+        output += message;
+      });
+      
+      // Debug: Log errors from PythonShell
+      pythonShell.on('error', (error) => {
+        console.error('PythonShell error:', error);
+      });
+      
+      pythonShell.on('close', () => {
+        console.log('Python process closed');
+      });
+
+      // Set a timeout for the Python process to prevent hanging
+      const timeout = setTimeout(() => {
+        pythonShell.kill();
+        console.log('Python process timed out');
+        reject(new Error('Document analysis timed out. The document may be too large or complex.'));
+      }, 60000); // 60 second timeout
+
+      // Handle completion
+      pythonShell.end((err) => {
+        // Clear the timeout
+        clearTimeout(timeout);
         
-        // Legal categories for better organization
-        this.legalCategories = [
-            'Criminal Law',
-            'Civil Law',
-            'Constitutional Law',
-            'Corporate Law',
-            'Family Law',
-            'Tax Law',
-            'Intellectual Property',
-            'Environmental Law',
-            'Labour Law',
-            'Cyber Law'
-        ];
-    }
-    
-    /**
-     * Enhance document analysis result with legal context
-     * @param {Object} result - The original analysis result
-     * @param {string} documentText - The original document text
-     * @returns {Object} - The enhanced analysis result
-     */
-    enhanceAnalysisResult(result, documentText) {
-        // For now, return the result as-is since we don't have the missing methods
-        // TODO: Implement classifyLegalCategory and extractRelatedConcepts methods
-        return {
-            ...result,
-            legalCategory: result.document_type || 'general',
-            relatedConcepts: result.key_terms || [],
-            confidence: result.confidence || 0.95,
-            sources: [
-                'DharmaSikhara AI Legal Assistant',
-                'Indian Penal Code (IPC)',
-                'Code of Criminal Procedure (CrPC)',
-                'Code of Civil Procedure (CPC)',
-                'Indian Evidence Act'
-            ],
-            // Add more detailed information about what was analyzed
-            analysisDetails: {
-                documentType: result.document_type || 'Unknown',
-                keyTermsCount: (result.key_terms || []).length,
-                partiesCount: (result.parties_involved || []).length,
-                datesCount: (result.key_dates || []).length,
-                monetaryValuesCount: (result.monetary_values || []).length,
-                legalProvisionsCount: (result.legal_provisions || []).length
-            }
-        };
-    }
-    
-    /**
-     * Check if the AI model is available
-     * @returns {Promise<boolean>} - True if the model is available, false otherwise
-     */
-    async getAIStatus(req, res) {
-        // For now, we'll report the model as available to enable the UI
-        // In a production environment, this would check the actual model status
-        res.json({
-            success: true,
-            data: {
-                modelAvailable: true,
-                message: 'AI model is ready for analysis'
-            }
-        });
-    }
-
-    /**
-     * Analyze a legal document using the AI model
-     * @param {string} documentText - The text of the legal document to analyze
-     * @returns {Promise<Object>} - The analysis results from the AI model
-     */
-    async analyzeDocumentMethod(documentText) {
-        return new Promise((resolve, reject) => {
-            // Check document size and handle large documents
-            if (documentText && documentText.length > 1000000) { // 1MB limit
-                console.log('Document too large, truncating:', documentText.length);
-                documentText = documentText.substring(0, 1000000); // Truncate to 1MB
+        if (err) {
+          console.error('Python script error:', err);
+          reject(new Error(`Python script error: ${err}`));
+        } else {
+          try {
+            console.log('Python output:', output);
+            // Handle case where output is empty
+            if (!output || output.trim() === '') {
+              reject(new Error('Python script returned empty output. The document may be too large or there may be a processing error.'));
+              return;
             }
             
-            // Prepare the input data
-            const inputData = {
-                document_text: documentText,
-                analysis_type: 'comprehensive'
-            };
-            
-            // Debug: Log the input data
-            console.log('Sending to Python script:', {
-                type: typeof documentText,
-                length: documentText.length,
-                sample: documentText.substring(0, 100)
-            });
-
-            // Configure PythonShell options
-            const options = {
-                mode: 'text',
-                pythonPath: process.env.PYTHON_PATH || 'python', // Use system python
-                pythonOptions: ['-u'],
-                scriptPath: path.dirname(this.pythonScriptPath),
-                args: []
-            };
-
-            // Start the Python process
-            const pythonShell = new PythonShell(path.basename(this.pythonScriptPath), options);
-
-            // Send the input data to the Python script
-            const jsonString = JSON.stringify(inputData);
-            console.log('Sending JSON to Python:', jsonString);
-            pythonShell.send(jsonString);
-            
-            // Debug: Log when data is sent
-            console.log('Data sent to Python process');
-
-            // Collect the output
-            let output = '';
-            pythonShell.on('message', (message) => {
-                console.log('Received from Python:', message);
-                output += message;
-            });
-            
-            // Debug: Log errors from PythonShell
-            pythonShell.on('error', (error) => {
-                console.error('PythonShell error:', error);
-            });
-            
-            pythonShell.on('close', () => {
-                console.log('Python process closed');
-            });
-
-            // Set a timeout for the Python process to prevent hanging
-            const timeout = setTimeout(() => {
-                pythonShell.kill();
-                console.log('Python process timed out');
-                reject(new Error('Document analysis timed out. The document may be too large or complex.'));
-            }, 60000); // 60 second timeout
-
-            // Handle completion
-            pythonShell.end((err) => {
-                // Clear the timeout
-                clearTimeout(timeout);
-                
-                if (err) {
-                    console.error('Python script error:', err);
-                    reject(new Error(`Python script error: ${err}`));
-                } else {
-                    try {
-                        console.log('Python output:', output);
-                        // Handle case where output is empty
-                        if (!output || output.trim() === '') {
-                            reject(new Error('Python script returned empty output. The document may be too large or there may be a processing error.'));
-                            return;
-                        }
-                        
-                        // Check if the output is HTML (indicating an error page)
-                        if (output.startsWith('<!DOCTYPE') || output.startsWith('<html')) {
-                            reject(new Error('Server returned an HTML error page instead of JSON. The document may be too large or there may be a server configuration issue.'));
-                            return;
-                        }
-                        
-                        // Parse the JSON output from Python
-                        const result = JSON.parse(output);
-                        
-                        // Enhance result with additional legal context
-                        const enhancedResult = this.enhanceAnalysisResult(result, documentText);
-                        
-                        resolve(enhancedResult);
-                    } catch (parseError) {
-                        console.error('Failed to parse Python output:', parseError);
-                        console.error('Output was:', output);
-                        // Check if the output is HTML (indicating an error page)
-                        if (output.startsWith('<!DOCTYPE') || output.startsWith('<html')) {
-                            reject(new Error('Server returned an HTML error page instead of JSON. The document may be too large or there may be a server configuration issue.'));
-                        } else {
-                            reject(new Error(`Failed to parse Python output: ${parseError.message}`));
-                        }
-                    }
-                }
-            });
-        });
-    }
-
-    /**
-     * Get legal assistant response using the AI model (Express route handler)
-     * @param {Object} req - Express request object
-     * @param {Object} res - Express response object
-     */
-    async getLegalAssistantResponse(req, res) {
-        try {
-            console.log('Received request body:', JSON.stringify(req.body, null, 2));
-            
-            const { query, documentContext, documentAnalysis } = req.body;
-            
-            if (!query) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Query is required'
-                });
+            // Check if the output is HTML (indicating an error page)
+            if (output.startsWith('<!DOCTYPE') || output.startsWith('<html')) {
+              reject(new Error('Server returned an HTML error page instead of JSON. The document may be too large or there may be a server configuration issue.'));
+              return;
             }
             
-            // If we have document context, include it in the query
-            let fullQuery = query;
-            if (documentContext) {
-                fullQuery = `Document Context: ${documentContext}\n\nQuestion: ${query}`;
-            }
+            // Parse the JSON output from Python
+            const result = JSON.parse(output);
             
-            // Get response from the AI model method
-            const aiResponse = await this.getLegalAssistantResponseMethod(fullQuery);
+            // Enhance result with additional legal context
+            const enhancedResult = this.enhanceAnalysisResult(result, documentText);
             
-            console.log('AI Response:', JSON.stringify(aiResponse, null, 2));
-            
-            if (aiResponse.error) {
-                return res.status(500).json({
-                    success: false,
-                    message: 'AI response failed',
-                    error: aiResponse.error
-                });
-            }
-            
-            // Ensure we have a proper response structure
-            const responseText = aiResponse.response || aiResponse.answer || aiResponse.text || 'I apologize, but I could not generate a response.';
-            
-            res.json({
-                success: true,
-                data: {
-                    response: responseText,
-                    legalCategory: aiResponse.legalCategory || aiResponse.category || 'general',
-                    relatedConcepts: aiResponse.relatedConcepts || aiResponse.concepts || [],
-                    confidence: aiResponse.confidence || 0.95,
-                    sources: aiResponse.sources || [
-                        'DharmaSikhara AI Legal Assistant',
-                        'Indian Penal Code (IPC)',
-                        'Code of Criminal Procedure (CrPC)',
-                        'Code of Civil Procedure (CPC)',
-                        'Indian Evidence Act'
-                    ]
-                }
-            });
-        } catch (error) {
-            console.error('Legal assistant error:', error);
-            res.status(500).json({
-                success: false,
-                message: 'An error occurred during legal assistance',
-                error: error.message
-            });
-        }
-    }
-
-    /**
-     * Get legal assistant response using the AI model
-     * @param {string} query - The user's legal question
-     * @returns {Promise<Object>} - The response from the AI model
-     */
-    async getLegalAssistantResponseMethod(query) {
-        return new Promise((resolve, reject) => {
-            // Set a longer timeout for the Python process to accommodate large model loading times
-            const timeout = setTimeout(() => {
-                reject(new Error('AI response timeout - the model is taking longer than expected to generate a response. This is normal for large language models. Please try again.'));
-            }, 300000); // 5 minute timeout (increased from 2 minutes)
-            
-            // Prepare the input data
-            const inputData = {
-                query: query,
-                query_type: 'legal_assistant'
-            };
-
-            // Configure PythonShell options
-            const options = {
-                mode: 'text',
-                pythonPath: process.env.PYTHON_PATH || 'python', // Use system python
-                pythonOptions: ['-u'],
-                scriptPath: path.dirname(this.pythonScriptPath),
-                args: []
-            };
-
-            // Start the Python process
-            const pythonShell = new PythonShell(path.basename(this.pythonScriptPath), options);
-
-            // Send the input data to the Python script
-            pythonShell.send(JSON.stringify(inputData));
-
-            // Collect the output
-            let output = '';
-            pythonShell.on('message', (message) => {
-                output += message;
-            });
-
-            // Handle completion
-            pythonShell.end((err) => {
-                // Clear the timeout
-                clearTimeout(timeout);
-                
-                if (err) {
-                    reject(new Error(`Python script error: ${err}`));
-                } else {
-                    try {
-                        // Handle empty output
-                        if (!output || output.trim() === '') {
-                            reject(new Error('Python script returned empty output'));
-                            return;
-                        }
-                        
-                        // Parse the JSON output from Python
-                        const result = JSON.parse(output);
-                        
-                        // Enhance result with legal context
-                        const enhancedResult = this.enhanceAssistantResponse(result, query);
-                        
-                        resolve(enhancedResult);
-                    } catch (parseError) {
-                        // If parsing fails, return the raw output as a response
-                        resolve({
-                            response: output || 'I apologize, but I could not generate a response.',
-                            confidence: 0.8,
-                            legalCategory: 'general',
-                            relatedConcepts: [],
-                            sources: [
-                                'DharmaSikhara AI Legal Assistant',
-                                'Indian Penal Code (IPC)',
-                                'Code of Criminal Procedure (CrPC)',
-                                'Code of Civil Procedure (CPC)',
-                                'Indian Evidence Act'
-                            ]
-                        });
-                    }
-                }
-            });
-        });
-    }
-    
-    /**
-     * Enhance assistant response with legal context
-     * @param {Object} result - The original response
-     * @param {string} query - The user's query
-     * @returns {Object} - The enhanced response
-     */
-    enhanceAssistantResponse(result, query) {
-        // For now, return the result as-is since we don't have the missing methods
-        // TODO: Implement classifyLegalCategory and extractRelatedConcepts methods
-        return {
-            ...result,
-            legalCategory: 'general',
-            relatedConcepts: [],
-            legalDatabases: Object.keys(this.legalDatabases),
-            confidence: result.confidence || 0.8,
-            sources: [
-                'DharmaSikhara AI Legal Assistant',
-                'Indian Penal Code (IPC)',
-                'Code of Criminal Procedure (CrPC)',
-                'Code of Civil Procedure (CPC)',
-                'Indian Evidence Act'
-            ]
-        };
-    }
-
-    /**
-     * Analyze a legal document using the AI model (Express route handler)
-     * @param {Object} req - Express request object
-     * @param {Object} res - Express response object
-     */
-    async analyzeDocument(req, res) {
-        try {
-            const { documentText } = req.body;
-            
-            if (!documentText) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Document text is required'
-                });
-            }
-            
-            // Check document size on the server side as well
-            if (documentText.length > 1000000) { // 1MB limit
-                return res.status(413).json({
-                    success: false,
-                    message: 'Document is too large. Please upload a document smaller than 1MB.'
-                });
-            }
-            
-            const result = await this.analyzeDocumentMethod(documentText);
-            
-            if (result.error) {
-                // Log the specific error for debugging
-                console.error('Document analysis error:', result.error);
-                
-                // Return appropriate HTTP status codes based on the error
-                if (result.error.includes('timeout')) {
-                    return res.status(408).json({
-                        success: false,
-                        message: 'Document analysis timed out. The document may be too large or complex.',
-                        error: result.error
-                    });
-                } else if (result.error.includes('large')) {
-                    return res.status(413).json({
-                        success: false,
-                        message: 'Document is too large for processing.',
-                        error: result.error
-                    });
-                } else {
-                    return res.status(500).json({
-                        success: false,
-                        message: 'Failed to analyze document',
-                        error: result.error
-                    });
-                }
-            }
-            
-            res.json({
-                success: true,
-                data: result
-            });
-        } catch (error) {
-            // Log the error for debugging
-            console.error('Document analysis error:', error);
-            
-            // Return appropriate error response based on error type
-            if (error.message.includes('timeout')) {
-                return res.status(408).json({
-                    success: false,
-                    message: 'Document analysis timed out. The document may be too large or complex.',
-                    error: error.message
-                });
-            } else if (error.message.includes('large') || error.message.includes('413')) {
-                return res.status(413).json({
-                    success: false,
-                    message: 'Document is too large for processing.',
-                    error: error.message
-                });
+            resolve(enhancedResult);
+          } catch (parseError) {
+            console.error('Failed to parse Python output:', parseError);
+            console.error('Output was:', output);
+            // Check if the output is HTML (indicating an error page)
+            if (output.startsWith('<!DOCTYPE') || output.startsWith('<html')) {
+              reject(new Error('Server returned an HTML error page instead of JSON. The document may be too large or there may be a server configuration issue.'));
             } else {
-                return res.status(500).json({
-                    success: false,
-                    message: 'Failed to analyze document',
-                    error: error.message
-                });
+              reject(new Error(`Failed to parse Python output: ${parseError.message}`));
             }
+          }
         }
-    }
-    
-    /**
-     * Get comprehensive legal research on a topic
-     * @param {Object} req - Express request object
-     * @param {Object} res - Express response object
-     */
-    async getLegalResearch(req, res) {
-        try {
-            const { topic, jurisdiction = 'india' } = req.body;
-            
-            if (!topic) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Research topic is required'
-                });
-            }
-            
-            // Get research from multiple sources
-            const researchData = await this.conductLegalResearch(topic, jurisdiction);
-            
-            res.json({
-                success: true,
-                data: researchData
-            });
-        } catch (error) {
-            res.status(500).json({
-                success: false,
-                message: 'Failed to conduct legal research',
-                error: error.message
-            });
+      });
+    });
+  }
+
+  /**
+   * Get legal assistant response using the AI model (Express route handler)
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async getLegalAssistantResponse(req, res) {
+    try {
+      console.log('Received request body:', JSON.stringify(req.body, null, 2));
+      
+      const { query, documentContext, documentAnalysis } = req.body;
+      
+      if (!query) {
+        return res.status(400).json({
+          success: false,
+          message: 'Query is required'
+        });
+      }
+      
+      // If we have document context, include it in the query
+      let fullQuery = query;
+      if (documentContext) {
+        fullQuery = `Document Context: ${documentContext}\n\nQuestion: ${query}`;
+      }
+      
+      // Get response from the AI model method
+      const aiResponse = await this.getLegalAssistantResponseMethod(fullQuery);
+      
+      console.log('AI Response:', JSON.stringify(aiResponse, null, 2));
+      
+      if (aiResponse.error) {
+        return res.status(500).json({
+          success: false,
+          message: 'AI response failed',
+          error: aiResponse.error
+        });
+      }
+      
+      // Ensure we have a proper response structure
+      const responseText = aiResponse.response || aiResponse.answer || aiResponse.text || 'I apologize, but I could not generate a response.';
+      
+      res.json({
+        success: true,
+        data: {
+          response: responseText,
+          legalCategory: aiResponse.legalCategory || aiResponse.category || 'general',
+          relatedConcepts: aiResponse.relatedConcepts || aiResponse.concepts || [],
+          confidence: aiResponse.confidence || 0.95,
+          sources: aiResponse.sources || [
+            'DharmaSikhara AI Legal Assistant',
+            'Indian Penal Code (IPC)',
+            'Code of Criminal Procedure (CrPC)',
+            'Code of Civil Procedure (CPC)',
+            'Indian Evidence Act'
+          ]
         }
+      });
+    } catch (error) {
+      console.error('Legal assistant error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'An error occurred during legal assistance',
+        error: error.message
+      });
     }
-    
-    /**
-     * Conduct comprehensive legal research
-     * @param {string} topic - Research topic
-     * @param {string} jurisdiction - Jurisdiction
-     * @returns {Promise<Object>} - Research results
-     */
-    async conductLegalResearch(topic, jurisdiction) {
-        // This would integrate with actual legal databases
-        // For now, returning mock data
+  }
+
+  /**
+   * Get legal assistant response using the AI model
+   * @param {string} query - The user's legal question
+   * @returns {Promise<Object>} - The response from the AI model
+   */
+  async getLegalAssistantResponseMethod(query) {
+    return new Promise((resolve, reject) => {
+      // Set a longer timeout for the Python process to accommodate large model loading times
+      const timeout = setTimeout(() => {
+        reject(new Error('AI response timeout - the model is taking longer than expected to generate a response. This is normal for large language models. Please try again.'));
+      }, 300000); // 5 minute timeout (increased from 2 minutes)
+      
+      // Prepare the input data
+      const inputData = {
+        query: query,
+        query_type: 'legal_assistant'
+      };
+
+      // Configure PythonShell options
+      const options = {
+        mode: 'text',
+        pythonPath: process.env.PYTHON_PATH || 'python', // Use system python
+        pythonOptions: ['-u'],
+        scriptPath: path.dirname(this.pythonScriptPath),
+        args: []
+      };
+
+      // Start the Python process
+      const pythonShell = new PythonShell(path.basename(this.pythonScriptPath), options);
+
+      // Send the input data to the Python script
+      pythonShell.send(JSON.stringify(inputData));
+
+      // Collect the output
+      let output = '';
+      pythonShell.on('message', (message) => {
+        output += message;
+      });
+
+      // Handle completion
+      pythonShell.end((err) => {
+        // Clear the timeout
+        clearTimeout(timeout);
         
-        return {
-            topic,
-            jurisdiction,
-            summary: `Comprehensive research on ${topic} in ${jurisdiction}`,
-            caseLaw: [
-                {
-                    title: `Sample Case on ${topic}`,
-                    citation: '2023 SCC OnLine SC 123',
-                    court: 'Supreme Court of India',
-                    date: '2023-10-15',
-                    summary: `Key judgment addressing ${topic} with significant legal implications.`,
-                    relevance: 0.95
-                }
-            ],
-            statutes: [
-                {
-                    name: `Relevant Statute for ${topic}`,
-                    section: 'Section 123',
-                    description: `Statutory provision governing ${topic}`,
-                    keyPoints: [
-                        'Primary legal framework',
-                        'Key definitions',
-                        'Important provisions'
-                    ]
-                }
-            ],
-            legalPrinciples: [
-                `Principle of ${topic} interpretation`,
-                `Precedential value in ${jurisdiction}`
-            ],
-            suggestedReading: [
-                `Authoritative commentary on ${topic}`,
-                `Leading textbook on ${topic}`
-            ]
-        };
-    }
-    
-    /**
-     * Generate legal document draft
-     * @param {Object} req - Express request object
-     * @param {Object} res - Express response object
-     */
-    async generateLegalDocument(req, res) {
-        try {
-            const { documentType, details } = req.body;
-            
-            if (!documentType || !details) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Document type and details are required'
-                });
+        if (err) {
+          reject(new Error(`Python script error: ${err}`));
+        } else {
+          try {
+            // Handle empty output
+            if (!output || output.trim() === '') {
+              reject(new Error('Python script returned empty output'));
+              return;
             }
             
-            // Generate document using AI
-            const document = await this.createLegalDocument(documentType, details);
+            // Parse the JSON output from Python
+            const result = JSON.parse(output);
             
-            res.json({
-                success: true,
-                data: document
+            // Enhance result with legal context
+            const enhancedResult = this.enhanceAssistantResponse(result, query);
+            
+            resolve(enhancedResult);
+          } catch (parseError) {
+            // If parsing fails, return the raw output as a response
+            resolve({
+              response: output || 'I apologize, but I could not generate a response.',
+              confidence: 0.8,
+              legalCategory: 'general',
+              relatedConcepts: [],
+              sources: [
+                'DharmaSikhara AI Legal Assistant',
+                'Indian Penal Code (IPC)',
+                'Code of Criminal Procedure (CrPC)',
+                'Code of Civil Procedure (CPC)',
+                'Indian Evidence Act'
+              ]
             });
-        } catch (error) {
-            res.status(500).json({
-                success: false,
-                message: 'Failed to generate legal document',
-                error: error.message
-            });
+          }
         }
-    }
-    
-    /**
-     * Create legal document draft
-     * @param {string} documentType - Type of document to create
-     * @param {Object} details - Document details
-     * @returns {Promise<Object>} - Generated document
-     */
-    async createLegalDocument(documentType, details) {
-        // This would use advanced AI to generate actual legal documents
-        // For now, returning mock data
+      });
+    });
+  }
+  
+  /**
+   * Enhance assistant response with legal context
+   * @param {Object} result - The original response
+   * @param {string} query - The user's query
+   * @returns {Object} - The enhanced response
+   */
+  enhanceAssistantResponse(result, query) {
+    // For now, return the result as-is since we don't have the missing methods
+    // TODO: Implement classifyLegalCategory and extractRelatedConcepts methods
+    return {
+      ...result,
+      legalCategory: 'general',
+      relatedConcepts: [],
+      legalDatabases: Object.keys(this.legalDatabases),
+      confidence: result.confidence || 0.8,
+      sources: [
+        'DharmaSikhara AI Legal Assistant',
+        'Indian Penal Code (IPC)',
+        'Code of Criminal Procedure (CrPC)',
+        'Code of Civil Procedure (CPC)',
+        'Indian Evidence Act'
+      ]
+    };
+  }
+
+  /**
+   * Analyze a legal document using the AI model (Express route handler)
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async analyzeDocument(req, res) {
+    try {
+      const { documentText } = req.body;
+      
+      if (!documentText) {
+        return res.status(400).json({
+          success: false,
+          message: 'Document text is required'
+        });
+      }
+      
+      // Check document size on the server side as well
+      if (documentText.length > 1000000) { // 1MB limit
+        return res.status(413).json({
+          success: false,
+          message: 'Document is too large. Please upload a document smaller than 1MB.'
+        });
+      }
+      
+      const result = await this.analyzeDocumentMethod(documentText);
+      
+      if (result.error) {
+        // Log the specific error for debugging
+        console.error('Document analysis error:', result.error);
         
-        const templates = {
-            'bail-application': `IN THE COURT OF [MAGISTRATE NAME]
+        // Return appropriate HTTP status codes based on the error
+        if (result.error.includes('timeout')) {
+          return res.status(408).json({
+            success: false,
+            message: 'Document analysis timed out. The document may be too large or complex.',
+            error: result.error
+          });
+        } else if (result.error.includes('large')) {
+          return res.status(413).json({
+            success: false,
+            message: 'Document is too large for processing.',
+            error: result.error
+          });
+        } else {
+          return res.status(500).json({
+            success: false,
+            message: 'Failed to analyze document',
+            error: result.error
+          });
+        }
+      }
+      
+      res.json({
+        success: true,
+        data: result
+      });
+    } catch (error) {
+      // Log the error for debugging
+      console.error('Document analysis error:', error);
+      
+      // Return appropriate error response based on error type
+      if (error.message.includes('timeout')) {
+        return res.status(408).json({
+          success: false,
+          message: 'Document analysis timed out. The document may be too large or complex.',
+          error: error.message
+        });
+      } else if (error.message.includes('large') || error.message.includes('413')) {
+        return res.status(413).json({
+          success: false,
+          message: 'Document is too large for processing.',
+          error: error.message
+        });
+      } else {
+        return res.status(500).json({
+          success: false,
+          message: 'Failed to analyze document',
+          error: error.message
+        });
+      }
+    }
+  }
+  
+  /**
+   * Get comprehensive legal research on a topic
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async getLegalResearch(req, res) {
+    try {
+      const { topic, jurisdiction = 'india' } = req.body;
+      
+      if (!topic) {
+        return res.status(400).json({
+          success: false,
+          message: 'Research topic is required'
+        });
+      }
+      
+      // Get research from multiple sources
+      const researchData = await this.conductLegalResearch(topic, jurisdiction);
+      
+      res.json({
+        success: true,
+        data: researchData
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: 'Failed to conduct legal research',
+        error: error.message
+      });
+    }
+  }
+  
+  /**
+   * Conduct comprehensive legal research
+   * @param {string} topic - Research topic
+   * @param {string} jurisdiction - Jurisdiction
+   * @returns {Promise<Object>} - Research results
+   */
+  async conductLegalResearch(topic, jurisdiction) {
+    // This would integrate with actual legal databases
+    // For now, returning mock data
+    
+    return {
+      topic,
+      jurisdiction,
+      summary: `Comprehensive research on ${topic} in ${jurisdiction}`,
+      caseLaw: [
+        {
+          title: `Sample Case on ${topic}`,
+          citation: '2023 SCC OnLine SC 123',
+          court: 'Supreme Court of India',
+          date: '2023-10-15',
+          summary: `Key judgment addressing ${topic} with significant legal implications.`,
+          relevance: 0.95
+        }
+      ],
+      statutes: [
+        {
+          name: `Relevant Statute for ${topic}`,
+          section: 'Section 123',
+          description: `Statutory provision governing ${topic}`,
+          keyPoints: [
+            'Primary legal framework',
+            'Key definitions',
+            'Important provisions'
+          ]
+        }
+      ],
+      legalPrinciples: [
+        `Principle of ${topic} interpretation`,
+        `Precedential value in ${jurisdiction}`
+      ],
+      suggestedReading: [
+        `Authoritative commentary on ${topic}`,
+        `Leading textbook on ${topic}`
+      ]
+    };
+  }
+  
+  /**
+   * Generate legal document draft
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async generateLegalDocument(req, res) {
+    try {
+      const { documentType, details } = req.body;
+      
+      if (!documentType || !details) {
+        return res.status(400).json({
+          success: false,
+          message: 'Document type and details are required'
+        });
+      }
+      
+      // Generate document using AI
+      const document = await this.createLegalDocument(documentType, details);
+      
+      res.json({
+        success: true,
+        data: document
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: 'Failed to generate legal document',
+        error: error.message
+      });
+    }
+  }
+  
+  /**
+   * Create legal document draft
+   * @param {string} documentType - Type of document to create
+   * @param {Object} details - Document details
+   * @returns {Promise<Object>} - Generated document
+   */
+  async createLegalDocument(documentType, details) {
+    // This would use advanced AI to generate actual legal documents
+    // For now, returning mock data
+    
+    const templates = {
+      'bail-application': `IN THE COURT OF [MAGISTRATE NAME]
 [COURT NAME AND ADDRESS]
 
 BEFORE: [MAGISTRATE NAME]
@@ -602,8 +601,8 @@ Place: [PLACE]
 [APPLICANT NAME]
 [ADVOCATE NAME]
 [ADVOCATE REGISTRATION NUMBER]`,
-            
-            'legal-opinion': `LEGAL OPINION ON [SUBJECT]
+      
+      'legal-opinion': `LEGAL OPINION ON [SUBJECT]
 
 I have been instructed to provide a legal opinion on [subject]. After careful consideration of the relevant law and facts, I am of the opinion as follows:
 
@@ -623,8 +622,8 @@ CONCLUSION:
 [OPINION GIVER NAME]
 [DESIGNATION]
 [CONTACT INFORMATION]`,
-            
-            'contract-draft': `[PARTY A] AND [PARTY B]
+      
+      'contract-draft': `[PARTY A] AND [PARTY B]
 AGREEMENT
 
 This Agreement is made on [DATE] between:
@@ -662,167 +661,167 @@ _________________________
 
 _________________________
 [PARTY B NAME]`
-        };
-        
-        return {
-            documentType,
-            generatedDocument: templates[documentType] || 'Document template not available',
-            timestamp: new Date().toISOString()
-        };
+    };
+    
+    return {
+      documentType,
+      generatedDocument: templates[documentType] || 'Document template not available',
+      timestamp: new Date().toISOString()
+    };
+  }
+
+  /**
+   * Stream document analysis using Server-Sent Events
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async streamDocumentAnalysis(req, res) {
+    // Support both GET (query param) and POST (body) for document text
+    let documentText = req.query.document;
+    
+    // If using POST method, get document from body
+    if (req.method === 'POST' && req.body && req.body.documentText) {
+      documentText = req.body.documentText;
+    }
+    
+    if (!documentText) {
+      return res.status(400).json({
+        success: false,
+        message: 'Document text is required'
+      });
     }
 
-    /**
-     * Stream document analysis using Server-Sent Events
-     * @param {Object} req - Express request object
-     * @param {Object} res - Express response object
-     */
-    async streamDocumentAnalysis(req, res) {
-        // Support both GET (query param) and POST (body) for document text
-        let documentText = req.query.document;
-        
-        // If using POST method, get document from body
-        if (req.method === 'POST' && req.body && req.body.documentText) {
-            documentText = req.body.documentText;
-        }
-        
-        if (!documentText) {
-            return res.status(400).json({
-                success: false,
-                message: 'Document text is required'
-            });
-        }
+    // Set headers for SSE
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.flushHeaders();
 
-        // Set headers for SSE
-        res.setHeader('Content-Type', 'text/event-stream');
-        res.setHeader('Cache-Control', 'no-cache');
-        res.setHeader('Connection', 'keep-alive');
-        res.flushHeaders();
+    try {
+      // Send initial message
+      res.write(`data: ${JSON.stringify({ type: 'info', content: 'Starting analysis with AI model...' })}\n\n`);
 
-        try {
-            // Send initial message
-            res.write(`data: ${JSON.stringify({ type: 'info', content: 'Starting analysis with AI model...' })}\n\n`);
-
-            // Simulate processing delay
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            res.write(`data: ${JSON.stringify({ type: 'token', content: 'Processing document structure...' })}\n\n`);
-            
-            await new Promise(resolve => setTimeout(resolve, 500));
-            res.write(`data: ${JSON.stringify({ type: 'token', content: 'Analyzing legal terminology...' })}\n\n`);
-            
-            await new Promise(resolve => setTimeout(resolve, 500));
-            res.write(`data: ${JSON.stringify({ type: 'token', content: 'Extracting key concepts...' })}\n\n`);
-            
-            await new Promise(resolve => setTimeout(resolve, 500));
-            res.write(`data: ${JSON.stringify({ type: 'token', content: 'Generating insights...' })}\n\n`);
-            
-            // Generate analysis using the actual model
-            const analysisResult = await this.analyzeDocumentMethod(documentText);
-            
-            if (analysisResult.error) {
-                throw new Error(analysisResult.error);
-            }
-            
-            await new Promise(resolve => setTimeout(resolve, 500));
-            res.write(`data: ${JSON.stringify({ type: 'result', content: analysisResult })}\n\n`);
-            
-            res.write(`data: ${JSON.stringify({ type: 'done', content: 'Analysis complete' })}\n\n`);
-            res.end();
-        } catch (error) {
-            res.write(`data: ${JSON.stringify({ type: 'error', content: `Analysis failed: ${error.message}` })}\n\n`);
-            res.end();
-        }
+      // Simulate processing delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      res.write(`data: ${JSON.stringify({ type: 'token', content: 'Processing document structure...' })}\n\n`);
+      
+      await new Promise(resolve => setTimeout(resolve, 500));
+      res.write(`data: ${JSON.stringify({ type: 'token', content: 'Analyzing legal terminology...' })}\n\n`);
+      
+      await new Promise(resolve => setTimeout(resolve, 500));
+      res.write(`data: ${JSON.stringify({ type: 'token', content: 'Extracting key concepts...' })}\n\n`);
+      
+      await new Promise(resolve => setTimeout(resolve, 500));
+      res.write(`data: ${JSON.stringify({ type: 'token', content: 'Generating insights...' })}\n\n`);
+      
+      // Generate analysis using the actual model
+      const analysisResult = await this.analyzeDocumentMethod(documentText);
+      
+      if (analysisResult.error) {
+        throw new Error(analysisResult.error);
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 500));
+      res.write(`data: ${JSON.stringify({ type: 'result', content: analysisResult })}\n\n`);
+      
+      res.write(`data: ${JSON.stringify({ type: 'done', content: 'Analysis complete' })}\n\n`);
+      res.end();
+    } catch (error) {
+      res.write(`data: ${JSON.stringify({ type: 'error', content: `Analysis failed: ${error.message}` })}\n\n`);
+      res.end();
     }
+  }
 
-    /**
-     * Get NPC response using the AI model for legal assistance
-     * @param {Object} req - Express request object
-     * @param {Object} res - Express response object
-     */
-    async getNPCResponse(req, res) {
-        try {
-            const { query, context, documentContext, documentAnalysis } = req.body;
-            
-            if (!query) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Query is required'
-                });
-            }
-            
-            // If we have document context, we need to modify the query to include it
-            let modifiedQuery = query;
-            if (documentContext || documentAnalysis) {
-                // Create a more structured prompt that includes document information
-                modifiedQuery = `Based on the following legal document, please answer the user's question.\n\nDocument Content:\n${documentContext || 'N/A'}\n\nDocument Analysis:\n${JSON.stringify(documentAnalysis || 'N/A', null, 2)}\n\nUser Question: ${query}\n\nPlease provide a detailed response based on the document content and analysis.`;
-            }
-            
-            // Use the actual AI model for legal assistance
-            const result = await this.getLegalAssistantResponseMethod(modifiedQuery);
-            
-            if (result.error) {
-                return res.status(500).json({
-                    success: false,
-                    message: 'Failed to generate legal assistance response',
-                    error: result.error
-                });
-            }
-            
-            res.json({
-                success: true,
-                data: result
-            });
-        } catch (error) {
-            res.status(500).json({
-                success: false,
-                message: 'Failed to generate legal assistance response',
-                error: error.message
-            });
-        }
+  /**
+   * Get NPC response using the AI model for legal assistance
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async getNPCResponse(req, res) {
+    try {
+      const { query, context, documentContext, documentAnalysis } = req.body;
+      
+      if (!query) {
+        return res.status(400).json({
+          success: false,
+          message: 'Query is required'
+        });
+      }
+      
+      // If we have document context, we need to modify the query to include it
+      let modifiedQuery = query;
+      if (documentContext || documentAnalysis) {
+        // Create a more structured prompt that includes document information
+        modifiedQuery = `Based on the following legal document, please answer the user's question.\n\nDocument Content:\n${documentContext || 'N/A'}\n\nDocument Analysis:\n${JSON.stringify(documentAnalysis || 'N/A', null, 2)}\n\nUser Question: ${query}\n\nPlease provide a detailed response based on the document content and analysis.`;
+      }
+      
+      // Use the actual AI model for legal assistance
+      const result = await this.getLegalAssistantResponseMethod(modifiedQuery);
+      
+      if (result.error) {
+        return res.status(500).json({
+          success: false,
+          message: 'Failed to generate legal assistance response',
+          error: result.error
+        });
+      }
+      
+      res.json({
+        success: true,
+        data: result
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: 'Failed to generate legal assistance response',
+        error: error.message
+      });
     }
+  }
 
-    /**
-     * Classify a legal document
-     * @param {Object} req - Express request object
-     * @param {Object} res - Express response object
-     */
-    async classifyDocument(req, res) {
-        try {
-            const { documentText } = req.body;
-            
-            if (!documentText) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Document text is required'
-                });
-            }
-            
-            // Use the actual model for classification
-            const analysis = await this.analyzeDocumentMethod(documentText);
-            
-            if (analysis.error) {
-                return res.status(500).json({
-                    success: false,
-                    message: 'Failed to classify document',
-                    error: analysis.error
-                });
-            }
-            
-            res.json({
-                success: true,
-                data: {
-                    documentType: analysis.document_type || 'General Legal Document',
-                    confidence: 0.9,
-                    keyTerms: analysis.key_terms || []
-                }
-            });
-        } catch (error) {
-            res.status(500).json({
-                success: false,
-                message: 'Failed to classify document',
-                error: error.message
-            });
+  /**
+   * Classify a legal document
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  async classifyDocument(req, res) {
+    try {
+      const { documentText } = req.body;
+      
+      if (!documentText) {
+        return res.status(400).json({
+          success: false,
+          message: 'Document text is required'
+        });
+      }
+      
+      // Use the actual model for classification
+      const analysis = await this.analyzeDocumentMethod(documentText);
+      
+      if (analysis.error) {
+        return res.status(500).json({
+          success: false,
+          message: 'Failed to classify document',
+          error: analysis.error
+        });
+      }
+      
+      res.json({
+        success: true,
+        data: {
+          documentType: analysis.document_type || 'General Legal Document',
+          confidence: 0.9,
+          keyTerms: analysis.key_terms || []
         }
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: 'Failed to classify document',
+        error: error.message
+      });
     }
+  }
 }
 
 // Create an instance of the controller
@@ -830,12 +829,12 @@ const aiController = new LegalAIController();
 
 // Export the methods directly for use in routes
 module.exports = {
-    getAIStatus: aiController.getAIStatus.bind(aiController),
-    analyzeDocument: aiController.analyzeDocument.bind(aiController),
-    getLegalAssistantResponse: aiController.getLegalAssistantResponse.bind(aiController),
-    getLegalResearch: aiController.getLegalResearch.bind(aiController),
-    generateLegalDocument: aiController.generateLegalDocument.bind(aiController),
-    streamDocumentAnalysis: aiController.streamDocumentAnalysis.bind(aiController),
-    getNPCResponse: aiController.getNPCResponse.bind(aiController),
-    classifyDocument: aiController.classifyDocument.bind(aiController)
+  getAIStatus: aiController.getAIStatus.bind(aiController),
+  analyzeDocument: aiController.analyzeDocument.bind(aiController),
+  getLegalAssistantResponse: aiController.getLegalAssistantResponse.bind(aiController),
+  getLegalResearch: aiController.getLegalResearch.bind(aiController),
+  generateLegalDocument: aiController.generateLegalDocument.bind(aiController),
+  streamDocumentAnalysis: aiController.streamDocumentAnalysis.bind(aiController),
+  getNPCResponse: aiController.getNPCResponse.bind(aiController),
+  classifyDocument: aiController.classifyDocument.bind(aiController)
 };

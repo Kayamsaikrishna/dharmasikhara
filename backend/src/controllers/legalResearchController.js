@@ -1,6 +1,4 @@
 const axios = require('axios');
-const User = require('../models/User');
-const Scenario = require('../models/Scenario');
 const fs = require('fs');
 const path = require('path');
 

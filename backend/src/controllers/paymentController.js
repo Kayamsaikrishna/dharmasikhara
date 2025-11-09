@@ -1,6 +1,47 @@
-const Payment = require('../models/Payment');
-const Subscription = require('../models/Subscription');
-const User = require('../models/User');
+const databaseService = require('../services/database');
+
+const getPlanFeatures = (plan) => {
+    const features = {
+        free: {
+            documentAnalysis: true,
+            scenariosAccess: 2,
+            multiplayerAccess: false,
+            customScenarios: 0,
+            prioritySupport: false,
+            storage: '0 GB',
+            documentAnalysisLimit: '5 per week'
+        },
+        pro: {
+            documentAnalysis: true,
+            scenariosAccess: 10,
+            multiplayerAccess: true,
+            customScenarios: 0,
+            prioritySupport: false,
+            storage: '1 GB',
+            documentAnalysisLimit: '10 per week'
+        },
+        advanced: {
+            documentAnalysis: true,
+            scenariosAccess: 30,
+            multiplayerAccess: true,
+            customScenarios: 5,
+            prioritySupport: false,
+            storage: '2 GB',
+            documentAnalysisLimit: '15 per week'
+        },
+        premium: {
+            documentAnalysis: true,
+            scenariosAccess: 100,
+            multiplayerAccess: true,
+            customScenarios: 20,
+            prioritySupport: true,
+            storage: '10 GB',
+            documentAnalysisLimit: '25 per week'
+        }
+    };
+    
+    return features[plan] || features.free;
+};
 
 const getSubscriptionPlans = async (req, res) => {
     try {
@@ -13,15 +54,7 @@ const getSubscriptionPlans = async (req, res) => {
                 period: 'month',
                 storage: '0 GB',
                 documentAnalysisLimit: '5 per week',
-                features: {
-                    documentAnalysis: true,
-                    scenariosAccess: 2,
-                    multiplayerAccess: false,
-                    customScenarios: 0,
-                    prioritySupport: false,
-                    storage: '0 GB',
-                    documentAnalysisLimit: '5 per week'
-                },
+                features: getPlanFeatures('free'),
                 description: 'Perfect for getting started with basic legal document analysis'
             },
             {
@@ -32,15 +65,7 @@ const getSubscriptionPlans = async (req, res) => {
                 period: 'month',
                 storage: '1 GB',
                 documentAnalysisLimit: '10 per week',
-                features: {
-                    documentAnalysis: true,
-                    scenariosAccess: 10,
-                    multiplayerAccess: true,
-                    customScenarios: 0,
-                    prioritySupport: false,
-                    storage: '1 GB',
-                    documentAnalysisLimit: '10 per week'
-                },
+                features: getPlanFeatures('pro'),
                 description: 'Ideal for regular users who need more scenarios and multiplayer access'
             },
             {
@@ -51,15 +76,7 @@ const getSubscriptionPlans = async (req, res) => {
                 period: 'month',
                 storage: '2 GB',
                 documentAnalysisLimit: '15 per week',
-                features: {
-                    documentAnalysis: true,
-                    scenariosAccess: 30,
-                    multiplayerAccess: true,
-                    customScenarios: 5,
-                    prioritySupport: false,
-                    storage: '2 GB',
-                    documentAnalysisLimit: '15 per week'
-                },
+                features: getPlanFeatures('advanced'),
                 description: 'Great for serious learners who want to create custom scenarios'
             },
             {
@@ -70,15 +87,7 @@ const getSubscriptionPlans = async (req, res) => {
                 period: 'month',
                 storage: '10 GB',
                 documentAnalysisLimit: '25 per week',
-                features: {
-                    documentAnalysis: true,
-                    scenariosAccess: 100,
-                    multiplayerAccess: true,
-                    customScenarios: 20,
-                    prioritySupport: true,
-                    storage: '10 GB',
-                    documentAnalysisLimit: '25 per week'
-                },
+                features: getPlanFeatures('premium'),
                 description: 'The ultimate plan with unlimited access and priority support'
             }
         ];
@@ -117,57 +126,133 @@ const processPayment = async (req, res) => {
             });
         }
         
+        // Get SQLite database connection
+        const db = databaseService.getSQLite();
+        
         // In a real implementation, you would process the payment with a payment gateway
         // For this demo, we'll simulate a successful payment
         const paymentId = `pay_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         
         // Create payment record
-        const payment = new Payment({
-            user: req.user.userId,
-            amount,
-            paymentMethod,
-            paymentId,
-            status: 'completed',
-            plan,
-            features: getPlanFeatures(plan)
+        const payment = await new Promise((resolve, reject) => {
+            const createdAt = new Date().toISOString();
+            db.run(
+                `INSERT INTO payments 
+                 (user_id, amount, currency, payment_method, payment_id, status, plan, features, created_at) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                [
+                    req.user.userId,
+                    amount,
+                    'INR',
+                    paymentMethod,
+                    paymentId,
+                    'completed',
+                    plan,
+                    JSON.stringify(getPlanFeatures(plan)),
+                    createdAt
+                ],
+                function(err) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve({
+                            id: this.lastID,
+                            user_id: req.user.userId,
+                            amount,
+                            currency: 'INR',
+                            payment_method: paymentMethod,
+                            payment_id,
+                            status: 'completed',
+                            plan,
+                            features: getPlanFeatures(plan),
+                            created_at: createdAt
+                        });
+                    }
+                }
+            );
         });
         
-        await payment.save();
-        
-        // Update or create subscription
-        const user = await User.findById(req.user.userId).populate('subscription');
-        
-        let subscription;
-        if (user.subscription) {
-            // Update existing subscription
-            subscription = await Subscription.findByIdAndUpdate(
-                user.subscription._id,
-                {
-                    plan,
-                    status: 'active',
-                    startDate: new Date(),
-                    endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
-                    features: getPlanFeatures(plan)
-                },
-                { new: true }
-            );
-        } else {
-            // Create new subscription
-            subscription = new Subscription({
-                user: req.user.userId,
-                plan,
-                status: 'active',
-                startDate: new Date(),
-                endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
-                features: getPlanFeatures(plan)
+        // Create or update subscription
+        const subscription = await new Promise((resolve, reject) => {
+            const startDate = new Date().toISOString();
+            const endDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+            
+            // Check if user already has a subscription
+            db.get('SELECT * FROM subscriptions WHERE user_id = ?', [req.user.userId], (err, row) => {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                
+                if (row) {
+                    // Update existing subscription
+                    db.run(
+                        `UPDATE subscriptions 
+                         SET plan = ?, status = ?, start_date = ?, end_date = ?, features = ?, updated_at = ? 
+                         WHERE id = ?`,
+                        [
+                            plan,
+                            'active',
+                            startDate,
+                            endDate,
+                            JSON.stringify(getPlanFeatures(plan)),
+                            new Date().toISOString(),
+                            row.id
+                        ],
+                        function(err) {
+                            if (err) {
+                                reject(err);
+                            } else {
+                                resolve({
+                                    id: row.id,
+                                    user_id: req.user.userId,
+                                    plan,
+                                    status: 'active',
+                                    start_date: startDate,
+                                    end_date: endDate,
+                                    features: getPlanFeatures(plan),
+                                    updated_at: new Date().toISOString()
+                                });
+                            }
+                        }
+                    );
+                } else {
+                    // Create new subscription
+                    db.run(
+                        `INSERT INTO subscriptions 
+                         (user_id, plan, status, start_date, end_date, features, created_at, updated_at) 
+                         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                        [
+                            req.user.userId,
+                            plan,
+                            'active',
+                            startDate,
+                            endDate,
+                            JSON.stringify(getPlanFeatures(plan)),
+                            new Date().toISOString(),
+                            new Date().toISOString()
+                        ],
+                        function(err) {
+                            if (err) {
+                                reject(err);
+                            } else {
+                                resolve({
+                                    id: this.lastID,
+                                    user_id: req.user.userId,
+                                    plan,
+                                    status: 'active',
+                                    start_date: startDate,
+                                    end_date: endDate,
+                                    features: getPlanFeatures(plan),
+                                    created_at: new Date().toISOString(),
+                                    updated_at: new Date().toISOString()
+                                });
+                            }
+                        }
+                    );
+                }
             });
-            
-            await subscription.save();
-            
-            // Update user with subscription
-            user.subscription = subscription._id;
-            await user.save();
-        }
+        });
         
         res.json({
             success: true,
@@ -188,9 +273,23 @@ const processPayment = async (req, res) => {
 
 const getPaymentHistory = async (req, res) => {
     try {
-        const payments = await Payment.find({ user: req.user.userId })
-            .sort({ createdAt: -1 })
-            .limit(20);
+        // Get SQLite database connection
+        const db = databaseService.getSQLite();
+        
+        // Query payments from SQLite database
+        const payments = await new Promise((resolve, reject) => {
+            db.all(
+                'SELECT * FROM payments WHERE user_id = ? ORDER BY created_at DESC LIMIT 20', 
+                [req.user.userId], 
+                (err, rows) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(rows);
+                    }
+                }
+            );
+        });
         
         res.json({
             success: true,
@@ -205,52 +304,10 @@ const getPaymentHistory = async (req, res) => {
     }
 };
 
-// Helper function to get plan features
-const getPlanFeatures = (plan) => {
-    const features = {
-        documentAnalysis: true,
-        scenariosAccess: 0,
-        multiplayerAccess: false,
-        customScenarios: 0,
-        prioritySupport: false,
-        storage: '0 GB',
-        documentAnalysisLimit: '0 per week'
-    };
-    
-    switch (plan) {
-        case 'free':
-            features.scenariosAccess = 2;
-            features.storage = '0 GB';
-            features.documentAnalysisLimit = '5 per week';
-            break;
-        case 'pro':
-            features.scenariosAccess = 10;
-            features.multiplayerAccess = true;
-            features.storage = '1 GB';
-            features.documentAnalysisLimit = '10 per week';
-            break;
-        case 'advanced':
-            features.scenariosAccess = 30;
-            features.multiplayerAccess = true;
-            features.customScenarios = 5;
-            features.storage = '2 GB';
-            features.documentAnalysisLimit = '15 per week';
-            break;
-        case 'premium':
-            features.scenariosAccess = 100;
-            features.multiplayerAccess = true;
-            features.customScenarios = 20;
-            features.prioritySupport = true;
-            features.storage = '10 GB';
-            features.documentAnalysisLimit = '25 per week';
-            break;
-    }
-    
-    return features;
-};
-
+// Export all functions
 module.exports = {
     getSubscriptionPlans,
     processPayment,
-    getPaymentHistory
+    getPaymentHistory,
+    getPlanFeatures
 };

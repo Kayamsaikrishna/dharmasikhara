@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useUser } from '../contexts/UserContext';
-import { saveUserProgress } from '../utils/progressApi';
 
 const DigitalEvidence: React.FC = () => {
   const navigate = useNavigate();
-  const { user } = useUser();
   const [activeTab, setActiveTab] = useState<'gallery' | 'summary' | 'analysis'>('gallery');
   const [selectedPhoto, setSelectedPhoto] = useState<any>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -14,57 +11,23 @@ const DigitalEvidence: React.FC = () => {
 
   // Update progress when component mounts
   useEffect(() => {
-    const updateProgress = async () => {
-      try {
-        if (user) {
-          // For authenticated users, save to backend
-          await saveUserProgress('the-inventory-that-changed-everything', {
-            status: 'in_progress',
-            progress: 40, // 40% for completing digital evidence review
-            currentStage: 'bail-draft',
-            completedStages: ['client-interview', 'digital-evidence']
-          });
-        } else {
-          // For non-authenticated users, fallback to localStorage
-          const savedProgress = localStorage.getItem('scenario-progress-the-inventory-that-changed-everything');
-          if (savedProgress) {
-            const progress = JSON.parse(savedProgress);
-            // Add 'digital-evidence' to completed stages if not already present
-            const completedStages = progress.completedStages.includes('digital-evidence') 
-              ? progress.completedStages 
-              : [...progress.completedStages, 'digital-evidence'];
-            
-            const updatedProgress = {
-              ...progress,
-              currentStage: 'bail-draft',
-              completedStages: completedStages
-            };
-            localStorage.setItem('scenario-progress-the-inventory-that-changed-everything', JSON.stringify(updatedProgress));
-          }
-        }
-      } catch (error) {
-        console.error('Error saving progress:', error);
-        // Fallback to localStorage if backend fails
-        const savedProgress = localStorage.getItem('scenario-progress-the-inventory-that-changed-everything');
-        if (savedProgress) {
-          const progress = JSON.parse(savedProgress);
-          // Add 'digital-evidence' to completed stages if not already present
-          const completedStages = progress.completedStages.includes('digital-evidence') 
-            ? progress.completedStages 
-            : [...progress.completedStages, 'digital-evidence'];
-          
-          const updatedProgress = {
-            ...progress,
-            currentStage: 'bail-draft',
-            completedStages: completedStages
-          };
-          localStorage.setItem('scenario-progress-the-inventory-that-changed-everything', JSON.stringify(updatedProgress));
-        }
-      }
-    };
-
-    updateProgress();
-  }, [user]);
+    // Update progress in localStorage
+    const savedProgress = localStorage.getItem('scenario-progress-the-inventory-that-changed-everything');
+    if (savedProgress) {
+      const progress = JSON.parse(savedProgress);
+      // Add 'digital-evidence' to completed stages if not already present
+      const completedStages = progress.completedStages.includes('digital-evidence') 
+        ? progress.completedStages 
+        : [...progress.completedStages, 'digital-evidence'];
+      
+      const updatedProgress = {
+        ...progress,
+        currentStage: 'bail-draft',
+        completedStages: completedStages
+      };
+      localStorage.setItem('scenario-progress-the-inventory-that-changed-everything', JSON.stringify(updatedProgress));
+    }
+  }, []);
 
   // Evidence data with proper paths
   const evidenceItems = [
@@ -162,11 +125,12 @@ const DigitalEvidence: React.FC = () => {
     setSelectedPhoto(null);
   };
 
-  // Function to get image path - using the correct API endpoint
+  // Function to get image path - using the correct API endpoint with full backend URL
   const getImagePath = (fileName: string) => {
     // Use the evidence controller endpoint which properly handles filenames
-    // Fix the path to use the correct static file serving route
-    return `/scenario 1/evidences folder/${encodeURIComponent(fileName)}`;
+    // Use full backend URL instead of relative path
+    const backendUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+    return `${backendUrl}/api/evidence/images/${encodeURIComponent(fileName)}`;
   };
 
   return (

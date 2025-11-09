@@ -4,7 +4,7 @@ import Hero from '../components/Hero';
 import Features from '../components/Features';
 import Benefits from '../components/Benefits';
 import Team from '../components/Team';
-import LegalNewsFeed from '../components/LegalNewsFeed';
+// LegalNewsFeed import removed
 import { Link } from 'react-router-dom';
 
 const Home: React.FC = () => {
@@ -22,9 +22,9 @@ const Home: React.FC = () => {
             <div className="lg:col-span-2">
               <Features />
             </div>
-            <div>
+            {/* <div>
               <LegalNewsFeed />
-            </div>
+            </div> */}
           </div>
         </div>
         <Benefits />

@@ -165,7 +165,7 @@ const EnhancedScenarioDetail = () => {
       {
         id: 1,
         icon: '👤',
-        name: 'Client Interview',
+        name: 'Client Counseling',
         duration: '10-15 min',
         description: 'Meet Rajesh Kumar in custody and gather his version of events',
         skills: ['Active Listening', 'Rapport Building', 'Fact Gathering'],
@@ -197,6 +197,15 @@ const EnhancedScenarioDetail = () => {
         description: 'Present oral arguments before the magistrate',
         skills: ['Oral Advocacy', 'Quick Thinking', 'Professional Conduct'],
         completed: courtHearingCompleted
+      },
+      {
+        id: 5,
+        icon: '🎓',
+        name: 'Legal Assessment',
+        duration: '20-30 min',
+        description: 'Complete competency assessment to evaluate legal knowledge and skills',
+        skills: ['Legal Knowledge', 'Case Analysis', 'Ethical Judgment', 'Argumentation'],
+        completed: false // Will be determined by assessment completion
       }
     ],
 
@@ -570,7 +579,7 @@ const EnhancedScenarioDetail = () => {
                 onClick={() => simulateProgress('client-interview')}
                 className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded"
               >
-                Simulate Client Interview
+                Simulate Client Counseling
               </button>
               <button 
                 onClick={() => simulateProgress('digital-evidence')}

@@ -173,27 +173,15 @@ const PerformanceDashboard: React.FC = () => {
           { date: 'Week 6', score: assessmentScore ? calculatedOverallScore : (totalScenariosCompleted >= 5 ? 80 : (totalScenariosCompleted >= 4 ? 70 : (totalScenariosCompleted >= 3 ? 60 : (totalScenariosCompleted >= 2 ? 50 : (totalScenariosCompleted >= 1 ? 35 : 0) ) ) ) ) }
         ];
         
-        // Generate more data points for different time periods
-        // For a more realistic dataset, we'll generate data for up to 2 years (104 weeks)
-        const extendedProgressDataArray = [...initialProgressDataArray];
-        for (let i = 7; i <= 104; i++) {
-          // Generate scores that trend upward over time with some variance
-          const baseScore = Math.min(20 + (totalScenariosCompleted * 15) + (i * 0.5), 95);
-          // Add some random variance to make it look more realistic
-          const variance = Math.random() * 10 - 5; // Between -5 and +5
-          const score = Math.max(0, Math.min(100, baseScore + variance));
-          extendedProgressDataArray.push({ date: `Week ${i}`, score });
-        }
-        
         // Filter data based on selected time period
-        let filteredProgressData = [...extendedProgressDataArray];
+        let filteredProgressData = [...initialProgressDataArray];
         
         if (timePeriod === '6M') {
           // For 6 months, show last 26 weeks
-          filteredProgressData = extendedProgressDataArray.slice(-26);
+          filteredProgressData = initialProgressDataArray.slice(-26);
         } else if (timePeriod === '1Y') {
           // For 1 year, show last 52 weeks
-          filteredProgressData = extendedProgressDataArray.slice(-52);
+          filteredProgressData = initialProgressDataArray.slice(-52);
         }
         // For 'All', show all data (no filtering needed)
         
@@ -803,7 +791,7 @@ const PerformanceDashboard: React.FC = () => {
               <p className="text-indigo-100 text-sm">
                 {scenariosCompleted > 0
                   ? "Continue with the next stage in your current scenario to build on your progress."
-                  : "Start with the Client Interview scenario to begin building your legal skills."}
+                  : "Start with the Client Counseling scenario to begin building your legal skills."}
               </p>
             </div>
           </div>

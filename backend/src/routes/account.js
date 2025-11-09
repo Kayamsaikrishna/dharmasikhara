@@ -23,9 +23,6 @@ router.put('/profile', authenticateToken, accountController.updateProfile);
 router.get('/documents', authenticateToken, accountController.getUserDocuments);
 router.post('/documents', authenticateToken, accountController.uploadDocument);
 router.delete('/documents/:id', authenticateToken, accountController.deleteDocument);
-router.post('/extract-text', authenticateToken, upload.single('file'), accountController.extractText);
 router.get('/subscription', authenticateToken, accountController.getSubscription);
-router.post('/subscription', authenticateToken, accountController.updateSubscription);
-// router.get('/payments', authenticateToken, accountController.getPaymentHistory);
 
 module.exports = router;

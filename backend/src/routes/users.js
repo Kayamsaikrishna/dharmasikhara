@@ -9,7 +9,6 @@ router.get('/:id', userController.getUserById);
 router.get('/', userController.getAllUsers);
 router.put('/:id', userController.updateUser);
 router.delete('/:id', userController.deleteUser);
-router.put('/:id/role', userController.updateUserRole); // Add role update route
 
 // User progress and analytics
 router.get('/:id/progress', userController.getUserProgress);

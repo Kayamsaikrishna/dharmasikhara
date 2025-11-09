@@ -1,52 +1,34 @@
-const mongoose = require('mongoose');
+// Payment model for SQLite database
+// This is a placeholder module to maintain compatibility with existing code structure
 
-const paymentSchema = new mongoose.Schema({
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
-  subscription: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Subscription'
-  },
-  amount: {
-    type: Number,
-    required: true
-  },
-  currency: {
-    type: String,
-    default: 'INR'
-  },
-  paymentMethod: {
-    type: String,
-    enum: ['card', 'upi', 'paypal', 'bank_transfer'],
-    required: true
-  },
-  paymentId: {
-    type: String,
-    required: true
-  },
-  status: {
-    type: String,
-    enum: ['pending', 'completed', 'failed', 'refunded'],
-    default: 'pending'
-  },
-  plan: {
-    type: String,
-    enum: ['free', 'pro', 'advanced', 'premium']
-  },
-  features: {
-    type: mongoose.Schema.Types.Mixed
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now
+class Payment {
+  constructor(data) {
+    Object.assign(this, data);
   }
-});
 
-module.exports = mongoose.model('Payment', paymentSchema);
+  static async find(query) {
+    // This method is no longer used as we've moved to direct SQLite queries
+    // in the controller. Keeping for backward compatibility.
+    return [];
+  }
+
+  static async findOne(query) {
+    // This method is no longer used as we've moved to direct SQLite queries
+    // in the controller. Keeping for backward compatibility.
+    return null;
+  }
+
+  static async findById(id) {
+    // This method is no longer used as we've moved to direct SQLite queries
+    // in the controller. Keeping for backward compatibility.
+    return null;
+  }
+
+  save() {
+    // This method is no longer used as we've moved to direct SQLite queries
+    // in the controller. Keeping for backward compatibility.
+    return Promise.resolve(this);
+  }
+}
+
+module.exports = Payment;

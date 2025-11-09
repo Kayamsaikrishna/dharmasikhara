@@ -115,8 +115,11 @@ const MarketingContent: React.FC = () => {
       try {
         setLoading(true);
         
+        // Use direct backend URL instead of relative path
+        const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+        
         // Fetch marketing content
-        const marketingResponse = await fetch('/api/marketing/content');
+        const marketingResponse = await fetch(`${API_BASE_URL}/api/marketing/content`);
         const marketingData = await marketingResponse.json();
         
         if (marketingData.success) {
@@ -126,7 +129,7 @@ const MarketingContent: React.FC = () => {
         }
         
         // Fetch promotional content
-        const promotionalResponse = await fetch('/api/marketing/promotional');
+        const promotionalResponse = await fetch(`${API_BASE_URL}/api/marketing/promotional`);
         const promotionalData = await promotionalResponse.json();
         
         if (promotionalData.success) {
@@ -134,7 +137,7 @@ const MarketingContent: React.FC = () => {
         }
         
         // Fetch educational content
-        const educationalResponse = await fetch('/api/marketing/educational');
+        const educationalResponse = await fetch(`${API_BASE_URL}/api/marketing/educational`);
         const educationalData = await educationalResponse.json();
         
         if (educationalData.success) {
@@ -153,7 +156,9 @@ const MarketingContent: React.FC = () => {
 
   const handleEngagement = async (contentType: string, contentId: string, action: string) => {
     try {
-      await fetch('/api/marketing/track-engagement', {
+      // Use direct backend URL instead of relative path
+      const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+      await fetch(`${API_BASE_URL}/api/marketing/track-engagement`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

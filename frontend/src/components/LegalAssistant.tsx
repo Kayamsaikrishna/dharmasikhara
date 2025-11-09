@@ -207,6 +207,9 @@ const LegalAssistant: React.FC = () => {
         formData.append('file', selectedFile);
         
         try {
+          // Use direct backend URL instead of relative path
+          const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+          
           // Prepare headers - only add Authorization if token exists
           const headers: Record<string, string> = {};
           
@@ -215,7 +218,7 @@ const LegalAssistant: React.FC = () => {
             headers['Authorization'] = `Bearer ${token}`;
           }
           
-          const response = await fetch('/api/account/extract-text', {
+          const response = await fetch(`${API_BASE_URL}/api/account/extract-text`, {
             method: 'POST',
             headers,
             body: formData
@@ -369,7 +372,8 @@ const LegalAssistant: React.FC = () => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 300000); // 5 minute timeout (increased from 2 minutes)
       
-      const response = await fetch('/api/ai/legal-assistant', {
+      // Use direct backend URL instead of relative path
+      const response = await fetch('http://localhost:5000/api/ai/legal-assistant', {
         method: 'POST',
         headers,
         body: JSON.stringify(requestBody),
@@ -432,7 +436,8 @@ const LegalAssistant: React.FC = () => {
         return;
       }
       
-      const response = await fetch('/api/ai/legal-research', {
+      // Use direct backend URL instead of relative path
+      const response = await fetch('http://localhost:5000/api/ai/legal-research', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -484,7 +489,8 @@ const LegalAssistant: React.FC = () => {
         return;
       }
       
-      const response = await fetch('/api/ai/generate-document', {
+      // Use direct backend URL instead of relative path
+      const response = await fetch('http://localhost:5000/api/ai/generate-document', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

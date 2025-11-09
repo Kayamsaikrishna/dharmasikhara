@@ -69,7 +69,9 @@ const ExpertSupport: React.FC = () => {
     const fetchExperts = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/api/expert-support/experts');
+        // Use direct backend URL instead of relative path
+        const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+        const response = await fetch(`${API_BASE_URL}/api/expert-support/experts`);
         const data = await response.json();
         
         if (data.success) {
@@ -93,7 +95,9 @@ const ExpertSupport: React.FC = () => {
   useEffect(() => {
     const fetchUserSessions = async () => {
       try {
-        const response = await fetch(`/api/expert-support/sessions/user/${userId}`, {
+        // Use direct backend URL instead of relative path
+        const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+        const response = await fetch(`${API_BASE_URL}/api/expert-support/sessions/user/${userId}`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -115,7 +119,9 @@ const ExpertSupport: React.FC = () => {
   useEffect(() => {
     const fetchUpcomingSessions = async () => {
       try {
-        const response = await fetch(`/api/expert-support/sessions/upcoming/${userId}`, {
+        // Use direct backend URL instead of relative path
+        const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+        const response = await fetch(`${API_BASE_URL}/api/expert-support/sessions/upcoming/${userId}`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -164,7 +170,9 @@ const ExpertSupport: React.FC = () => {
     if (!selectedExpert) return;
     
     try {
-      const response = await fetch('/api/expert-support/sessions/schedule', {
+      // Use direct backend URL instead of relative path
+      const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+      const response = await fetch(`${API_BASE_URL}/api/expert-support/sessions/schedule`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -207,7 +215,9 @@ const ExpertSupport: React.FC = () => {
 
   const handleCancelSession = async (sessionId: string) => {
     try {
-      const response = await fetch(`/api/expert-support/sessions/${sessionId}`, {
+      // Use direct backend URL instead of relative path
+      const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+      const response = await fetch(`${API_BASE_URL}/api/expert-support/sessions/${sessionId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -244,7 +254,9 @@ const ExpertSupport: React.FC = () => {
     e.preventDefault();
     
     try {
-      const response = await fetch('/api/expert-support/sessions/feedback', {
+      // Use direct backend URL instead of relative path
+      const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+      const response = await fetch(`${API_BASE_URL}/api/expert-support/sessions/feedback`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,

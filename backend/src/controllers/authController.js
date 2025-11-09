@@ -1,23 +1,25 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
 const databaseService = require('../services/database');
 
 const register = async (req, res) => {
     try {
-        // Check if MongoDB is available
-        const mongoDB = databaseService.getMongoDB();
-        if (!mongoDB) {
-            return res.status(503).json({
-                success: false,
-                message: 'Registration temporarily unavailable due to database connectivity issues. Please try again later or use demo login (demo@example.com / demo123).' 
-            });
-        }
-        
         const { username, email, password, firstName, lastName, institution, year, specialization } = req.body;
         
+        // Get SQLite database connection
+        const db = databaseService.getSQLite();
+        
         // Check if user already exists
-        const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+        const existingUser = await new Promise((resolve, reject) => {
+            db.get('SELECT * FROM users WHERE email = ? OR username = ?', [email, username], (err, row) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(row);
+                }
+            });
+        });
+        
         if (existingUser) {
             // Provide more specific error message
             if (existingUser.email === email && existingUser.username === username) {
@@ -42,25 +44,36 @@ const register = async (req, res) => {
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
         
-        // Create new user (always as client)
-        const newUser = new User({
-            username,
-            email,
-            password: hashedPassword,
-            role: 'client',
-            firstName,
-            lastName,
-            institution,
-            year,
-            specialization,
-            createdAt: new Date()
+        // Create new user
+        const newUser = await new Promise((resolve, reject) => {
+            const createdAt = new Date().toISOString();
+            db.run(
+                'INSERT INTO users (username, email, password, first_name, last_name, institution, year, specialization, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                [username, email, hashedPassword, firstName, lastName, institution, year, specialization, createdAt],
+                function(err) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve({
+                            id: this.lastID,
+                            username,
+                            email,
+                            password: hashedPassword,
+                            first_name: firstName,
+                            last_name: lastName,
+                            institution,
+                            year,
+                            specialization,
+                            created_at: createdAt
+                        });
+                    }
+                }
+            );
         });
-        
-        await newUser.save();
         
         // Generate JWT token
         const token = jwt.sign(
-            { userId: newUser._id, email: newUser.email, role: newUser.role },
+            { userId: newUser.id, email: newUser.email, role: 'client' },
             process.env.JWT_SECRET || 'dharmasikhara_secret',
             { expiresIn: '24h' }
         );
@@ -70,12 +83,12 @@ const register = async (req, res) => {
             message: 'User registered successfully',
             data: {
                 user: {
-                    id: newUser._id,
+                    id: newUser.id,
                     username: newUser.username,
                     email: newUser.email,
-                    role: newUser.role,
-                    firstName: newUser.firstName,
-                    lastName: newUser.lastName,
+                    role: 'client',
+                    firstName: newUser.first_name,
+                    lastName: newUser.last_name,
                     institution: newUser.institution,
                     year: newUser.year,
                     specialization: newUser.specialization
@@ -87,56 +100,29 @@ const register = async (req, res) => {
         console.error('Registration error:', error);
         res.status(500).json({
             success: false,
-            message: 'An error occurred during registration'
+            message: 'An error occurred during registration: ' + error.message
         });
     }
 };
 
 const login = async (req, res) => {
     try {
-        // Always allow login with default credentials for demo purposes
-        // This allows the application to function without database connections
         const { email, password } = req.body;
         
-        // For demo purposes, allow login with default credentials
-        if (email === 'demo@example.com' && password === 'demo123') {
-            const token = jwt.sign(
-                { userId: 'demo', email: 'demo@example.com', role: 'client' },
-                process.env.JWT_SECRET || 'dharmasikhara_secret',
-                { expiresIn: '24h' }
-            );
-            
-            return res.json({
-                success: true,
-                message: 'Demo login successful',
-                data: {
-                    user: {
-                        id: 'demo',
-                        username: 'demo_user',
-                        email: 'demo@example.com',
-                        role: 'client',
-                        firstName: 'Demo',
-                        lastName: 'User',
-                        institution: 'Demo Institution',
-                        year: '2023',
-                        specialization: 'General Law'
-                    },
-                    token
-                }
-            });
-        }
-        
-        // Check if MongoDB is available
-        const mongoDB = databaseService.getMongoDB();
-        if (!mongoDB) {
-            return res.status(503).json({
-                success: false,
-                message: 'Login temporarily unavailable due to database connectivity issues. Please use demo credentials (demo@example.com / demo123) or try again later.'
-            });
-        }
+        // Get SQLite database connection
+        const db = databaseService.getSQLite();
         
         // Find user in database
-        const user = await User.findOne({ email });
+        const user = await new Promise((resolve, reject) => {
+            db.get('SELECT * FROM users WHERE email = ?', [email], (err, row) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(row);
+                }
+            });
+        });
+        
         if (!user) {
             return res.status(401).json({
                 success: false,
@@ -154,12 +140,19 @@ const login = async (req, res) => {
         }
         
         // Update last login
-        user.lastLogin = new Date();
-        await user.save();
+        await new Promise((resolve, reject) => {
+            db.run('UPDATE users SET updated_at = ? WHERE id = ?', [new Date().toISOString(), user.id], (err) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        });
         
         // Generate JWT token
         const token = jwt.sign(
-            { userId: user._id, email: user.email, role: user.role },
+            { userId: user.id, email: user.email, role: 'client' },
             process.env.JWT_SECRET || 'dharmasikhara_secret',
             { expiresIn: '24h' }
         );
@@ -169,12 +162,12 @@ const login = async (req, res) => {
             message: 'Login successful',
             data: {
                 user: {
-                    id: user._id,
+                    id: user.id,
                     username: user.username,
                     email: user.email,
-                    role: user.role,
-                    firstName: user.firstName,
-                    lastName: user.lastName,
+                    role: 'client',
+                    firstName: user.first_name,
+                    lastName: user.last_name,
                     institution: user.institution,
                     year: user.year,
                     specialization: user.specialization
@@ -186,7 +179,7 @@ const login = async (req, res) => {
         console.error('Login error:', error);
         res.status(500).json({
             success: false,
-            message: 'An error occurred during login'
+            message: 'An error occurred during login: ' + error.message
         });
     }
 };
@@ -203,10 +196,11 @@ const refreshToken = (req, res) => {
     // In a real implementation, you would validate and refresh the token
     res.json({
         success: true,
-        message: 'Token refreshed'
+        message: 'Token refreshed successfully'
     });
 };
 
+// Export all functions
 module.exports = {
     register,
     login,

@@ -1,47 +1,34 @@
-const mongoose = require('mongoose');
+// ClientProject model for SQLite database
+// This is a placeholder module to maintain compatibility with existing code structure
 
-const clientProjectSchema = new mongoose.Schema({
-  clientName: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  projectName: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  status: {
-    type: String,
-    enum: ['pending', 'in_progress', 'completed', 'cancelled'],
-    default: 'pending'
-  },
-  budget: {
-    type: Number,
-    required: true
-  },
-  deadline: {
-    type: Date,
-    required: true
-  },
-  contractor: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
-  client: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now
+class ClientProject {
+  constructor(data) {
+    Object.assign(this, data);
   }
-});
 
-module.exports = mongoose.model('ClientProject', clientProjectSchema);
+  static async find(query) {
+    // This method is no longer used as we've moved to direct SQLite queries
+    // in the controller. Keeping for backward compatibility.
+    return [];
+  }
+
+  static async findOne(query) {
+    // This method is no longer used as we've moved to direct SQLite queries
+    // in the controller. Keeping for backward compatibility.
+    return null;
+  }
+
+  static async findById(id) {
+    // This method is no longer used as we've moved to direct SQLite queries
+    // in the controller. Keeping for backward compatibility.
+    return null;
+  }
+
+  save() {
+    // This method is no longer used as we've moved to direct SQLite queries
+    // in the controller. Keeping for backward compatibility.
+    return Promise.resolve(this);
+  }
+}
+
+module.exports = ClientProject;

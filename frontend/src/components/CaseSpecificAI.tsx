@@ -49,7 +49,9 @@ const CaseSpecificAI: React.FC = () => {
   useEffect(() => {
     const fetchModels = async () => {
       try {
-        const response = await fetch('/api/case-specific-ai/models');
+        // Use direct backend URL instead of relative path
+        const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+        const response = await fetch(`${API_BASE_URL}/api/case-specific-ai/models`);
         const data = await response.json();
         
         if (data.success) {
@@ -74,9 +76,11 @@ const CaseSpecificAI: React.FC = () => {
     setLoading(true);
     setError('');
     setAiResponse('');
-
+    
     try {
-      const response = await fetch('/api/case-specific-ai/response', {
+      // Use direct backend URL instead of relative path
+      const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+      const response = await fetch(`${API_BASE_URL}/api/case-specific-ai/response`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -111,9 +115,11 @@ const CaseSpecificAI: React.FC = () => {
     setLoading(true);
     setError('');
     setDocumentAnalysis([]);
-
+    
     try {
-      const response = await fetch('/api/case-specific-ai/analyze-documents', {
+      // Use direct backend URL instead of relative path
+      const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+      const response = await fetch(`${API_BASE_URL}/api/case-specific-ai/analyze-documents`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -148,9 +154,11 @@ const CaseSpecificAI: React.FC = () => {
     setLoading(true);
     setError('');
     setCaseStrategy(null);
-
+    
     try {
-      const response = await fetch('/api/case-specific-ai/strategy', {
+      // Use direct backend URL instead of relative path
+      const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+      const response = await fetch(`${API_BASE_URL}/api/case-specific-ai/strategy`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -68,7 +68,7 @@ const Navbar: React.FC = () => {
               <Link to="/multiplayer" className="text-white hover:bg-white/20 px-3 py-2 rounded-lg font-medium transition duration-300">Multiplayer</Link>
               <Link to="/legal-assistant" className="text-white hover:bg-white/20 px-3 py-2 rounded-lg font-medium transition duration-300">Legal Assistant</Link>
               <Link to="/legal-research" className="text-white hover:bg-white/20 px-3 py-2 rounded-lg font-medium transition duration-300">Legal Research</Link>
-              <Link to="/legal-news" className="text-white hover:bg-white/20 px-3 py-2 rounded-lg font-medium transition duration-300">Legal News</Link>
+              {/* Legal News link removed */}
               {/* Assessment link removed */}
               {/* Legal Updates link removed */}
               {/* Live Sessions link removed */}
@@ -163,7 +163,7 @@ const Navbar: React.FC = () => {
             <Link to="/multiplayer" className="block text-white hover:bg-white/20 px-3 py-2 rounded-lg font-medium transition duration-300" onClick={() => setIsMenuOpen(false)}>Multiplayer</Link>
             <Link to="/legal-assistant" className="block text-white hover:bg-white/20 px-3 py-2 rounded-lg font-medium transition duration-300" onClick={() => setIsMenuOpen(false)}>Legal Assistant</Link>
             <Link to="/legal-research" className="block text-white hover:bg-white/20 px-3 py-2 rounded-lg font-medium transition duration-300" onClick={() => setIsMenuOpen(false)}>Legal Research</Link>
-            <Link to="/legal-news" className="block text-white hover:bg-white/20 px-3 py-2 rounded-lg font-medium transition duration-300" onClick={() => setIsMenuOpen(false)}>Legal News</Link>
+            {/* Legal News link removed */}
             {/* Assessment link removed */}
             {/* Legal Updates link removed */}
             {/* Live Sessions link removed */}

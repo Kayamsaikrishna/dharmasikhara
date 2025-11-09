@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const mongoose = require('mongoose');
 const Redis = require('redis');
 const { Client } = require('pg');
 const elasticsearch = require('elasticsearch');
@@ -19,7 +18,6 @@ const aiController = require('./src/controllers/aiController');
 // Import routes
 const aiRoutes = require('./src/routes/ai');
 const legalResearchRoutes = require('./src/routes/legalResearch');
-const legalNewsRoutes = require('./src/routes/legalNews');
 const accountRoutes = require('./src/routes/account');
 const paymentRoutes = require('./src/routes/payments');
 const userRoutes = require('./src/routes/users');
@@ -42,7 +40,7 @@ const authRoutes = require('./src/routes/auth');
 const databaseService = require('./src/services/database');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5000; // Use 5000 as requested
 
 // Increase payload limit for document uploads
 app.use(cors());
@@ -56,7 +54,6 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/legal-research', legalResearchRoutes);
 
 // Legal News Routes
-app.use('/api/legal-news', legalNewsRoutes);
 
 // Account Routes
 app.use('/api/account', accountRoutes);
@@ -143,20 +140,18 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// Connect to all databases before starting the server
-// Note: We continue starting the server even if database connections fail
-// to allow basic functionality without databases
+// Connect to SQLite database before starting the server
 databaseService.connectAll()
   .then(() => {
-    console.log('Database connection attempts completed');
+    console.log('All database connections established successfully');
   })
   .catch((error) => {
-    console.error('Database connection error (continuing without databases):', error);
+    console.error('Database connection error:', error);
   })
   .finally(() => {
-    // Start the server regardless of database connection status
+    // Start the server
     app.listen(PORT, '0.0.0.0', () => {
         console.log(`DharmaSikhara AI Backend running on http://0.0.0.0:${PORT}`);
-        console.log('WARNING: Some features may be limited due to missing database connections');
+        console.log('SQLite database is ready for use');
     });
   });

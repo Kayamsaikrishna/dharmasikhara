@@ -75,7 +75,7 @@ const ProgressTest: React.FC = () => {
                 onClick={() => updateProgress('client-interview')}
                 className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
               >
-                Client Interview
+                Client Counseling
               </button>
               <button 
                 onClick={() => updateProgress('digital-evidence')}

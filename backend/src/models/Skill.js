@@ -1,28 +1,34 @@
-const mongoose = require('mongoose');
+// Skill model for SQLite database
+// This is a placeholder module to maintain compatibility with existing code structure
 
-const skillSchema = new mongoose.Schema({
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
-  skillName: {
-    type: String,
-    required: true
-  },
-  level: {
-    type: Number,
-    min: 0,
-    max: 100,
-    default: 0
-  },
-  lastUpdated: {
-    type: Date,
-    default: Date.now
+class Skill {
+  constructor(data) {
+    Object.assign(this, data);
   }
-});
 
-// Compound index to ensure one skill per user
-skillSchema.index({ user: 1, skillName: 1 }, { unique: true });
+  static async find(query) {
+    // This method is no longer used as we've moved to direct SQLite queries
+    // in the controller. Keeping for backward compatibility.
+    return [];
+  }
 
-module.exports = mongoose.model('Skill', skillSchema);
+  static async findOne(query) {
+    // This method is no longer used as we've moved to direct SQLite queries
+    // in the controller. Keeping for backward compatibility.
+    return null;
+  }
+
+  static async findById(id) {
+    // This method is no longer used as we've moved to direct SQLite queries
+    // in the controller. Keeping for backward compatibility.
+    return null;
+  }
+
+  save() {
+    // This method is no longer used as we've moved to direct SQLite queries
+    // in the controller. Keeping for backward compatibility.
+    return Promise.resolve(this);
+  }
+}
+
+module.exports = Skill;

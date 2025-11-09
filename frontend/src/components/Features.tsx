@@ -25,22 +25,12 @@ const Features: React.FC = () => {
       description: "Track your progress with comprehensive analytics and personalized insights to identify strengths and areas for improvement."
     },
     {
-      icon: <FileText className="w-8 h-8 text-indigo-600" />, // Added legal analysis feature
+      icon: <FileText className="w-8 h-8 text-indigo-600" />,
       title: "Legal Document Analysis",
       description: "AI-powered analysis of legal documents to identify key terms, summarize content, and classify document types.",
       link: "/legal-analysis" // Added link
     },
-    {
-      icon: <Newspaper className="w-8 h-8 text-indigo-600" />, // Added legal news feature
-      title: "Live Legal News",
-      description: "Stay updated with the latest legal cases, court rulings, and regulatory changes with AI-powered summarization.",
-      link: "/legal-news" // Added link
-    },
-    {
-      icon: <Plus className="w-8 h-8 text-indigo-600" />,
-      title: "Create Custom Scenarios",
-      description: "Design your own legal scenarios tailored to specific practice areas or learning objectives. Premium feature: 1000 points for 5 scenarios per month."
-    }
+
   ];
 
   return (

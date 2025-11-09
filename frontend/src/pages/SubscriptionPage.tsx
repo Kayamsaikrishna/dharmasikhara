@@ -54,9 +54,17 @@ const SubscriptionPage: React.FC = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
+        setError('');
+        
+        // Use direct backend URL instead of relative path
+        const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
         
         // Fetch subscription plans
-        const plansResponse = await fetch('/api/payments/plans');
+        const plansResponse = await fetch(`${API_BASE_URL}/api/payments/plans`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
         
         // Check if response is OK
         if (!plansResponse.ok) {
@@ -70,7 +78,7 @@ const SubscriptionPage: React.FC = () => {
         }
         
         // Fetch user subscription
-        const subscriptionResponse = await fetch('/api/account/subscription', {
+        const subscriptionResponse = await fetch(`${API_BASE_URL}/api/account/subscription`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -105,7 +113,10 @@ const SubscriptionPage: React.FC = () => {
       setError('');
       setSuccess('');
       
-      const response = await fetch('/api/account/subscription', {
+      // Use direct backend URL instead of relative path
+      const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+      
+      const response = await fetch(`${API_BASE_URL}/api/account/subscription`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -119,7 +130,7 @@ const SubscriptionPage: React.FC = () => {
       if (data.success) {
         setSuccess('Subscription updated successfully!');
         // Refresh subscription data
-        const subscriptionResponse = await fetch('/api/account/subscription', {
+        const subscriptionResponse = await fetch(`${API_BASE_URL}/api/account/subscription`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }

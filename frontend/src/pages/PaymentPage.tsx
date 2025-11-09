@@ -43,8 +43,8 @@ const PaymentPage: React.FC = () => {
 
   // Get plan ID from URL query parameters
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const planId = params.get('plan');
+    const queryParams = new URLSearchParams(location.search);
+    const planId = queryParams.get('plan');
     
     if (!planId) {
       setError('No plan selected');
@@ -55,7 +55,9 @@ const PaymentPage: React.FC = () => {
     // Fetch plan details
     const fetchPlan = async () => {
       try {
-        const response = await fetch('/api/payments/plans');
+        // Use direct backend URL instead of relative path
+        const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+        const response = await fetch(`${API_BASE_URL}/api/payments/plans`);
         const data = await response.json();
         
         if (data.success) {
@@ -99,8 +101,11 @@ const PaymentPage: React.FC = () => {
         return;
       }
       
+      // Use direct backend URL instead of relative path
+      const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+      
       // Process payment
-      const response = await fetch('/api/payments/process', {
+      const response = await fetch(`${API_BASE_URL}/api/payments/process`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -404,7 +409,7 @@ const PaymentPage: React.FC = () => {
                       <span className="font-medium">₹{plan.price}</span>
                     </div>
                     <div className="flex justify-between mb-2">
-                      <span className="text-gray-600">Tax (+GST)</span>
+                      <span className="text-gray-600">Tax</span>
                       <span className="font-medium">N/A</span>
                     </div>
                     <div className="flex justify-between mt-4 pt-4 border-t border-gray-200">

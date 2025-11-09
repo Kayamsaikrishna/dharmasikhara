@@ -16,7 +16,7 @@ const SimulationEntrance = () => {
   const steps = [
     {
       id: 'client-interview',
-      title: "Client Interview",
+      title: "Client Counseling",
       description: "Meet Rajesh Kumar in custody and gather his version of events",
       icon: "👤",
       time: "10-15 min",
@@ -63,7 +63,7 @@ const SimulationEntrance = () => {
       icon: "🏛️"
     },
     {
-      title: "Client Interview",
+      title: "Client Counseling",
       description: "Prepare to interview your client, analyze evidence, and present your case.",
       icon: "👤"
     },
@@ -164,7 +164,7 @@ const SimulationEntrance = () => {
         navigate('/courtroom');
         break;
       case 'assessment':
-        window.location.href = '/scenario1/Assessment of Dharmasikhara/assessment_start.html';
+        navigate('/legal-assessment');
         break;
       default:
         navigate('/client-interview');
@@ -404,7 +404,7 @@ const SimulationEntrance = () => {
                     onClick={handleStartSimulation}
                     className="px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-bold rounded-full shadow-lg hover:from-amber-600 hover:to-orange-700 transform hover:scale-105 transition-all duration-300 flex items-center justify-center"
                   >
-                    <span className="mr-2">🎭</span> Start Client Interview
+                    <span className="mr-2">🎭</span> Start Client Counseling
                   </button>
                   
                   {savedProgress && (

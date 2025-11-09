@@ -217,38 +217,6 @@ const ClientInterview: React.FC = () => {
     }
   }, []);
 
-  // Add a debug function to simulate interview completion
-  const simulateInterviewCompletion = () => {
-    // Update progress in localStorage
-    const savedProgress = localStorage.getItem('scenario-progress-the-inventory-that-changed-everything');
-    if (savedProgress) {
-      const progress = JSON.parse(savedProgress);
-      // Add 'client-interview' to completed stages if not already present
-      const completedStages = progress.completedStages.includes('client-interview') 
-        ? progress.completedStages 
-        : [...progress.completedStages, 'client-interview'];
-      
-      const updatedProgress = {
-        ...progress,
-        currentStage: 'digital-evidence',
-        completedStages: completedStages
-      };
-      localStorage.setItem('scenario-progress-the-inventory-that-changed-everything', JSON.stringify(updatedProgress));
-      
-      // Show completion message
-      setInterviewCompleted(true);
-      setIsTimerActive(false);
-      setStatus('Interview Completed');
-      setRecommendation('Client interview completed. Proceeding to digital evidence review phase.');
-      setShowRecommendation(true);
-      
-      setTimeout(() => {
-        setShowRecommendation(false);
-        // Navigate to digital evidence page
-        navigate('/digital-evidence');
-      }, 3000);
-    }
-  };
 
   // Optimize Three.js rendering performance
   useEffect(() => {
@@ -1235,7 +1203,6 @@ const ClientInterview: React.FC = () => {
       if (now - lastTime < 1000 / 30) return;
       lastTime = now;
       
-      // Remove unused variable: delta
       clock.getDelta();
       const time = clock.getElapsedTime();
 
@@ -1461,7 +1428,7 @@ const ClientInterview: React.FC = () => {
       {/* Welcome Message */}
       {showWelcome && (
         <div className="welcome-message absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-br from-indigo-900 to-purple-900 text-white p-8 rounded-2xl shadow-2xl w-11/12 max-w-2xl z-10 border border-indigo-500 animate-slide-up">
-          <h2 className="text-3xl font-bold mb-4 text-center text-amber-300">Welcome to the Client Interview</h2>
+          <h2 className="text-3xl font-bold mb-4 text-center text-amber-300">Welcome to the Client Counseling</h2>
           <p className="text-lg mb-6 text-center">You are now meeting with Rajesh Kumar in custody. Ask him questions about his case to gather information for the bail application.</p>
           <div className="bg-gray-800 p-4 rounded-lg mb-6">
             <h3 className="font-bold text-amber-400 mb-2">Tips for the Interview:</h3>
@@ -1708,7 +1675,7 @@ const ClientInterview: React.FC = () => {
       {/* Control Panel */}
       <div className="control-panel absolute top-4 right-4 bg-gradient-to-b from-gray-900 to-gray-800 bg-opacity-90 text-white p-5 rounded-2xl shadow-xl w-80 border border-gray-700 animate-subtle-bounce">
         <h3 className="text-2xl font-bold mb-4 flex items-center">
-          <span className="mr-2">⚖️</span> Client Interview
+          <span className="mr-2">⚖️</span> Client Counseling
           <span className="ml-auto text-amber-400 text-sm animate-pulse-glow px-2 py-1 rounded bg-gray-800">LIVE</span>
         </h3>
         

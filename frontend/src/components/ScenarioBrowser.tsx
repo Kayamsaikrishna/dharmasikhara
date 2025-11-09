@@ -34,7 +34,7 @@ const ScenarioBrowser: React.FC = () => {
       rating: 4.7,
       reviewCount: 32,
       price: 0,
-      tags: ['bail application', 'client interviewing', 'legal research', 'oral advocacy', 'investigation', 'evidence analysis'],
+      tags: ['bail application', 'client counseling', 'legal research', 'oral advocacy', 'investigation', 'evidence analysis by lawyer'],
       status: 'published',
       createdAt: '2025-01-15T10:30:00Z',
       updatedAt: '2025-01-20T14:45:00Z',
@@ -146,30 +146,10 @@ const ScenarioBrowser: React.FC = () => {
           Practice with realistic legal scenarios designed to challenge your investigative and advocacy skills
         </p>
         <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <Link to="/create-scenario">
-            <button 
-              className="inline-flex items-center bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 rounded-xl hover:from-indigo-700 hover:to-purple-700 transition duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-              onClick={() => {
-                alert('Create your own custom legal scenario! Design unique cases and challenges for yourself and others. This premium feature allows you to build personalized learning experiences.');
-              }}
-            >
-              <Plus className="w-5 h-5 mr-2" />
-              Create Custom Scenario
-            </button>
-          </Link>
-          <button 
-            className="inline-flex items-center bg-white text-indigo-600 border border-indigo-200 px-8 py-4 rounded-xl hover:bg-indigo-50 transition duration-300 font-medium shadow-sm"
-            onClick={() => {
-              alert('Track your progress through various legal scenarios. See your completion rates, scores, and skill development over time.');
-            }}
-          >
-            <Eye className="w-5 h-5 mr-2" />
-            View Progress
-          </button>
+
+
         </div>
-        <p className="mt-4 text-sm text-gray-500">
-          Premium feature: 1000 points for 5 custom scenarios per month
-        </p>
+
       </div>
 
       {/* Search and Filters */}

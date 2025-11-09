@@ -24,7 +24,10 @@ const Login: React.FC = () => {
     setError('');
     
     try {
-      const endpoint = isSignUp ? '/api/auth/register' : '/api/auth/login';
+      // Use direct backend URL instead of relative path
+      const endpoint = isSignUp 
+        ? 'http://localhost:5000/api/auth/register' 
+        : 'http://localhost:5000/api/auth/login';
       
       let body;
       if (isSignUp) {

@@ -33,8 +33,11 @@ const Profile: React.FC = () => {
       try {
         setLoading(true);
         
+        // Use direct backend URL instead of relative path
+        const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+        
         // Fetch user subscription
-        const subscriptionResponse = await fetch('/api/account/subscription', {
+        const subscriptionResponse = await fetch(`${API_BASE_URL}/api/account/subscription`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }

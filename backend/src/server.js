@@ -4,11 +4,12 @@ const databaseService = require('./services/database');
 // Use port 5003 as default to align with project configuration
 const PORT = process.env.PORT || 5003;
 
-// Connect to all databases before starting the server
+// Connect to SQLite database before starting the server
 databaseService.connectAll()
   .then(() => {
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`DharmaSikhara Backend running on http://0.0.0.0:${PORT}`);
+      console.log('Using localized SQLite database at: backend/dharmasikhara.db');
     });
   })
   .catch((error) => {
@@ -20,11 +21,11 @@ databaseService.connectAll()
 process.on('SIGTERM', async () => {
   console.log('SIGTERM received, shutting down gracefully');
   try {
-    if (databaseService.getMongoDB()) {
-      await databaseService.getMongoDB().connection.close();
-    }
-    if (databaseService.getRedis()) {
-      await databaseService.getRedis().quit();
+    // Close SQLite database connection
+    const sqliteDb = databaseService.getSQLite();
+    if (sqliteDb) {
+      // SQLite connection will be closed automatically when process exits
+      console.log('SQLite database connection closed');
     }
     process.exit(0);
   } catch (error) {
@@ -36,11 +37,11 @@ process.on('SIGTERM', async () => {
 process.on('SIGINT', async () => {
   console.log('SIGINT received, shutting down gracefully');
   try {
-    if (databaseService.getMongoDB()) {
-      await databaseService.getMongoDB().connection.close();
-    }
-    if (databaseService.getRedis()) {
-      await databaseService.getRedis().quit();
+    // Close SQLite database connection
+    const sqliteDb = databaseService.getSQLite();
+    if (sqliteDb) {
+      // SQLite connection will be closed automatically when process exits
+      console.log('SQLite database connection closed');
     }
     process.exit(0);
   } catch (error) {

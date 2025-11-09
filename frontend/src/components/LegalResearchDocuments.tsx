@@ -41,14 +41,16 @@ const LegalResearchDocuments: React.FC = () => {
       if (!user || !token) return;
       
       try {
-        const response = await fetch('/api/legal-research/documents/categories', {
+        // Use direct backend URL instead of relative path
+        const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+        const response = await fetch(`${API_BASE_URL}/api/legal-research/documents/categories`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
         });
-        
+      
         const data = await response.json();
-        
+      
         if (data.success) {
           setCategories(['all', ...data.data]);
         }
@@ -66,7 +68,9 @@ const LegalResearchDocuments: React.FC = () => {
       if (!user || !token) return;
       
       try {
-        const response = await fetch('/api/legal-research/documents', {
+        // Use direct backend URL instead of relative path
+        const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+        const response = await fetch(`${API_BASE_URL}/api/legal-research/documents`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -98,7 +102,9 @@ const LegalResearchDocuments: React.FC = () => {
     setSelectedDocument(null);
 
     try {
-      let url = '/api/legal-research/documents';
+      // Use direct backend URL instead of relative path
+      const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+      let url = `${API_BASE_URL}/api/legal-research/documents`;
       
       // Add query parameters
       const params = new URLSearchParams();
@@ -424,7 +430,9 @@ const LegalResearchDocuments: React.FC = () => {
                 if (!user || !token) return;
                 
                 try {
-                  const response = await fetch('/api/legal-research/documents', {
+                  // Use direct backend URL instead of relative path
+                  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+                  const response = await fetch(`${API_BASE_URL}/api/legal-research/documents`, {
                     headers: {
                       'Authorization': `Bearer ${token}`
                     }
@@ -480,7 +488,9 @@ const LegalResearchDocuments: React.FC = () => {
                       if (!user || !token) return;
                       
                       try {
-                        const response = await fetch('/api/legal-research/documents', {
+                        // Use direct backend URL instead of relative path
+                        const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+                        const response = await fetch(`${API_BASE_URL}/api/legal-research/documents`, {
                           headers: {
                             'Authorization': `Bearer ${token}`
                           }

@@ -1,98 +1,37 @@
-const mongoose = require('mongoose');
+// User model for SQLite database
+// This is a placeholder module to maintain compatibility with existing code structure
 
-const userSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-    lowercase: true
-  },
-  password: {
-    type: String,
-    required: true,
-    minlength: 6
-  },
-  role: {
-    type: String,
-    enum: ['client'],
-    default: 'client'
-  },
-  firstName: {
-    type: String,
-    trim: true
-  },
-  lastName: {
-    type: String,
-    trim: true
-  },
-  institution: {
-    type: String,
-    trim: true
-  },
-  year: {
-    type: String,
-    trim: true
-  },
-  specialization: {
-    type: String,
-    trim: true
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
-  lastLogin: {
-    type: Date
-  },
-  subscription: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Subscription'
-  },
-  documents: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Document'
-  }],
-  preferences: {
-    language: {
-      type: String,
-      default: 'en',
-      enum: ['en', 'hi', 'ta', 'te', 'bn', 'mr', 'gu', 'kn', 'ml', 'pa', 'or', 'as']
-    },
-    theme: {
-      type: String,
-      default: 'light',
-      enum: ['light', 'dark']
-    }
-  },
-  proficiency: {
-    criminalLaw: {
-      type: Number,
-      default: 50
-    },
-    civilLaw: {
-      type: Number,
-      default: 50
-    },
-    constitutionalLaw: {
-      type: Number,
-      default: 50
-    },
-    corporateLaw: {
-      type: Number,
-      default: 50
-    },
-    familyLaw: {
-      type: Number,
-      default: 50
-    }
+// User model for SQLite database
+// This is a placeholder module to maintain compatibility with existing code structure
+
+class User {
+  constructor(data) {
+    Object.assign(this, data);
   }
-});
 
-module.exports = mongoose.model('User', userSchema);
+  static async find(query) {
+    // This method is no longer used as we've moved to direct SQLite queries
+    // in the controller. Keeping for backward compatibility.
+    return [];
+  }
+
+  static async findOne(query) {
+    // This method is no longer used as we've moved to direct SQLite queries
+    // in the controller. Keeping for backward compatibility.
+    return null;
+  }
+
+  static async findById(id) {
+    // This method is no longer used as we've moved to direct SQLite queries
+    // in the controller. Keeping for backward compatibility.
+    return null;
+  }
+
+  save() {
+    // This method is no longer used as we've moved to direct SQLite queries
+    // in the controller. Keeping for backward compatibility.
+    return Promise.resolve(this);
+  }
+}
+
+module.exports = User;

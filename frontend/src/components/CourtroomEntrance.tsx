@@ -16,7 +16,7 @@ const CourtroomEntrance = () => {
   const steps = [
     {
       id: 'client-interview',
-      title: "Client Interview",
+      title: "Client Counseling",
       description: "Meet Rajesh Kumar in custody and gather his version of events",
       icon: "👤",
       time: "10-15 min",
@@ -55,7 +55,7 @@ const CourtroomEntrance = () => {
       icon: "🏛️"
     },
     {
-      title: "Client Interview",
+      title: "Client Counseling",
       description: "Prepare to interview your client, analyze evidence, and present your case.",
       icon: "👤"
     },
@@ -86,6 +86,8 @@ const CourtroomEntrance = () => {
           const progress = await getUserProgress('the-inventory-that-changed-everything');
           if (progress) {
             setSavedProgress(progress);
+            // If there's saved progress, show the progress view directly
+            setShowProgressView(true);
           }
         } catch (error) {
           console.error('Error fetching progress:', error);
@@ -93,6 +95,8 @@ const CourtroomEntrance = () => {
           const localProgress = localStorage.getItem('scenario-progress-the-inventory-that-changed-everything');
           if (localProgress) {
             setSavedProgress(JSON.parse(localProgress));
+            // If there's saved progress, show the progress view directly
+            setShowProgressView(true);
           }
         } finally {
           setLoading(false);
@@ -102,6 +106,8 @@ const CourtroomEntrance = () => {
         const progress = localStorage.getItem('scenario-progress-the-inventory-that-changed-everything');
         if (progress) {
           setSavedProgress(JSON.parse(progress));
+          // If there's saved progress, show the progress view directly
+          setShowProgressView(true);
         }
         setLoading(false);
       }
@@ -115,16 +121,12 @@ const CourtroomEntrance = () => {
     const timer = setTimeout(() => {
       if (currentStep < introSteps.length - 1) {
         setCurrentStep(prev => prev + 1);
-      } else if (shouldShowProgressView) {
-        // Animation sequence completed, show progress view after a delay
-        setTimeout(() => {
-          setShowProgressView(true);
-        }, 1000);
       }
+      // Removed automatic switch to progress view
     }, 2500);
 
     return () => clearTimeout(timer);
-  }, [currentStep, shouldShowProgressView]);
+  }, [currentStep, savedProgress]);
 
   const handleStartSimulation = () => {
     navigate('/client-interview');
@@ -156,13 +158,12 @@ const CourtroomEntrance = () => {
   };
 
   const handleShowProgress = () => {
-    // Reset animation and show progress view after animation completes
-    setCurrentStep(0);
-    setShowProgressView(false);
+    // Show progress view directly
+    setShowProgressView(true);
     setShouldShowProgressView(true);
   };
 
-  // Show progress view only when animation is complete and shouldShowProgressView is true
+  // Show progress view when requested
   if (showProgressView && savedProgress) {
     const completedStages = savedProgress.completedStages || [];
     const currentStage = savedProgress.currentStage || 'client-interview';
@@ -354,7 +355,7 @@ const CourtroomEntrance = () => {
               ))}
             </div>
 
-            {currentStep === introSteps.length - 1 && (
+            {(currentStep === introSteps.length - 1 || savedProgress) && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -362,7 +363,9 @@ const CourtroomEntrance = () => {
                 className="space-y-6"
               >
                 <p className="text-lg text-amber-200">
-                  This feature is currently in development and will be fully implemented in the next phase.
+                  {currentStep === introSteps.length - 1 
+                    ? "You've completed the introduction to the legal simulation. Continue to the client interview to begin your journey, or pick up where you left off if you've made progress already."
+                    : "Continue to the client interview to begin your journey, or pick up where you left off if you've made progress already."}
                 </p>
                 
                 <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">
@@ -370,7 +373,7 @@ const CourtroomEntrance = () => {
                     onClick={handleStartSimulation}
                     className="px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-bold rounded-full shadow-lg hover:from-amber-600 hover:to-orange-700 transform hover:scale-105 transition-all duration-300 flex items-center justify-center"
                   >
-                    <span className="mr-2">🎭</span> Start Client Interview
+                    <span className="mr-2">🎭</span> Start Client Counseling
                   </button>
                   
                   {savedProgress && (
@@ -396,6 +399,16 @@ const CourtroomEntrance = () => {
               <div className="mt-8">
                 <div className="w-12 h-12 border-4 border-t-amber-400 border-r-amber-400 border-b-transparent border-l-transparent rounded-full animate-spin mx-auto"></div>
                 <p className="text-indigo-200 mt-4">Loading simulation...</p>
+                {savedProgress && (
+                  <div className="mt-6">
+                    <button
+                      onClick={handleShowProgress}
+                      className="px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold rounded-full shadow-lg hover:from-blue-600 hover:to-indigo-700 transition-all flex items-center justify-center mx-auto"
+                    >
+                      <span className="mr-2">📊</span> Continue Progress
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>

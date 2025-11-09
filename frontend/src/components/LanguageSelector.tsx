@@ -16,7 +16,9 @@ const LanguageSelector: React.FC = () => {
   useEffect(() => {
     const fetchLanguages = async () => {
       try {
-        const response = await fetch('/api/language/supported');
+        // Use direct backend URL instead of relative path
+        const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+        const response = await fetch(`${API_BASE_URL}/api/language/supported`);
         const data = await response.json();
         if (data.success) {
           setLanguages(data.data);

@@ -1,66 +1,31 @@
-const mongoose = require('mongoose');
+// UserProgress model for SQLite database
+// This is a placeholder module to maintain compatibility with existing code structure
 
-const userProgressSchema = new mongoose.Schema({
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
-  scenario: {
-    type: mongoose.Schema.Types.Mixed, // Allow both ObjectId and String
-    ref: 'Scenario',
-    required: false // Made optional to allow string scenario IDs
-  },
-  scenarioSlug: {
-    type: String,
-    required: false // For string-based scenario identifiers
-  },
-  status: {
-    type: String,
-    enum: ['not_started', 'in_progress', 'completed'],
-    default: 'not_started'
-  },
-  progress: {
-    type: Number,
-    min: 0,
-    max: 100,
-    default: 0
-  },
-  score: {
-    type: Number,
-    min: 0,
-    max: 100
-  },
-  timeSpent: {
-    type: Number, // in minutes
-    default: 0
-  },
-  startDate: {
-    type: Date
-  },
-  completionDate: {
-    type: Date
-  },
-  feedback: {
-    type: String
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now
+// UserProgress model for SQLite database
+// This is a placeholder module to maintain compatibility with existing code structure
+
+class UserProgress {
+  constructor(data) {
+    Object.assign(this, data);
   }
-});
 
-// Add a custom validation to ensure either scenario or scenarioSlug is provided
-userProgressSchema.pre('validate', function(next) {
-  if (!this.scenario && !this.scenarioSlug) {
-    next(new Error('Either scenario (ObjectId) or scenarioSlug (String) must be provided'));
-  } else {
-    next();
+  static async findOne(query) {
+    // This method is no longer used as we've moved to direct SQLite queries
+    // in the controller. Keeping for backward compatibility.
+    return null;
   }
-});
 
-module.exports = mongoose.model('UserProgress', userProgressSchema);
+  static async find(query) {
+    // This method is no longer used as we've moved to direct SQLite queries
+    // in the controller. Keeping for backward compatibility.
+    return [];
+  }
+
+  save() {
+    // This method is no longer used as we've moved to direct SQLite queries
+    // in the controller. Keeping for backward compatibility.
+    return Promise.resolve(this);
+  }
+}
+
+module.exports = UserProgress;

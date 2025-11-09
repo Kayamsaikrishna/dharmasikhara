@@ -433,11 +433,7 @@ const Marketplace: React.FC = () => {
                   <p className="text-gray-600 text-sm">1000 points for 5 custom scenarios per month</p>
                 </div>
               </div>
-              <Link to="/create-scenario">
-                <button className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-lg hover:from-indigo-700 hover:to-purple-700 transition duration-300 font-medium">
-                  Create Custom Scenario
-                </button>
-              </Link>
+
             </div>
           </div>
           

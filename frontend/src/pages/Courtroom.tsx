@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useUser } from '../contexts/UserContext';
+import { saveUserProgress } from '../utils/progressApi';
 
 // Define types for the bail hearing script
 interface Speaker {
@@ -32,7 +34,8 @@ interface BailHearingScript {
   case_summary: any;
 }
 
-const Courtroom: React.FC = () => {
+const Courtroom: React.FC<{}> = () => {
+  const { user } = useUser();
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<any>(null);
   const cameraRef = useRef<any>(null);
@@ -256,60 +259,6 @@ const Courtroom: React.FC = () => {
     };
   }, []);
 
-  const initCourtroom = () => {
-    if (typeof window !== 'undefined' && (window as any).THREE && containerRef.current) {
-      const THREE = (window as any).THREE;
-      
-      // Scene setup
-      sceneRef.current = new THREE.Scene();
-      sceneRef.current.background = new THREE.Color(0x1a1a1a);
-      sceneRef.current.fog = new THREE.Fog(0x1a1a1a, 60, 180);
-      
-      // Camera setup
-      const container = containerRef.current;
-      const width = container.clientWidth;
-      const height = container.clientHeight;
-      
-      cameraRef.current = new THREE.PerspectiveCamera(50, width / height, 0.1, 1000);
-      cameraRef.current.position.set(0, 8, 25);
-      cameraRef.current.lookAt(0, 3, -15);
-      
-      // Renderer setup
-      rendererRef.current = new THREE.WebGLRenderer({ antialias: true, alpha: false });
-      rendererRef.current.setSize(width, height);
-      rendererRef.current.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      rendererRef.current.shadowMap.enabled = true;
-      rendererRef.current.shadowMap.type = THREE.PCFSoftShadowMap;
-      rendererRef.current.toneMapping = THREE.ACESFilmicToneMapping;
-      rendererRef.current.toneMappingExposure = 1.3;
-      rendererRef.current.outputEncoding = THREE.sRGBEncoding;
-      
-      container.innerHTML = '';
-      container.appendChild(rendererRef.current.domElement);
-      
-      // Clock for animations
-      clockRef.current = new THREE.Clock();
-      
-      // Build courtroom
-      buildRealisticCourtroom(THREE);
-      setupAdvancedLighting(THREE);
-      setupControls(THREE);
-      
-      // Add event listeners for window resize
-      window.addEventListener('resize', () => onWindowResize(THREE));
-      
-      // Start animation loop
-      animate(THREE);
-      
-      // Hide loading screen after a short delay
-      setTimeout(() => {
-        if (loadingRef.current) {
-          loadingRef.current.style.display = 'none';
-        }
-      }, 1000);
-    }
-  };
-
   const onWindowResize = (THREE: any) => {
     if (cameraRef.current && rendererRef.current && containerRef.current) {
       const container = containerRef.current;
@@ -317,6 +266,58 @@ const Courtroom: React.FC = () => {
       cameraRef.current.updateProjectionMatrix();
       rendererRef.current.setSize(container.clientWidth, container.clientHeight);
     }
+  };
+
+  // Initialize the courtroom scene
+  const initCourtroom = () => {
+    // Get THREE from window object
+    const THREE = (window as any).THREE;
+    if (!THREE) {
+      console.error('Three.js not loaded');
+      return;
+    }
+    
+    // Initialize container reference
+    if (!containerRef.current) {
+      console.error('Container not found');
+      return;
+    }
+    
+    // Set up scene, camera, and renderer
+    sceneRef.current = new THREE.Scene();
+    sceneRef.current.background = new THREE.Color(0x1a1a1a);
+    sceneRef.current.fog = new THREE.Fog(0x1a1a1a, 20, 100);
+    
+    const container = containerRef.current;
+    cameraRef.current = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+    cameraRef.current.position.set(0, 8, 25);
+    cameraRef.current.lookAt(0, 3, -15);
+    
+    rendererRef.current = new THREE.WebGLRenderer({ antialias: true });
+    rendererRef.current.setSize(container.clientWidth, container.clientHeight);
+    rendererRef.current.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    rendererRef.current.shadowMap.enabled = true;
+    rendererRef.current.shadowMap.type = THREE.PCFSoftShadowMap;
+    
+    container.innerHTML = '';
+    container.appendChild(rendererRef.current.domElement);
+    
+    // Build the courtroom
+    buildRealisticCourtroom(THREE);
+    setupAdvancedLighting(THREE);
+    setupControls(THREE);
+    
+    // Hide loading screen
+    if (loadingRef.current) {
+      loadingRef.current.style.display = 'none';
+    }
+    
+    // Start animation loop
+    clockRef.current = new THREE.Clock();
+    animate(THREE);
+    
+    // Add resize listener
+    window.addEventListener('resize', () => onWindowResize(THREE));
   };
 
   const buildRealisticCourtroom = (THREE: any) => {
@@ -2073,8 +2074,27 @@ const Courtroom: React.FC = () => {
         }, delay);
       }
     } else {
-      // Conversation ended
+      // Conversation ended - save user progress
       setIsPlaying(false);
+      
+      // Save progress when hearing ends
+      if (user) {
+        const progressData = {
+          completedStages: ['bail-hearing'],
+          currentStage: 'completed',
+          lastUpdated: new Date().toISOString(),
+          totalTimeSpent: 0, // Would need to track actual time in a real implementation
+          assessmentScore: null
+        };
+        
+        saveUserProgress('the-inventory-that-changed-everything', progressData)
+          .then(() => {
+            console.log('Progress saved successfully');
+          })
+          .catch((error) => {
+            console.error('Failed to save progress:', error);
+          });
+      }
     }
   };
 
@@ -2136,7 +2156,7 @@ const Courtroom: React.FC = () => {
     return () => {
       if (timer) clearTimeout(timer);
     };
-  }, [currentSequence, isPlaying, bailHearingScript, isPaused]);
+  }, [currentSequence, isPlaying, bailHearingScript, isPaused, processNextSequence]);
 
   // Add useEffect to handle automatic gavel sounds
   useEffect(() => {
@@ -2146,13 +2166,13 @@ const Courtroom: React.FC = () => {
         autoTriggerGavel(currentDialogue);
       }
     }
-  }, [currentSequence, bailHearingScript]);
+  }, [currentSequence, bailHearingScript, autoTriggerGavel]);
 
   const animate = (THREE: any) => {
     animationFrameIdRef.current = requestAnimationFrame(() => animate(THREE));
     
     if (clockRef.current && rendererRef.current && sceneRef.current && cameraRef.current) {
-      const delta = clockRef.current.getDelta();
+      clockRef.current.getDelta();
       
       // Animate fans
       if (stateRef.current.fansOn) {
@@ -2595,7 +2615,33 @@ const Courtroom: React.FC = () => {
       <div className="absolute bottom-7 right-7 z-30">
         <button 
           className="px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-800 text-white font-bold rounded-xl shadow-2xl hover:from-purple-700 hover:to-purple-900 transition-all flex items-center gap-2"
-          onClick={() => alert("Assessment page is under development. Coming soon!")}
+          onClick={() => {
+            // Save progress before navigating to assessment
+            if (user) {
+              const progressData = {
+                completedStages: ['bail-hearing', 'court-hearing'],
+                currentStage: 'legal-assessment',
+                lastUpdated: new Date().toISOString(),
+                totalTimeSpent: 0,
+                assessmentScore: null
+              };
+              
+              saveUserProgress('the-inventory-that-changed-everything', progressData)
+                .then(() => {
+                  console.log('Progress saved successfully');
+                  // Navigate to legal assessment page
+                  window.location.hash = '/legal-assessment';
+                })
+                .catch((error) => {
+                  console.error('Failed to save progress:', error);
+                  // Still navigate even if save fails
+                  window.location.hash = '/legal-assessment';
+                });
+            } else {
+              // For non-authenticated users, still navigate
+              window.location.hash = '/legal-assessment';
+            }
+          }}
         >
           <span>🏁</span> End Hearing
         </button>
@@ -2609,6 +2655,5 @@ const Courtroom: React.FC = () => {
     </div>
   );
 };
-
 
 export default Courtroom;

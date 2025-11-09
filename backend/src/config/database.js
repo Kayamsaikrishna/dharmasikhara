@@ -9,11 +9,6 @@ const config = {
     password: process.env.POSTGRES_PASSWORD || 'postgres',
   },
   
-  // MongoDB configuration for scenario content
-  mongodb: {
-    uri: process.env.MONGODB_URI || 'mongodb://localhost:27017/dharmasikhara',
-  },
-  
   // Redis configuration for caching and sessions
   redis: {
     host: process.env.REDIS_HOST || 'localhost',

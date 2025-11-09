@@ -14,6 +14,8 @@ export interface ProgressData {
 export const saveUserProgress = async (scenarioId: string, progress: any) => {
   try {
     const token = localStorage.getItem('token');
+    
+    // Try to save to backend API first
     const response = await fetch(`${API_BASE_URL}/api/progress`, {
       method: 'POST',
       headers: {
@@ -27,13 +29,28 @@ export const saveUserProgress = async (scenarioId: string, progress: any) => {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to save progress');
+      // If backend fails, fallback to localStorage
+      console.warn('Backend API failed, falling back to localStorage');
+      const localProgress = {
+        scenarioId,
+        ...progress,
+        timestamp: new Date().toISOString()
+      };
+      localStorage.setItem(`progress-${scenarioId}`, JSON.stringify(localProgress));
+      return localProgress;
     }
 
     return await response.json();
   } catch (error) {
-    console.error('Error saving user progress:', error);
-    throw error;
+    // If any error occurs, fallback to localStorage
+    console.warn('Error saving user progress, falling back to localStorage:', error);
+    const localProgress = {
+      scenarioId,
+      ...progress,
+      timestamp: new Date().toISOString()
+    };
+    localStorage.setItem(`progress-${scenarioId}`, JSON.stringify(localProgress));
+    return localProgress;
   }
 };
 
@@ -49,17 +66,25 @@ export const getUserProgress = async (scenarioId: string) => {
     });
 
     if (!response.ok) {
-      // If user is not authenticated or progress not found, return null
+      // If user is not authenticated or progress not found, try localStorage
       if (response.status === 401 || response.status === 404) {
-        return null;
+        const localProgress = localStorage.getItem(`progress-${scenarioId}`);
+        return localProgress ? JSON.parse(localProgress) : null;
       }
       throw new Error('Failed to fetch progress');
     }
 
     return await response.json();
   } catch (error) {
-    console.error('Error fetching user progress:', error);
-    return null;
+    // Try localStorage as fallback
+    console.warn('Error fetching user progress, trying localStorage:', error);
+    try {
+      const localProgress = localStorage.getItem(`progress-${scenarioId}`);
+      return localProgress ? JSON.parse(localProgress) : null;
+    } catch (localError) {
+      console.error('Error reading from localStorage:', localError);
+      return null;
+    }
   }
 };
 
@@ -75,16 +100,52 @@ export const getAllUserProgress = async () => {
     });
 
     if (!response.ok) {
-      // If user is not authenticated or progress not found, return empty array
+      // If user is not authenticated or progress not found, try localStorage
       if (response.status === 401 || response.status === 404) {
-        return [];
+        // Collect all progress items from localStorage
+        const localProgressItems = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && key.startsWith('progress-')) {
+            try {
+              const item = JSON.parse(localStorage.getItem(key) || '{}');
+              if (item.scenarioId) {
+                localProgressItems.push(item);
+              }
+            } catch (e) {
+              console.warn('Error parsing localStorage item:', key, e);
+            }
+          }
+        }
+        return localProgressItems;
       }
       throw new Error('Failed to fetch progress');
     }
 
     return await response.json();
   } catch (error) {
-    console.error('Error fetching all user progress:', error);
-    return [];
+    // Try localStorage as fallback
+    console.warn('Error fetching all user progress, trying localStorage:', error);
+    try {
+      // Collect all progress items from localStorage
+      const localProgressItems = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('progress-')) {
+          try {
+            const item = JSON.parse(localStorage.getItem(key) || '{}');
+            if (item.scenarioId) {
+              localProgressItems.push(item);
+            }
+          } catch (e) {
+            console.warn('Error parsing localStorage item:', key, e);
+          }
+        }
+      }
+      return localProgressItems;
+    } catch (localError) {
+      console.error('Error reading from localStorage:', localError);
+      return [];
+    }
   }
 };
