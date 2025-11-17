@@ -1,47 +1,47 @@
-const fetch = require('node-fetch');
+const http = require('http');
 
-async function testLegalAssistant() {
-  console.log('Testing Legal Assistant...');
+// Test the legal assistant endpoint directly
+function testLegalAssistant() {
+  const postData = JSON.stringify({
+    query: "What are the key provisions of the Indian Contract Act?"
+  });
   
-  // Test legal question
-  try {
-    console.log('\n1. Testing legal question...');
-    const legalResponse = await fetch('http://localhost:5000/api/ai/legal-assistant', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        query: 'What are the key provisions for bail in criminal cases in India?'
-      })
+  const options = {
+    hostname: 'localhost',
+    port: 5000,
+    path: '/api/ai/legal-assistant',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-Length': Buffer.byteLength(postData)
+    }
+  };
+  
+  const req = http.request(options, (res) => {
+    console.log(`STATUS: ${res.statusCode}`);
+    console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
+    
+    let data = '';
+    res.on('data', (chunk) => {
+      data += chunk;
     });
     
-    const legalData = await legalResponse.json();
-    console.log('Legal Assistant Response:', JSON.stringify(legalData, null, 2));
-  } catch (error) {
-    console.error('Error testing legal question:', error.message);
-  }
-  
-  // Test document analysis
-  try {
-    console.log('\n2. Testing document analysis...');
-    const documentResponse = await fetch('http://localhost:5000/api/ai/analyze-document', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        documentText: 'This is a sample legal document about contract law in India. It discusses the key elements of a valid contract under the Indian Contract Act, 1872.'
-      })
+    res.on('end', () => {
+      try {
+        const jsonData = JSON.parse(data);
+        console.log('Response:', JSON.stringify(jsonData, null, 2));
+      } catch (e) {
+        console.log('Raw response data:', data);
+      }
     });
-    
-    const documentData = await documentResponse.json();
-    console.log('Document Analysis Response:', JSON.stringify(documentData, null, 2));
-  } catch (error) {
-    console.error('Error testing document analysis:', error.message);
-  }
+  });
   
-  console.log('\nTest completed.');
+  req.on('error', (e) => {
+    console.error(`Problem with request: ${e.message}`);
+  });
+  
+  req.write(postData);
+  req.end();
 }
 
 testLegalAssistant();

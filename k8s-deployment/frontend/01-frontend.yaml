@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: dharmasikhara
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: node:18
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            cd /app &&
+            npm install &&
+            npm run build &&
+            npx serve -s build -l 3000
+        env:
+        - name: REACT_APP_BACKEND_URL
+          value: "http://backend:5000"
+        ports:
+        - containerPort: 3000
+        volumeMounts:
+        - name: frontend-code
+          mountPath: /app
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+      volumes:
+      - name: frontend-code
+        hostPath:
+          path: /home/k8s/dharmasikhara/frontend
+          type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: dharmasikhara
+spec:
+  selector:
+    app: frontend
+  ports:
+  - protocol: TCP
+    port: 3000
+    targetPort: 3000
+  type: ClusterIP

@@ -2,6 +2,7 @@
   "name": "dharma-sikhara-frontend",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://law.infernomach.in",
   "dependencies": {
     "@react-three/drei": "^10.7.6",
     "@react-three/fiber": "^9.4.0",

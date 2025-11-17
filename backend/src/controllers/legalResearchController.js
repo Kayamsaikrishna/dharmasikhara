@@ -203,40 +203,79 @@ const getResearchDocumentById = async (req, res) => {
   }
 };
 
+// Get research document categories
+const getResearchDocumentCategories = async (req, res) => {
+  try {
+    // Get all documents
+    const documents = scanResearchDocuments();
+    
+    // Extract unique categories
+    const categories = [...new Set(documents.map(doc => doc.category))];
+    
+    // Count documents per category
+    const categoryCounts = {};
+    categories.forEach(category => {
+      categoryCounts[category] = documents.filter(doc => doc.category === category).length;
+    });
+    
+    const result = {
+      success: true,
+      data: {
+        categories: categories.map(category => ({
+          name: category,
+          documentCount: categoryCounts[category]
+        }))
+      },
+      total: categories.length
+    };
+    
+    console.log('Categories response:', JSON.stringify(result, null, 2));
+    
+    return res.json(result);
+  } catch (error) {
+    console.error('Error in getResearchDocumentCategories:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to fetch research document categories: ' + error.message
+    });
+  }
+};
+
 // Search research documents
 const searchResearchDocuments = async (req, res) => {
   try {
-    const { query, category } = req.query;
-    
-    if (!query) {
-      return res.status(400).json({
-        success: false,
-        error: 'Search query is required'
-      });
-    }
+    const { query, category, language } = req.query;
     
     // Get all documents
     const documents = scanResearchDocuments();
     
-    // Filter by category if specified
+    // Filter documents based on search criteria
     let filteredDocuments = documents;
-    if (category && category !== 'all') {
-      filteredDocuments = documents.filter(doc => 
+    
+    if (query) {
+      const searchTerm = query.toLowerCase();
+      filteredDocuments = filteredDocuments.filter(doc => 
+        doc.title.toLowerCase().includes(searchTerm) || 
+        doc.category.toLowerCase().includes(searchTerm)
+      );
+    }
+    
+    if (category) {
+      filteredDocuments = filteredDocuments.filter(doc => 
         doc.category.toLowerCase() === category.toLowerCase()
       );
     }
     
-    // Search by query in title and fileName
-    const searchResults = filteredDocuments.filter(doc => 
-      doc.title.toLowerCase().includes(query.toLowerCase()) ||
-      doc.fileName.toLowerCase().includes(query.toLowerCase()) ||
-      doc.category.toLowerCase().includes(query.toLowerCase())
-    );
+    if (language) {
+      filteredDocuments = filteredDocuments.filter(doc => 
+        doc.language.toLowerCase() === language.toLowerCase()
+      );
+    }
     
     return res.json({
       success: true,
-      data: searchResults,
-      total: searchResults.length
+      data: filteredDocuments,
+      total: filteredDocuments.length
     });
   } catch (error) {
     console.error('Error in searchResearchDocuments:', error);
@@ -247,55 +286,37 @@ const searchResearchDocuments = async (req, res) => {
   }
 };
 
-// Get research document categories
-const getResearchDocumentCategories = async (req, res) => {
-  try {
-    // Get all documents
-    const documents = scanResearchDocuments();
-    
-    // Extract unique categories
-    const categories = [...new Set(documents.map(doc => doc.category))];
-    
-    return res.json({
-      success: true,
-      data: categories
-    });
-  } catch (error) {
-    console.error('Error in getResearchDocumentCategories:', error);
-    return res.status(500).json({
-      success: false,
-      error: 'Failed to fetch document categories: ' + error.message
-    });
-  }
-};
-
 // Serve document file
 const serveDocumentFile = async (req, res) => {
   try {
     const { category, lang, fileName } = req.params;
     
+    // Construct the file path
     let filePath;
     if (category === 'main') {
+      // Handle main category files (in BNS_DATA root)
       filePath = path.join(__dirname, '../../../research/BNS_DATA', fileName);
-    } else if (category === 'judgements') {
-      filePath = path.join(__dirname, '../../../research/BNS_DATA/JUDGEMENTS', fileName);
-    } else if (category === 'constitution') {
-      filePath = path.join(__dirname, '../../../research/BNS_DATA/CONSTITUTION', fileName);
+    } else if (lang) {
+      // With language subdirectory
+      filePath = path.join(__dirname, '../../../research/BNS_DATA', category.toUpperCase(), lang.toUpperCase(), fileName);
     } else {
-      filePath = path.join(__dirname, '../../../research/BNS_DATA', category, lang, fileName);
+      // Without language subdirectory (for CONSTITUTION and JUDGEMENTS)
+      filePath = path.join(__dirname, '../../../research/BNS_DATA', category.toUpperCase(), fileName);
     }
     
     // Check if file exists
     if (!fs.existsSync(filePath)) {
+      console.log('Document not found at path:', filePath);
       return res.status(404).json({
         success: false,
         error: 'Document not found'
       });
     }
     
-    // Set appropriate headers for PDF
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
+    // Set appropriate content type for PDF files
+    if (fileName.endsWith('.pdf')) {
+      res.setHeader('Content-Type', 'application/pdf');
+    }
     
     // Stream the file
     const fileStream = fs.createReadStream(filePath);

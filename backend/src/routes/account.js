@@ -24,5 +24,6 @@ router.get('/documents', authenticateToken, accountController.getUserDocuments);
 router.post('/documents', authenticateToken, accountController.uploadDocument);
 router.delete('/documents/:id', authenticateToken, accountController.deleteDocument);
 router.get('/subscription', authenticateToken, accountController.getSubscription);
+router.post('/extract-text', upload.single('file'), accountController.extractText);
 
 module.exports = router;

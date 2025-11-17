@@ -207,20 +207,10 @@ const LegalAssistant: React.FC = () => {
         formData.append('file', selectedFile);
         
         try {
-          // Use direct backend URL instead of relative path
-          const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
-          
-          // Prepare headers - only add Authorization if token exists
-          const headers: Record<string, string> = {};
-          
-          // Only add Authorization header if user is logged in
-          if (token && !isTokenExpired()) {
-            headers['Authorization'] = `Bearer ${token}`;
-          }
-          
-          const response = await fetch(`${API_BASE_URL}/api/account/extract-text`, {
+          // Use relative path for API calls to work in both development and production
+          const response = await fetch('/api/account/extract-text', {
             method: 'POST',
-            headers,
+            headers: token && !isTokenExpired() ? { 'Authorization': `Bearer ${token}` } : {},
             body: formData
           });
           
@@ -372,8 +362,8 @@ const LegalAssistant: React.FC = () => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 300000); // 5 minute timeout (increased from 2 minutes)
       
-      // Use direct backend URL instead of relative path
-      const response = await fetch('http://localhost:5000/api/ai/legal-assistant', {
+      // Use relative path for API calls to work in both development and production
+      const response = await fetch('/api/ai/legal-assistant', {
         method: 'POST',
         headers,
         body: JSON.stringify(requestBody),
@@ -423,6 +413,11 @@ const LegalAssistant: React.FC = () => {
   const handleLegalResearch = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Show error message since this feature is not implemented
+    setError('Legal research feature is not currently available.');
+    return;
+    
+    /*
     if (!researchTopic.trim()) return;
     
     setIsLoading(true);
@@ -436,8 +431,8 @@ const LegalAssistant: React.FC = () => {
         return;
       }
       
-      // Use direct backend URL instead of relative path
-      const response = await fetch('http://localhost:5000/api/ai/legal-research', {
+      // Use relative path for API calls to work in both development and production
+      const response = await fetch('/api/ai/legal-research', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -471,11 +466,17 @@ const LegalAssistant: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
+    */
   };
 
   const handleGenerateDocument = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Show error message since this feature is not implemented
+    setError('Document generation feature is not currently available.');
+    return;
+    
+    /*
     if (!documentType || !documentDetails.trim()) return;
     
     setIsLoading(true);
@@ -489,8 +490,8 @@ const LegalAssistant: React.FC = () => {
         return;
       }
       
-      // Use direct backend URL instead of relative path
-      const response = await fetch('http://localhost:5000/api/ai/generate-document', {
+      // Use relative path for API calls to work in both development and production
+      const response = await fetch('/api/ai/generate-document', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -524,6 +525,7 @@ const LegalAssistant: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
+    */
   };
 
   const handleTextToSpeech = async (text: string) => {
@@ -543,7 +545,7 @@ const LegalAssistant: React.FC = () => {
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
@@ -580,487 +582,592 @@ const LegalAssistant: React.FC = () => {
     }
   };
 
-  return (
-    <div className="flex flex-col h-full bg-gradient-to-br from-indigo-50 to-purple-50">
-      {/* Legal Assistant Title Bar */}
-      <div className="bg-gradient-to-r from-indigo-600 to-purple-700 text-white p-3 shadow-md">
-        <div className="container mx-auto flex justify-between items-center">
-          <h2 className="text-xl font-bold">Legal Assistant</h2>
-          <div className="flex items-center space-x-4">
-            <span className="text-xs bg-indigo-600 px-2 py-1 rounded-full">
-              AI-Powered Legal Assistance
-            </span>
-            {(token && !isTokenExpired()) && (
-              <div className="flex space-x-2">
-                <button 
-                  onClick={startNewChat}
-                  className="text-xs bg-white text-indigo-600 px-2 py-1 rounded hover:bg-indigo-100 transition duration-300"
-                >
-                  New Chat
-                </button>
-                <button 
-                  onClick={deleteCurrentChat}
-                  className="text-xs bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition duration-300"
-                >
-                  Delete Chat
-                </button>
-              </div>
-            )}
+  const MessageBubble: React.FC<{ message: Message }> = ({ message }) => {
+    if (message.sender === 'user') {
+      return (
+        <div className="flex justify-end mb-4">
+          <div className="bg-blue-500 text-white rounded-lg p-4 max-w-xs md:max-w-md lg:max-w-lg shadow-md">
+            <div className="font-medium">{message.text}</div>
+            <div className="text-xs text-blue-100 mt-1">
+              {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
-        {/* Sidebar */}
-        <div className="w-full md:w-80 bg-white text-gray-800 p-4 flex flex-col shadow-lg rounded-lg">
-          <div className="mb-6">
-            <h2 className="text-lg font-semibold mb-3">Document Context</h2>
+      );
+    } else {
+      return (
+        <div className="flex justify-start mb-4">
+          <div className="bg-gray-100 rounded-lg p-4 max-w-xs md:max-w-md lg:max-w-lg shadow-sm">
             <div 
-              className="border-2 border-dashed border-indigo-300 rounded-lg p-4 text-center cursor-pointer hover:border-indigo-500 transition duration-300 bg-indigo-50"
+              className="prose prose-sm max-w-none"
+              dangerouslySetInnerHTML={{ __html: formatAIResponse(message.text) }}
+            />
+            {message.sources && message.sources.length > 0 && (
+              <div className="mt-3 pt-3 border-t border-gray-200">
+                <div className="text-xs text-gray-500 font-medium">Sources:</div>
+                <div className="text-xs text-gray-600 mt-1">
+                  {message.sources.join(', ')}
+                </div>
+              </div>
+            )}
+            <div className="text-xs text-gray-400 mt-2">
+              {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </div>
+          </div>
+        </div>
+      );
+    }
+  };
+
+  // Function to format AI responses with proper HTML
+  const formatAIResponse = (text: string): string => {
+    if (!text) return '';
+    
+    // Convert markdown-style bold to HTML bold
+    let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    
+    // Convert markdown-style italics to HTML italics
+    formattedText = formattedText.replace(/\*(.*?)\*/g, '<em>$1</em>');
+    
+    // Convert markdown-style headers to HTML headers
+    formattedText = formattedText.replace(/^###### (.*$)/gm, '<h6>$1</h6>');
+    formattedText = formattedText.replace(/^##### (.*$)/gm, '<h5>$1</h5>');
+    formattedText = formattedText.replace(/^#### (.*$)/gm, '<h4>$1</h4>');
+    formattedText = formattedText.replace(/^### (.*$)/gm, '<h3>$1</h3>');
+    formattedText = formattedText.replace(/^## (.*$)/gm, '<h2>$1</h2>');
+    formattedText = formattedText.replace(/^# (.*$)/gm, '<h1>$1</h1>');
+    
+    // Convert markdown-style lists to HTML lists
+    formattedText = formattedText.replace(/^\* (.*$)/gm, '<li>$1</li>');
+    formattedText = formattedText.replace(/<li>(.*?)<\/li>/g, '<ul><li>$1</li></ul>');
+    formattedText = formattedText.replace(/<\/ul>\s*<ul>/g, '');
+    
+    // Convert markdown-style numbered lists to HTML lists
+    formattedText = formattedText.replace(/^\d+\. (.*$)/gm, '<li>$1</li>');
+    formattedText = formattedText.replace(/<li>(.*?)<\/li>/g, '<ol><li>$1</li></ol>');
+    formattedText = formattedText.replace(/<\/ol>\s*<ol>/g, '');
+    
+    // Convert markdown-style tables to HTML tables
+    formattedText = convertMarkdownTableToHtml(formattedText);
+    
+    // Convert line breaks to HTML breaks
+    formattedText = formattedText.replace(/\n/g, '<br />');
+    
+    return formattedText;
+  };
+
+  // Function to convert markdown tables to HTML tables
+  const convertMarkdownTableToHtml = (text: string): string => {
+    const lines = text.split('<br />');
+    let inTable = false;
+    let tableHtml = '';
+    let headerRow = true;
+    
+    const resultLines = [];
+    
+    for (const line of lines) {
+      // Check if this is a table row (contains |)
+      if (line.includes('|') && line.trim().startsWith('|') && line.trim().endsWith('|')) {
+        if (!inTable) {
+          inTable = true;
+          tableHtml = '<table class="min-w-full border-collapse border border-gray-300"><thead>';
+        }
+        
+        const cells = line.split('|').filter(cell => cell.trim() !== '');
+        if (cells.length > 0) {
+          if (headerRow) {
+            tableHtml += '<tr class="bg-gray-100">';
+            cells.forEach(cell => {
+              tableHtml += `<th class="border border-gray-300 px-4 py-2 text-left font-bold">${cell.trim()}</th>`;
+            });
+            tableHtml += '</tr></thead><tbody>';
+            headerRow = false;
+          } else {
+            // Check if this is a separator row (contains ---)
+            if (cells[0].includes('---')) {
+              // Skip separator row
+              continue;
+            } else {
+              tableHtml += '<tr>';
+              cells.forEach(cell => {
+                tableHtml += `<td class="border border-gray-300 px-4 py-2">${cell.trim()}</td>`;
+              });
+              tableHtml += '</tr>';
+            }
+          }
+        }
+      } else {
+        if (inTable) {
+          tableHtml += '</tbody></table>';
+          resultLines.push(tableHtml);
+          inTable = false;
+          headerRow = true;
+        }
+        resultLines.push(line);
+      }
+    }
+    
+    if (inTable) {
+      tableHtml += '</tbody></table>';
+      resultLines.push(tableHtml);
+    }
+    
+    return resultLines.join('<br />');
+  };
+
+  return (
+    <div className="flex h-screen bg-gray-50">
+      {/* Sidebar */}
+      <div className="w-80 bg-white shadow-lg flex flex-col border-r border-gray-200">
+        {/* Sidebar Header */}
+        <div className="p-5 border-b border-gray-200 bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+          <div className="flex items-center space-x-3">
+            <div className="bg-white/20 p-2 rounded-lg">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+            </div>
+            <div>
+              <h1 className="text-xl font-bold">Legal Assistant</h1>
+              <p className="text-indigo-100 text-xs">AI Powered Legal Analysis</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="p-4 border-b border-gray-200">
+          <h2 className="text-sm font-semibold text-gray-700 mb-3">Quick Actions</h2>
+          <div className="space-y-2">
+            <button
               onClick={triggerFileInput}
+              className="w-full flex items-center px-3 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition duration-300"
             >
-              <svg className="w-8 h-8 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
               </svg>
-              <p className="text-indigo-700 text-sm mb-1">
-                {file ? file.name : 'Click to upload a file'}
-              </p>
-              <p className="text-xs text-indigo-500">
-                Supports PDF, TXT, and other text files
-              </p>
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                accept=".pdf,.txt,.doc,.docx"
-                className="hidden"
-              />
-            </div>
+              Upload Document
+            </button>
             
-            {documentContext && (
-              <div className="mt-3 text-xs text-gray-400">
-                <p>Document loaded: {documentContext.length} characters</p>
-              </div>
-            )}
-          </div>
-
-          <div className="mb-6">
-            <h2 className="text-lg font-semibold mb-3">Quick Actions</h2>
-            <div className="space-y-2">
-              <button
-                onClick={() => setShowResearchForm(true)}
-                className="w-full text-left px-3 py-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-md transition duration-300"
-              >
-                Legal Research
-              </button>
-              <button
-                onClick={() => setShowDocumentForm(true)}
-                className="w-full text-left px-3 py-2 text-sm bg-purple-600 hover:bg-purple-700 text-white rounded-md transition duration-300"
-              >
-                Generate Document
-              </button>
-            </div>
-          </div>
-
-          <div className="mb-6">
-            <h2 className="text-lg font-semibold mb-3">Document Analysis</h2>
-            <div className="space-y-2">
-              <button
-                onClick={() => setActiveTab('summary')}
-                disabled={!analysisResult}
-                className={`w-full text-left px-3 py-2 text-sm rounded-md transition duration-300 ${
-                  activeTab === 'summary' 
-                    ? 'bg-indigo-600' 
-                    : 'bg-gray-700 hover:bg-gray-600'
-                } ${!analysisResult ? 'opacity-50 cursor-not-allowed' : ''}`}
-              >
-                Summary
-              </button>
-              <button
-                onClick={() => setActiveTab('keypoints')}
-                disabled={!analysisResult}
-                className={`w-full text-left px-3 py-2 text-sm rounded-md transition duration-300 ${
-                  activeTab === 'keypoints' 
-                    ? 'bg-indigo-600' 
-                    : 'bg-gray-700 hover:bg-gray-600'
-                } ${!analysisResult ? 'opacity-50 cursor-not-allowed' : ''}`}
-              >
-                Key Points
-              </button>
-              <button
-                onClick={() => setActiveTab('sections')}
-                disabled={!analysisResult}
-                className={`w-full text-left px-3 py-2 text-sm rounded-md transition duration-300 ${
-                  activeTab === 'sections' 
-                    ? 'bg-indigo-600' 
-                    : 'bg-gray-700 hover:bg-gray-600'
-                } ${!analysisResult ? 'opacity-50 cursor-not-allowed' : ''}`}
-              >
-                Legal Sections
-              </button>
-            </div>
-          </div>
-
-          <div className="mt-auto">
-            <h2 className="text-lg font-semibold mb-3">Capabilities</h2>
-            <ul className="space-y-2 text-sm">
-              <li className="flex items-start">
-                <svg className="flex-shrink-0 w-4 h-4 text-green-500 mr-1 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                <span>Legal document analysis</span>
-              </li>
-              <li className="flex items-start">
-                <svg className="flex-shrink-0 w-4 h-4 text-green-500 mr-1 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                <span>Case law research</span>
-              </li>
-              <li className="flex items-start">
-                <svg className="flex-shrink-0 w-4 h-4 text-green-500 mr-1 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                <span>Document generation</span>
-              </li>
-              <li className="flex items-start">
-                <svg className="flex-shrink-0 w-4 h-4 text-green-500 mr-1 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                <span>Voice input/output</span>
-              </li>
-            </ul>
+            {/* Hidden file input */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              accept=".pdf,.txt,.doc,.docx"
+              className="hidden"
+            />
+            
+            <button
+              onClick={() => setShowResearchForm(true)}
+              className="w-full flex items-center px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition duration-300"
+              disabled
+              title="Feature not currently available"
+            >
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+              </svg>
+              Legal Research
+            </button>
+            
+            <button
+              onClick={() => setShowDocumentForm(true)}
+              className="w-full flex items-center px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition duration-300"
+              disabled
+              title="Feature not currently available"
+            >
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Generate Document
+            </button>
           </div>
         </div>
 
-        {/* Chat Area */}
-        <div className="flex-1 flex flex-col">
-          {/* Chat Tabs */}
-          <div className="bg-white border-b border-gray-200">
-            <div className="flex">
-              <button
-                onClick={() => setActiveTab('chat')}
-                className={`px-4 py-2 text-sm font-medium ${
-                  activeTab === 'chat'
-                    ? 'text-indigo-600 border-b-2 border-indigo-600'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
+        {/* Chat History */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-4">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-sm font-semibold text-gray-700">Chat History</h2>
+              <button 
+                onClick={startNewChat}
+                className="text-xs text-indigo-600 hover:text-indigo-800 flex items-center"
               >
-                Chat
+                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                New
               </button>
-              {analysisResult && (
-                <>
-                  <button
-                    onClick={() => setActiveTab('document')}
-                    className={`px-4 py-2 text-sm font-medium ${
-                      activeTab === 'document'
-                        ? 'text-indigo-600 border-b-2 border-indigo-600'
-                        : 'text-gray-500 hover:text-gray-700'
-                    }`}
-                  >
-                    Document Analysis
-                  </button>
-                </>
+            </div>
+            <div className="space-y-2">
+              {chatHistory.map((chat) => (
+                <div 
+                  key={chat.id}
+                  className={`p-3 rounded-lg cursor-pointer text-sm transition-all duration-200 ${
+                    currentChatId === chat.id 
+                      ? 'bg-indigo-50 border border-indigo-200' 
+                      : 'hover:bg-gray-100'
+                  }`}
+                  onClick={() => {
+                    setMessages(chat.messages);
+                    setCurrentChatId(chat.id);
+                  }}
+                >
+                  <div className="font-medium truncate text-gray-800">{chat.title}</div>
+                  <div className="text-xs text-gray-500 mt-1 flex justify-between">
+                    <span>{new Date(chat.updatedAt).toLocaleDateString()}</span>
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteChatHistory(chat.id);
+                      }}
+                      className="text-red-400 hover:text-red-600"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              ))}
+              
+              {chatHistory.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  <svg className="w-12 h-12 mx-auto text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                  <p className="mt-2 text-sm">No chat history yet</p>
+                  <p className="text-xs mt-1">Start a conversation to see it here</p>
+                </div>
               )}
             </div>
           </div>
 
-          {/* Chat Content */}
-          <div className="flex-1 overflow-hidden">
-            {activeTab === 'chat' && (
-              <div className="h-full flex flex-col">
-                {/* Messages */}
-                <div className="flex-1 overflow-y-auto p-4 bg-gradient-to-br from-indigo-50 to-purple-50">
-                  {memoizedMessages.map((message) => (
-                    <div
-                      key={message.id}
-                      className={`mb-4 flex ${
-                        message.sender === 'user' ? 'justify-end' : 'justify-start'
-                      }`}
-                    >
-                      <div
-                        className={`max-w-3/4 rounded-lg p-3 ${
-                          message.sender === 'user'
-                            ? 'bg-indigo-600 text-white'
-                            : 'bg-white text-gray-800 shadow-md'
-                        }`}
-                      >
-                        <div className="flex items-center mb-1">
-                          <span className="font-semibold text-xs">
-                            {message.sender === 'user' ? 'You' : 'AI'}
-                          </span>
-                          <span className="text-xs opacity-70 ml-2">
-                            {formatDateTime(message.timestamp)}
-                          </span>
-                        </div>
-                        <p className="text-sm whitespace-pre-wrap">{message.text}</p>
-                        {message.sender === 'ai' && (
-                          <button
-                            onClick={() => handleTextToSpeech(message.text)}
-                            className="mt-2 text-xs flex items-center text-indigo-600 hover:text-indigo-800"
-                          >
-                            <svg
-                              className="w-4 h-4 mr-1"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"
-                              />
-                            </svg>
-                            {isSpeaking ? 'Stop' : 'Listen'}
-                          </button>
-                        )}
-                      </div>
+          {/* Document Analysis Section */}
+          {documentContext && analysisResult && (
+            <div className="p-4 border-t border-gray-200 mt-4">
+              <h2 className="text-sm font-semibold text-gray-700 mb-3">Document Analysis</h2>
+              
+              <div className="bg-indigo-50 rounded-lg p-3 mb-3">
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 mt-1">
+                    <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
+                  <div className="ml-3">
+                    <div className="text-sm font-medium text-indigo-800 truncate">{file?.name || 'Document'}</div>
+                    <div className="text-xs text-indigo-600 mt-1">
+                      {analysisResult.document_type} • {analysisResult.document_length} chars
                     </div>
-                  ))}
-                  {isLoading && (
-                    <div className="flex justify-start mb-4">
-                      <div className="bg-white text-gray-800 rounded-lg p-3 shadow-md">
-                        <div className="flex items-center">
-                          <div className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce mr-1"></div>
-                          <div className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce mr-1 delay-75"></div>
-                          <div className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce delay-150"></div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  <div ref={messagesEndRef} />
-                </div>
-
-                {/* Input Area */}
-                <div className="border-t border-gray-200 bg-white p-4">
-                  {error && (
-                    <div className="mb-3 text-red-600 text-sm bg-red-50 p-2 rounded">
-                      {error}
-                    </div>
-                  )}
-                  <div className="flex items-end">
-                    <div className="flex-1 relative">
-                      <textarea
-                        value={inputText}
-                        onChange={(e) => setInputText(e.target.value)}
-                        onKeyPress={handleKeyPress}
-                        placeholder="Ask a legal question..."
-                        className="w-full border border-gray-300 rounded-lg py-2 px-4 pr-10 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
-                        rows={2}
-                        disabled={isLoading}
-                      />
-                      <button
-                        onClick={handleSpeechInput}
-                        className={`absolute right-2 bottom-2 p-1 rounded ${
-                          isListening
-                            ? 'text-red-500 animate-pulse'
-                            : 'text-gray-400 hover:text-gray-600'
-                        }`}
-                        disabled={isLoading}
-                      >
-                        <svg
-                          className="w-5 h-5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                    <button
-                      onClick={handleSendMessage}
-                      disabled={isLoading || !inputText.trim()}
-                      className="ml-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg p-2 h-10 w-10 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed transition duration-300"
-                    >
-                      {isLoading ? (
-                        <svg
-                          className="animate-spin h-5 w-5 text-white"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          ></circle>
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          ></path>
-                        </svg>
-                      ) : (
-                        <svg
-                          className="h-5 w-5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M13 5l7 7-7 7M5 5l7 7-7 7"
-                          />
-                        </svg>
-                      )}
-                    </button>
                   </div>
                 </div>
               </div>
+              
+              {/* Document Tabs */}
+              <div className="space-y-2">
+                <button
+                  className={`w-full text-left px-3 py-2 text-sm rounded-lg transition-colors ${
+                    activeTab === 'summary' 
+                      ? 'bg-indigo-100 text-indigo-800 font-medium' 
+                      : 'hover:bg-gray-100 text-gray-700'
+                  }`}
+                  onClick={() => setActiveTab('summary')}
+                >
+                  <div className="flex items-center">
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Summary
+                  </div>
+                </button>
+                <button
+                  className={`w-full text-left px-3 py-2 text-sm rounded-lg transition-colors ${
+                    activeTab === 'keypoints' 
+                      ? 'bg-indigo-100 text-indigo-800 font-medium' 
+                      : 'hover:bg-gray-100 text-gray-700'
+                  }`}
+                  onClick={() => setActiveTab('keypoints')}
+                >
+                  <div className="flex items-center">
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                    </svg>
+                    Key Points
+                  </div>
+                </button>
+                <button
+                  className={`w-full text-left px-3 py-2 text-sm rounded-lg transition-colors ${
+                    activeTab === 'sections' 
+                      ? 'bg-indigo-100 text-indigo-800 font-medium' 
+                      : 'hover:bg-gray-100 text-gray-700'
+                  }`}
+                  onClick={() => setActiveTab('sections')}
+                >
+                  <div className="flex items-center">
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                    Legal Sections
+                  </div>
+                </button>
+                <button
+                  className={`w-full text-left px-3 py-2 text-sm rounded-lg transition-colors ${
+                    activeTab === 'document' 
+                      ? 'bg-indigo-100 text-indigo-800 font-medium' 
+                      : 'hover:bg-gray-100 text-gray-700'
+                  }`}
+                  onClick={() => setActiveTab('document')}
+                >
+                  <div className="flex items-center">
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Full Document
+                  </div>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Sidebar Footer */}
+        <div className="p-4 border-t border-gray-200 bg-gray-50">
+          <div className="flex items-center justify-between text-xs text-gray-500">
+            <div className="flex items-center">
+              <svg className="w-4 h-4 mr-1 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              <span>DharmaSikhara AI</span>
+            </div>
+            <span>v1.0</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Chat Area */}
+      <div className="flex-1 flex flex-col">
+        {/* Chat Header */}
+        <div className="bg-white shadow-sm p-4 border-b border-gray-200">
+          <div className="flex justify-between items-center">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-800">Legal Assistant</h2>
+              <p className="text-sm text-gray-500">
+                {documentContext 
+                  ? `Analyzing: ${file?.name || 'Document'}` 
+                  : "Ask questions about Indian law"}
+              </p>
+            </div>
+            <div className="flex space-x-2">
+              <button
+                onClick={startNewChat}
+                className="px-3 py-1.5 text-sm bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 flex items-center"
+              >
+                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                New Chat
+              </button>
+              {currentChatId && (
+                <button
+                  onClick={deleteCurrentChat}
+                  className="px-3 py-1.5 text-sm bg-red-50 border border-red-200 text-red-700 rounded-lg hover:bg-red-100 flex items-center"
+                >
+                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  Delete
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Messages Container */}
+        <div 
+          ref={messagesEndRef}
+          className="flex-1 overflow-y-auto p-4 bg-gradient-to-b from-white to-gray-50"
+        >
+          {messages.map((message) => (
+            <MessageBubble key={message.id} message={message} />
+          ))}
+          
+          {isLoading && (
+            <div className="flex justify-start mb-4">
+              <div className="bg-white rounded-2xl rounded-tl-none p-4 max-w-xs md:max-w-md lg:max-w-lg shadow-sm border border-gray-100">
+                <div className="flex space-x-2">
+                  <div className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  <div className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Document Analysis Content */}
+        {documentContext && analysisResult && activeTab !== 'chat' && (
+          <div className="bg-white border-t border-gray-200 p-4 max-h-60 overflow-y-auto">
+            {activeTab === 'summary' && (
+              <div>
+                <h3 className="font-medium text-gray-900 mb-2 flex items-center">
+                  <svg className="w-4 h-4 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  Document Summary
+                </h3>
+                <div className="bg-gray-50 rounded-lg p-3">
+                  <p className="text-sm text-gray-700">{analysisResult.summary}</p>
+                </div>
+              </div>
             )}
-
-            {activeTab === 'document' && analysisResult && (
-              <div className="h-full overflow-y-auto p-4 bg-white">
-                <div className="max-w-4xl mx-auto">
-                  <h2 className="text-xl font-bold mb-4 text-indigo-700">Document Analysis</h2>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <div className="bg-indigo-50 p-4 rounded-lg">
-                      <h3 className="font-semibold text-indigo-700 mb-2">Document Type</h3>
-                      <p className="text-gray-800">{analysisResult.document_type}</p>
-                    </div>
-                    <div className="bg-indigo-50 p-4 rounded-lg">
-                      <h3 className="font-semibold text-indigo-700 mb-2">Document Length</h3>
-                      <p className="text-gray-800">{analysisResult.document_length} characters</p>
-                    </div>
-                  </div>
-
-                  <div className="mb-6">
-                    <h3 className="text-lg font-semibold mb-3 text-indigo-700">Summary</h3>
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <p className="text-gray-800">{analysisResult.summary}</p>
-                    </div>
-                  </div>
-
-                  <div className="mb-6">
-                    <h3 className="text-lg font-semibold mb-3 text-indigo-700">Key Legal Terms</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {analysisResult.key_terms.map((term, index) => (
-                        <span
-                          key={index}
-                          className="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm"
-                        >
+            
+            {activeTab === 'keypoints' && (
+              <div>
+                <h3 className="font-medium text-gray-900 mb-3 flex items-center">
+                  <svg className="w-4 h-4 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                  </svg>
+                  Key Points
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="bg-indigo-50 rounded-lg p-3">
+                    <h4 className="text-xs font-semibold text-indigo-800 uppercase tracking-wide mb-1">Key Terms</h4>
+                    <div className="flex flex-wrap gap-1">
+                      {analysisResult.key_terms.slice(0, 5).map((term, index) => (
+                        <span key={index} className="text-xs bg-white px-2 py-1 rounded-md text-indigo-700 border border-indigo-100">
                           {term}
                         </span>
                       ))}
                     </div>
                   </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <h3 className="text-lg font-semibold mb-3 text-indigo-700">Parties Involved</h3>
-                      <ul className="bg-gray-50 p-4 rounded-lg space-y-2">
-                        {analysisResult.parties_involved.map((party, index) => (
-                          <li key={index} className="text-gray-800">
-                            {party}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold mb-3 text-indigo-700">Key Dates</h3>
-                      <ul className="bg-gray-50 p-4 rounded-lg space-y-2">
-                        {analysisResult.key_dates.map((date, index) => (
-                          <li key={index} className="text-gray-800">
-                            {date}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                  <div className="bg-indigo-50 rounded-lg p-3">
+                    <h4 className="text-xs font-semibold text-indigo-800 uppercase tracking-wide mb-1">Parties Involved</h4>
+                    <p className="text-sm text-indigo-700">{analysisResult.parties_involved.join(', ') || 'None identified'}</p>
+                  </div>
+                  <div className="bg-indigo-50 rounded-lg p-3">
+                    <h4 className="text-xs font-semibold text-indigo-800 uppercase tracking-wide mb-1">Key Dates</h4>
+                    <p className="text-sm text-indigo-700">{analysisResult.key_dates.join(', ') || 'None identified'}</p>
+                  </div>
+                  <div className="bg-indigo-50 rounded-lg p-3">
+                    <h4 className="text-xs font-semibold text-indigo-800 uppercase tracking-wide mb-1">Monetary Values</h4>
+                    <p className="text-sm text-indigo-700">{analysisResult.monetary_values.join(', ') || 'None identified'}</p>
                   </div>
                 </div>
               </div>
             )}
-
-            {activeTab === 'summary' && analysisResult && (
-              <div className="h-full overflow-y-auto p-4 bg-white">
-                <div className="max-w-4xl mx-auto">
-                  <h2 className="text-xl font-bold mb-4 text-indigo-700">Document Summary</h2>
-                  <div className="bg-gray-50 p-6 rounded-lg">
-                    <p className="text-gray-800 whitespace-pre-wrap">{analysisResult.summary}</p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'keypoints' && analysisResult && (
-              <div className="h-full overflow-y-auto p-4 bg-white">
-                <div className="max-w-4xl mx-auto">
-                  <h2 className="text-xl font-bold mb-4 text-indigo-700">Key Points</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <h3 className="text-lg font-semibold mb-3 text-indigo-700">Key Legal Terms</h3>
-                      <ul className="bg-gray-50 p-4 rounded-lg space-y-2">
-                        {analysisResult.key_terms.map((term, index) => (
-                          <li key={index} className="text-gray-800">
-                            {term}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold mb-3 text-indigo-700">Parties Involved</h3>
-                      <ul className="bg-gray-50 p-4 rounded-lg space-y-2">
-                        {analysisResult.parties_involved.map((party, index) => (
-                          <li key={index} className="text-gray-800">
-                            {party}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold mb-3 text-indigo-700">Key Dates</h3>
-                      <ul className="bg-gray-50 p-4 rounded-lg space-y-2">
-                        {analysisResult.key_dates.map((date, index) => (
-                          <li key={index} className="text-gray-800">
-                            {date}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold mb-3 text-indigo-700">Monetary Values</h3>
-                      <ul className="bg-gray-50 p-4 rounded-lg space-y-2">
-                        {analysisResult.monetary_values.map((value, index) => (
-                          <li key={index} className="text-gray-800">
-                            {value}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'sections' && analysisResult && (
-              <div className="h-full overflow-y-auto p-4 bg-white">
-                <div className="max-w-4xl mx-auto">
-                  <h2 className="text-xl font-bold mb-4 text-indigo-700">Legal Sections</h2>
-                  <div className="bg-gray-50 p-6 rounded-lg">
-                    <h3 className="text-lg font-semibold mb-3 text-indigo-700">Legal Provisions</h3>
-                    <ul className="space-y-2">
-                      {analysisResult.legal_provisions.map((provision, index) => (
-                        <li key={index} className="text-gray-800">
+            
+            {activeTab === 'sections' && (
+              <div>
+                <h3 className="font-medium text-gray-900 mb-3 flex items-center">
+                  <svg className="w-4 h-4 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  </svg>
+                  Legal Sections
+                </h3>
+                <div className="space-y-3">
+                  <div className="bg-indigo-50 rounded-lg p-3">
+                    <h4 className="text-xs font-semibold text-indigo-800 uppercase tracking-wide mb-1">Legal Provisions</h4>
+                    <div className="flex flex-wrap gap-1">
+                      {analysisResult.legal_provisions.slice(0, 8).map((provision, index) => (
+                        <span key={index} className="text-xs bg-white px-2 py-1 rounded-md text-indigo-700 border border-indigo-100">
                           {provision}
-                        </li>
+                        </span>
                       ))}
-                    </ul>
+                    </div>
+                  </div>
+                  <div className="bg-indigo-50 rounded-lg p-3">
+                    <h4 className="text-xs font-semibold text-indigo-800 uppercase tracking-wide mb-1">Document Type</h4>
+                    <p className="text-sm text-indigo-700">{analysisResult.document_type}</p>
+                  </div>
+                  <div className="bg-indigo-50 rounded-lg p-3">
+                    <h4 className="text-xs font-semibold text-indigo-800 uppercase tracking-wide mb-1">Risk Assessment</h4>
+                    <div className="flex flex-wrap gap-1">
+                      {analysisResult.risk_assessment.slice(0, 5).map((risk, index) => (
+                        <span key={index} className="text-xs bg-white px-2 py-1 rounded-md text-indigo-700 border border-indigo-100">
+                          {risk}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
+            )}
+            
+            {activeTab === 'document' && (
+              <div>
+                <h3 className="font-medium text-gray-900 mb-2 flex items-center">
+                  <svg className="w-4 h-4 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  Full Document Content
+                </h3>
+                <div className="bg-gray-50 rounded-lg p-3 max-h-40 overflow-y-auto">
+                  <p className="text-sm text-gray-700 whitespace-pre-wrap">{documentContext}</p>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Input Area */}
+        <div className="border-t border-gray-200 p-4 bg-white">
+          {error && (
+            <div className="mb-3 p-3 bg-red-50 text-red-700 rounded-lg text-sm flex items-start">
+              <svg className="w-5 h-5 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>{error}</span>
+            </div>
+          )}
+          
+          <div className="flex items-end space-x-3">
+            <div className="flex-1 relative">
+              <textarea
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder={documentContext 
+                  ? "Ask a question about the document..." 
+                  : "Ask a legal question..."}
+                className="w-full p-4 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none shadow-sm"
+                rows={2}
+                disabled={isLoading}
+              />
+              <div className="absolute right-3 bottom-3 flex space-x-1">
+                <button
+                  onClick={handleSpeechInput}
+                  className={`p-1.5 rounded-full ${isListening ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                  disabled={isLoading}
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
+            <button
+              onClick={handleSendMessage}
+              disabled={!inputText.trim() || isLoading}
+              className="p-4 bg-indigo-600 text-white rounded-2xl hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition duration-300 flex items-center justify-center shadow-md hover:shadow-lg"
+            >
+              {isLoading ? (
+                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              ) : (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                </svg>
+              )}
+            </button>
+          </div>
+          
+          <div className="mt-2 text-xs text-gray-500 flex justify-between">
+            <span>Press Enter to send, Shift+Enter for new line</span>
+            {documentContext && (
+              <span className="text-indigo-600 font-medium">Document loaded: {file?.name || 'Document'}</span>
             )}
           </div>
         </div>
@@ -1211,6 +1318,89 @@ const LegalAssistant: React.FC = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Document Analysis */}
+      {showDocumentAnalysis && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-md w-full p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">Document Details</h3>
+              <button
+                onClick={() => setShowDocumentAnalysis(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="font-medium">Document Type:</span>
+                <span>{analysisResult?.document_type}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="font-medium">Document Length:</span>
+                <span>{analysisResult?.document_length} characters</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="font-medium">Token Count:</span>
+                <span>{analysisResult?.token_count}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="font-medium">Confidence:</span>
+                <span>{analysisResult?.confidence}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="font-medium">Summary:</span>
+                <span>{analysisResult?.summary}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="font-medium">Key Terms:</span>
+                <span>{analysisResult?.key_terms.join(', ')}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="font-medium">Parties Involved:</span>
+                <span>{analysisResult?.parties_involved.join(', ')}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="font-medium">Key Dates:</span>
+                <span>{analysisResult?.key_dates.join(', ')}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="font-medium">Monetary Values:</span>
+                <span>{analysisResult?.monetary_values.join(', ')}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="font-medium">Legal Provisions:</span>
+                <span>{analysisResult?.legal_provisions.join(', ')}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="font-medium">Risk Assessment:</span>
+                <span>{analysisResult?.risk_assessment.join(', ')}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="font-medium">Recommended Actions:</span>
+                <span>{analysisResult?.recommended_actions.join(', ')}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="font-medium">Document Structure:</span>
+                <span>{analysisResult?.document_structure.join(', ')}</span>
+              </div>
+            </div>
           </div>
         </div>
       )}

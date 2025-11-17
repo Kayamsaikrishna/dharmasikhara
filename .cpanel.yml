@@ -1,0 +1,10 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/infernom/Law_Students/
+    - /bin/cp -R * $DEPLOYPATH
+    - cd $DEPLOYPATH/backend
+    - npm install
+    - cd $DEPLOYPATH
+    - npm run build --prefix frontend
+    - cp -r frontend/build/* backend/public/

@@ -52,9 +52,8 @@ const CertificationCenter: React.FC = () => {
     const fetchCertifications = async () => {
       try {
         setLoading(true);
-        // Use direct backend URL instead of relative path
-        const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
-        const response = await fetch(`${API_BASE_URL}/api/certification`);
+        // Use relative URLs for production
+        const response = await fetch(`/api/certification`);
         const data = await response.json();
         
         if (data.success) {
@@ -77,9 +76,8 @@ const CertificationCenter: React.FC = () => {
   useEffect(() => {
     const fetchUserCertifications = async () => {
       try {
-        // Use direct backend URL instead of relative path
-        const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
-        const response = await fetch(`${API_BASE_URL}/api/certification/user/${userId}`, {
+        // Use relative URLs for production
+        const response = await fetch(`/api/certification/user/${userId}`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -103,9 +101,8 @@ const CertificationCenter: React.FC = () => {
     setVerificationResult(null);
     
     try {
-      // Use direct backend URL instead of relative path
-      const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
-      const response = await fetch(`${API_BASE_URL}/api/certification/eligibility/${userId}/${certification.id}`, {
+      // Use relative URLs for production
+      const response = await fetch(`/api/certification/eligibility/${userId}/${certification.id}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -127,9 +124,8 @@ const CertificationCenter: React.FC = () => {
     setError('');
     
     try {
-      // Use direct backend URL instead of relative path
-      const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
-      const response = await fetch(`${API_BASE_URL}/api/certification/issue/${userId}/${selectedCertification.id}`, {
+      // Use relative URLs for production
+      const response = await fetch(`/api/certification/issue/${userId}/${selectedCertification.id}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -170,9 +166,8 @@ const CertificationCenter: React.FC = () => {
 
   const handleVerifyCertificate = async (certificateId: string) => {
     try {
-      // Use direct backend URL instead of relative path
-      const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
-      const response = await fetch(`${API_BASE_URL}/api/certification/verify/${certificateId}`);
+      // Use relative URLs for production
+      const response = await fetch(`/api/certification/verify/${certificateId}`);
       const data = await response.json();
       
       if (data.success) {

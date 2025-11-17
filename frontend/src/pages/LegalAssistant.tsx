@@ -1,14 +1,11 @@
 import React from 'react';
-import Layout from '../components/Layout';
-import LegalAssistantComponent from '../components/LegalAssistant';
+import LegalAssistantComponent from '../components/LegalAssistantProfessional';
 
 const LegalAssistant: React.FC = () => {
   return (
-    <Layout>
-      <div className="h-[calc(100vh-140px)]">
-        <LegalAssistantComponent />
-      </div>
-    </Layout>
+    <div className="h-screen overflow-hidden">
+      <LegalAssistantComponent />
+    </div>
   );
 };
 

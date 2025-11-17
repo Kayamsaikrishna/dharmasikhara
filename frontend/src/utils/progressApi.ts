@@ -1,5 +1,6 @@
 // progressApi.ts - API utilities for user progress tracking
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+const isDevelopment = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+const API_BASE_URL = isDevelopment ? 'http://localhost:5000' : (typeof window !== 'undefined' ? window.location.origin : '');
 
 export interface ProgressData {
   scenarioId: string;

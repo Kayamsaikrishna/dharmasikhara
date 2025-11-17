@@ -24,10 +24,12 @@ const Login: React.FC = () => {
     setError('');
     
     try {
-      // Use direct backend URL instead of relative path
+      // Use the correct API URL based on environment
+      const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      const baseUrl = isDevelopment ? 'http://localhost:5000' : window.location.origin;
       const endpoint = isSignUp 
-        ? 'http://localhost:5000/api/auth/register' 
-        : 'http://localhost:5000/api/auth/login';
+        ? `${baseUrl}/api/auth/register` 
+        : `${baseUrl}/api/auth/login`;
       
       let body;
       if (isSignUp) {

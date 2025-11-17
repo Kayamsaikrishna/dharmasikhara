@@ -35,15 +35,13 @@ const LegalResearchDocuments: React.FC = () => {
     }
   }, [user, token]);
 
-  // Fetch document categories
+  // Fetch categories on component mount
   useEffect(() => {
     const fetchCategories = async () => {
       if (!user || !token) return;
       
       try {
-        // Use direct backend URL instead of relative path
-        const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
-        const response = await fetch(`${API_BASE_URL}/api/legal-research/documents/categories`, {
+        const response = await fetch('/api/legal-research/documents/categories', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -52,7 +50,8 @@ const LegalResearchDocuments: React.FC = () => {
         const data = await response.json();
       
         if (data.success) {
-          setCategories(['all', ...data.data]);
+          // Fix: data.data.categories is an object with a categories array, not a direct array
+          setCategories(['all', ...data.data.categories.map((cat: any) => cat.name)]);
         }
       } catch (err) {
         console.error('Error fetching categories:', err);
@@ -68,9 +67,8 @@ const LegalResearchDocuments: React.FC = () => {
       if (!user || !token) return;
       
       try {
-        // Use direct backend URL instead of relative path
-        const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
-        const response = await fetch(`${API_BASE_URL}/api/legal-research/documents`, {
+        // Use relative path for API calls to work in both development and production
+        const response = await fetch('/api/legal-research/documents', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -102,9 +100,8 @@ const LegalResearchDocuments: React.FC = () => {
     setSelectedDocument(null);
 
     try {
-      // Use direct backend URL instead of relative path
-      const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
-      let url = `${API_BASE_URL}/api/legal-research/documents`;
+      // Use relative path for API calls to work in both development and production
+      let url = '/api/legal-research/documents';
       
       // Add query parameters
       const params = new URLSearchParams();
@@ -430,8 +427,10 @@ const LegalResearchDocuments: React.FC = () => {
                 if (!user || !token) return;
                 
                 try {
-                  // Use direct backend URL instead of relative path
-                  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+                  // Use environment-aware API calls
+                  const API_BASE_URL = process.env.NODE_ENV === 'production' 
+                    ? ''  // Use relative URLs in production
+                    : 'http://localhost:5000';  // Use localhost in development
                   const response = await fetch(`${API_BASE_URL}/api/legal-research/documents`, {
                     headers: {
                       'Authorization': `Bearer ${token}`
@@ -488,10 +487,8 @@ const LegalResearchDocuments: React.FC = () => {
                       if (!user || !token) return;
                       
                       try {
-                        // Use direct backend URL instead of relative path
-                        const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
-                        const response = await fetch(`${API_BASE_URL}/api/legal-research/documents`, {
-                          headers: {
+                        // Use relative URLs for production
+                        const response = await fetch(`/api/legal-research/documents`, {                          headers: {
                             'Authorization': `Bearer ${token}`
                           }
                         });
@@ -572,7 +569,7 @@ const LegalResearchDocuments: React.FC = () => {
               </div>
               <div className="flex space-x-4 mb-4">
                 <a
-                  href={`http://localhost:5000${selectedDocument.path}`}
+                  href={selectedDocument.path}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors"
@@ -585,7 +582,7 @@ const LegalResearchDocuments: React.FC = () => {
               </div>
               <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
                 <iframe
-                  src={`http://localhost:5000${selectedDocument.path}`}
+                  src={selectedDocument.path}
                   className="w-full h-96"
                   title={selectedDocument.title}
                 ></iframe>

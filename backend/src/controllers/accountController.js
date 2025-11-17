@@ -275,38 +275,92 @@ const deleteDocument = async (req, res) => {
 
 // Placeholder for subscription functionality
 const getSubscription = async (req, res) => {
-    try {
-        res.json({
-            success: true,
-            data: {
-                plan: 'free',
-                status: 'active',
-                features: {
-                    documentAnalysis: true,
-                    scenariosAccess: 5,
-                    multiplayerAccess: false,
-                    customScenarios: 0,
-                    prioritySupport: false,
-                    storage: '100 MB',
-                    documentAnalysisLimit: '5 per week'
-                }
-            }
-        });
-    } catch (error) {
-        console.error('Get subscription error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'An error occurred while fetching subscription'
-        });
+  try {
+    res.json({
+      success: true,
+      data: {
+        plan: 'free',
+        status: 'active',
+        features: {
+          documentAnalysis: true,
+          scenariosAccess: 5,
+          multiplayerAccess: false,
+          customScenarios: 0,
+          prioritySupport: false,
+          storage: '100 MB',
+          documentAnalysisLimit: '5 per week'
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Get subscription error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'An error occurred while fetching subscription'
+    });
+  }
+};
+
+// Function to extract text from PDF files
+const extractText = async (req, res) => {
+  try {
+    // Check if file was uploaded
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'No file uploaded'
+      });
     }
+    
+    // Check file type and process accordingly
+    if (req.file.mimetype === 'application/pdf') {
+      // Extract text from PDF
+      const pdfData = await pdfParse(req.file.buffer);
+      
+      res.json({
+        success: true,
+        text: pdfData.text
+      });
+    } else if (req.file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+               req.file.mimetype === 'application/msword') {
+      // Extract text from Word document
+      const mammoth = require('mammoth');
+      
+      try {
+        const result = await mammoth.extractRawText({ buffer: req.file.buffer });
+        res.json({
+          success: true,
+          text: result.value
+        });
+      } catch (wordError) {
+        console.error('Word document extraction error:', wordError);
+        res.status(500).json({
+          success: false,
+          message: 'Failed to extract text from Word document: ' + wordError.message
+        });
+      }
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: 'Unsupported file type. Supported types: PDF, DOC, DOCX'
+      });
+    }
+  } catch (error) {
+    console.error('File extraction error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to extract text from file: ' + error.message
+    });
+  }
 };
 
 // Export all functions
 module.exports = {
-    getProfile,
-    updateProfile,
-    getUserDocuments,
-    uploadDocument,
-    deleteDocument,
-    getSubscription
+  getProfile,
+  updateProfile,
+  getUserDocuments,
+  uploadDocument,
+  deleteDocument,
+  getSubscription,
+  extractText
 };

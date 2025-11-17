@@ -11,3 +11,4 @@ export { default as Navbar } from './Navbar';
 export { default as ScenarioBrowser } from './ScenarioBrowser';
 export { default as ScenarioSimulation } from './ScenarioSimulation';
 export { default as Team } from './Team';
+export { default as LegalAssistant } from './LegalAssistantProfessional';

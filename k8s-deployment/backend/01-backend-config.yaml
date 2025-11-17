@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: dharmasikhara
+data:
+  NODE_ENV: "production"
+  PORT: "5000"
+  MONGODB_URI: "mongodb://ferretdb:27017/dharmasikhara"
+  JWT_SECRET: "dharmasikhara_jwt_secret_key"
+  GEMINI_API_KEY: "AIzaSyA91kgL0SfLuj0MfuO1heAgES4HBgHQ1Hs"

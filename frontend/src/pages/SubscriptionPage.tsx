@@ -19,6 +19,7 @@ interface Plan {
     prioritySupport: boolean;
     storage: string;
     documentAnalysisLimit: string;
+    legalAssistantTokens: string;
   };
   description: string;
 }
@@ -37,6 +38,7 @@ interface Subscription {
     prioritySupport: boolean;
     storage: string;
     documentAnalysisLimit: string;
+    legalAssistantTokens: string;
   };
 }
 
@@ -56,8 +58,9 @@ const SubscriptionPage: React.FC = () => {
         setLoading(true);
         setError('');
         
-        // Use direct backend URL instead of relative path
-        const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+        // Use the correct API URL based on environment
+        const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const API_BASE_URL = isDevelopment ? 'http://localhost:5000' : window.location.origin;
         
         // Fetch subscription plans
         const plansResponse = await fetch(`${API_BASE_URL}/api/payments/plans`, {
@@ -113,8 +116,9 @@ const SubscriptionPage: React.FC = () => {
       setError('');
       setSuccess('');
       
-      // Use direct backend URL instead of relative path
-      const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+      // Use the correct API URL based on environment
+      const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      const API_BASE_URL = isDevelopment ? 'http://localhost:5000' : window.location.origin;
       
       const response = await fetch(`${API_BASE_URL}/api/account/subscription`, {
         method: 'POST',
@@ -158,8 +162,8 @@ const SubscriptionPage: React.FC = () => {
   const getPlanColor = (planId: string) => {
     switch (planId) {
       case 'free': return 'border-gray-200';
-      case 'pro': return 'border-blue-200 bg-blue-50';
-      case 'advanced': return 'border-purple-200 bg-purple-50';
+      case 'basic': return 'border-blue-200 bg-blue-50';
+      case 'standard': return 'border-purple-200 bg-purple-50';
       case 'premium': return 'border-yellow-200 bg-yellow-50';
       default: return 'border-gray-200';
     }
@@ -168,8 +172,8 @@ const SubscriptionPage: React.FC = () => {
   const getPlanButtonColor = (planId: string) => {
     switch (planId) {
       case 'free': return 'bg-gray-600 hover:bg-gray-700';
-      case 'pro': return 'bg-blue-600 hover:bg-blue-700';
-      case 'advanced': return 'bg-purple-600 hover:bg-purple-700';
+      case 'basic': return 'bg-blue-600 hover:bg-blue-700';
+      case 'standard': return 'bg-purple-600 hover:bg-purple-700';
       case 'premium': return 'bg-yellow-500 hover:bg-yellow-600';
       default: return 'bg-gray-600 hover:bg-gray-700';
     }
@@ -279,13 +283,13 @@ const SubscriptionPage: React.FC = () => {
                   <span>{plan.features.scenariosAccess} Scenarios/Month</span>
                 </li>
                 <li className="flex items-center">
-                  <svg className={`w-5 h-5 mr-2 ${plan.features.documentAnalysisLimit ? 'text-green-500' : 'text-gray-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <svg className={`w-5 h-5 mr-2 ${plan.features.documentAnalysisLimit && plan.features.documentAnalysisLimit !== '0 per week' && plan.features.documentAnalysisLimit !== '0 per month' ? 'text-green-500' : 'text-gray-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
                   </svg>
                   <span>{plan.features.documentAnalysisLimit} Document Analysis</span>
                 </li>
                 <li className="flex items-center">
-                  <svg className={`w-5 h-5 mr-2 ${plan.features.storage !== '0 GB' ? 'text-green-500' : 'text-gray-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <svg className={`w-5 h-5 mr-2 ${plan.features.storage && plan.features.storage !== '0 GB' ? 'text-green-500' : 'text-gray-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
                   </svg>
                   <span>{plan.features.storage} Storage</span>
@@ -303,10 +307,10 @@ const SubscriptionPage: React.FC = () => {
                   <span>{plan.features.customScenarios} Custom Scenarios/Month</span>
                 </li>
                 <li className="flex items-center">
-                  <svg className={`w-5 h-5 mr-2 ${plan.features.prioritySupport ? 'text-green-500' : 'text-gray-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <svg className={`w-5 h-5 mr-2 ${plan.features.legalAssistantTokens && plan.features.legalAssistantTokens !== 'Limited' ? 'text-green-500' : 'text-gray-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
                   </svg>
-                  <span>Priority Support</span>
+                  <span>{plan.features.legalAssistantTokens} Legal Assistant Tokens</span>
                 </li>
               </ul>
               

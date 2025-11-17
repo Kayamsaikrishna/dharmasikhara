@@ -1,0 +1,947 @@
+{
+  "case_details": {
+    "case_number": "BAIL/2025/3847",
+    "case_title": "Rajesh Kumar vs State of Karnataka",
+    "court": "Court of Additional Chief Judicial Magistrate, Bangalore",
+    "date": "October 17, 2025",
+    "offense": "BNS Section 303(1) - Theft",
+    "value_of_property": "₹45,000",
+    "presiding_officer": "Hon'ble Magistrate Smt. Kavitha Narayan"
+  },
+  
+  "court_session": [
+    {
+      "sequence": 1,
+      "speaker": "Court Clerk",
+      "action": "ANNOUNCES",
+      "dialogue": "All rise! The Honourable Court is now in session. The Honourable Additional Chief Judicial Magistrate Smt. Kavitha Narayan presiding. Case number BAIL slash 2025 slash 3847. Rajesh Kumar versus State of Karnataka. Application for bail under Section 480 of the Bharatiya Nagarik Suraksha Sanhita."
+    },
+    {
+      "sequence": 2,
+      "speaker": "Magistrate",
+      "action": "SETTLES",
+      "dialogue": "Please be seated. Court clerk, confirm the presence of all parties."
+    },
+    {
+      "sequence": 3,
+      "speaker": "Court Clerk",
+      "action": "READS",
+      "dialogue": "Yes, Your Honour. Defense counsel present. Public Prosecutor present. Accused Rajesh Kumar present in custody. Two proposed sureties present in court - Ramesh Kumar and Arjun Rao."
+    },
+    {
+      "sequence": 4,
+      "speaker": "Magistrate",
+      "action": "ADDRESSES_DEFENSE",
+      "dialogue": "Counsel for the accused, please state your appearance and proceed with your bail application."
+    },
+    {
+      "sequence": 5,
+      "speaker": "Defense Attorney",
+      "action": "STANDS_AND_INTRODUCES",
+      "dialogue": "May it please Your Honour, I appear on behalf of the accused, Rajesh Kumar. Your Honour, I am here to move an application for bail under Section 480 of the Bharatiya Nagarik Suraksha Sanhita on behalf of my client, who has been falsely implicated in this case."
+    },
+    {
+      "sequence": 6,
+      "speaker": "Magistrate",
+      "action": "NODS",
+      "dialogue": "Please proceed. Give me a brief summary of the facts first, then your submissions."
+    },
+    {
+      "sequence": 7,
+      "speaker": "Defense Attorney",
+      "action": "PRESENTS_FACTS",
+      "dialogue": "Much obliged, Your Honour. The facts of this case are as follows: My client, Rajesh Kumar, is a 28-year-old sales executive who has been employed at Vijay Electronics for the past four years. On October 15, 2025, during a routine monthly inventory check at his workplace, a Dell Inspiron laptop valued at rupees forty-five thousand was reported missing. My client was conducting the inventory along with his colleague, one Prakash Mehta. The store manager, Mr. Arvind Desai, reviewed CCTV footage and allegedly observed my client placing an object into his personal bag. Based solely on this grainy footage, my client was arrested on October 16, 2025, and has been in custody since then. He is charged under Section 303(1) of the Bharatiya Nyaya Sanhita."
+    },
+    {
+      "sequence": 8,
+      "speaker": "Magistrate",
+      "action": "TAKES_NOTES",
+      "dialogue": "What does your client say happened in that footage?"
+    },
+    {
+      "sequence": 9,
+      "speaker": "Defense Attorney",
+      "action": "RESPONDS",
+      "dialogue": "Your Honour, my client categorically denies stealing any laptop. He states that what was captured on the CCTV was him retrieving his personal mobile phone charger, which is housed in a hard black plastic case. Due to the poor quality of the footage and the high angle of the camera, the charger appeared to resemble a laptop. This is a clear case of mistaken identity based on circumstantial misinterpretation."
+    },
+    {
+      "sequence": 10,
+      "speaker": "Magistrate",
+      "action": "QUESTIONS",
+      "dialogue": "Has the laptop been recovered from the accused?"
+    },
+    {
+      "sequence": 11,
+      "speaker": "Defense Attorney",
+      "action": "EMPHASIZES",
+      "dialogue": "No, Your Honour. That is a crucial point. Despite thorough searches of my client's residence, his personal bag, and his vehicle, the laptop has NOT been recovered. The police found absolutely nothing incriminating. This strongly supports my client's assertion of innocence."
+    },
+    {
+      "sequence": 12,
+      "speaker": "Magistrate",
+      "action": "ADDRESSES_PROSECUTION",
+      "dialogue": "Public Prosecutor, what is the state's position on the recovery?"
+    },
+    {
+      "sequence": 13,
+      "speaker": "Public Prosecutor",
+      "action": "STANDS_AND_RESPONDS",
+      "dialogue": "Your Honour, the investigation is still ongoing. The laptop has not been recovered yet, which we submit indicates that the accused may have disposed of it or hidden it elsewhere. The absence of recovery does not establish innocence. The CCTV evidence clearly shows the accused placing something into his bag during the inventory check when the laptop went missing."
+    },
+    {
+      "sequence": 14,
+      "speaker": "Defense Attorney",
+      "action": "OBJECTS_POLITELY",
+      "dialogue": "Your Honour, if I may respond to my learned friend's submission. The prosecution is engaging in speculation. There is no direct evidence linking my client to the theft. The CCTV footage is ambiguous at best, and my client has a perfectly reasonable explanation for his actions."
+    },
+    {
+      "sequence": 15,
+      "speaker": "Magistrate",
+      "action": "GESTURES",
+      "dialogue": "Counsel, please continue with your bail submissions. We will evaluate the evidence at trial. For now, I need to know why bail should be granted."
+    },
+    {
+      "sequence": 16,
+      "speaker": "Defense Attorney",
+      "action": "PROCEEDS_WITH_BAIL_GROUNDS",
+      "dialogue": "Yes, Your Honour. I now submit the following grounds for granting bail to my client. First and foremost, this is a case where the fundamental principle 'Bail is the rule, jail is the exception' must be applied. This principle has been consistently upheld by the Supreme Court in numerous judgments including Sanjay Chandra versus Central Bureau of Investigation, 2012. Under the new Bharatiya Nagarik Suraksha Sanhita, this principle is even more strongly emphasized."
+    },
+    {
+      "sequence": 17,
+      "speaker": "Defense Attorney",
+      "action": "CONTINUES",
+      "dialogue": "Second, Your Honour, my client is a first-time accused with absolutely no criminal antecedents. He has no previous involvement with the law whatsoever. He has maintained a clean record throughout his life and professional career."
+    },
+    {
+      "sequence": 18,
+      "speaker": "Defense Attorney",
+      "action": "EMPHASIZES_ROOTS",
+      "dialogue": "Third, my client has deep and strong roots in this community. He has been a resident of Bangalore for his entire life. He has stable employment of four years at Vijay Electronics. He is married with a two-year-old daughter, Ananya. His wife, Priya, is dependent on him. His elderly parents reside nearby in Shankarapuram. He has absolutely no reason or inclination to abscond."
+    },
+    {
+      "sequence": 19,
+      "speaker": "Magistrate",
+      "action": "QUESTIONS",
+      "dialogue": "Does the accused have a passport?"
+    },
+    {
+      "sequence": 20,
+      "speaker": "Defense Attorney",
+      "action": "RESPONDS_CONFIDENTLY",
+      "dialogue": "Yes, Your Honour, he does possess a passport. However, my client has voluntarily expressed his willingness to surrender his passport to this Honourable Court immediately. This demonstrates his commitment to remain available for the investigation and trial proceedings."
+    },
+    {
+      "sequence": 21,
+      "speaker": "Magistrate",
+      "action": "NOTES",
+      "dialogue": "That is noted. Continue."
+    },
+    {
+      "sequence": 22,
+      "speaker": "Defense Attorney",
+      "action": "FOURTH_GROUND",
+      "dialogue": "Fourth, Your Honour, my client poses absolutely no flight risk. He has voluntarily cooperated with the police at every stage. When he was arrested, he went peacefully without any resistance. He has been fully cooperative during interrogation. His willingness to surrender his passport and remain within the jurisdiction underscores his intention to face the legal process."
+    },
+    {
+      "sequence": 23,
+      "speaker": "Defense Attorney",
+      "action": "FIFTH_GROUND",
+      "dialogue": "Fifth, my client has arranged two financially sound and respectable sureties who are present in court today. His father, Ramesh Kumar, is a well-respected grocer in Shankarapuram with decades of business in the community. His brother-in-law, Arjun Rao, is a school teacher with a stable government position. Both are willing to execute bonds as required by this court."
+    },
+    {
+      "sequence": 24,
+      "speaker": "Magistrate",
+      "action": "ASKS_ABOUT_SURETIES",
+      "dialogue": "Are the proposed sureties present in court?"
+    },
+    {
+      "sequence": 25,
+      "speaker": "Defense Attorney",
+      "action": "CONFIRMS",
+      "dialogue": "Yes, Your Honour. Both Ramesh Kumar and Arjun Rao are present and ready to be examined if Your Honour deems it necessary."
+    },
+    {
+      "sequence": 26,
+      "speaker": "Magistrate",
+      "action": "ADDRESSES_SURETIES",
+      "dialogue": "Ramesh Kumar and Arjun Rao, please stand. Are you both willing to stand surety for the accused and ensure his presence at all court proceedings?"
+    },
+    {
+      "sequence": 27,
+      "speaker": "Ramesh Kumar",
+      "action": "STANDS_AND_RESPONDS",
+      "dialogue": "Yes, Your Honour. I am Rajesh's father. I have complete faith in my son's innocence. I am willing to provide any guarantee required by the court. I will ensure he appears for all proceedings."
+    },
+    {
+      "sequence": 28,
+      "speaker": "Arjun Rao",
+      "action": "STANDS_AND_RESPONDS",
+      "dialogue": "Yes, Your Honour. I am Rajesh's brother-in-law and I have known him for over eight years. He is a responsible family man and would never commit such an act. I am willing to execute any bond required and guarantee his attendance in court."
+    },
+    {
+      "sequence": 29,
+      "speaker": "Magistrate",
+      "action": "SATISFIED",
+      "dialogue": "Thank you. You may be seated. Counsel, continue with your submissions."
+    },
+    {
+      "sequence": 30,
+      "speaker": "Defense Attorney",
+      "action": "SIXTH_GROUND",
+      "dialogue": "Sixth, Your Honour, there is a critical evidentiary gap in this case. The laptop has not been recovered from my client's possession. There is no forensic evidence linking him to the alleged theft. The sole piece of evidence is ambiguous CCTV footage that can be reasonably explained by my client's version of events."
+    },
+    {
+      "sequence": 31,
+      "speaker": "Defense Attorney",
+      "action": "SEVENTH_GROUND",
+      "dialogue": "Seventh, my client has a credible witness in the form of his colleague, Prakash Mehta, who was present during the entire inventory check. Mr. Mehta can corroborate my client's presence and actions during the relevant time period. This witness supports the defense's version of events."
+    },
+    {
+      "sequence": 32,
+      "speaker": "Defense Attorney",
+      "action": "EIGHTH_GROUND",
+      "dialogue": "Eighth, Your Honour, my client's continued detention serves no purpose. The investigation has already been completed to the extent of searching his premises and interrogating him. His presence in custody will not aid the investigation further. On the contrary, his continued incarceration is causing immense hardship to his young family, particularly his two-year-old daughter who is dependent on him."
+    },
+    {
+      "sequence": 33,
+      "speaker": "Defense Attorney",
+      "action": "NINTH_GROUND",
+      "dialogue": "Ninth, my client has no motive whatsoever to commit this offense. He earns a respectable salary of rupees forty-two thousand per month. He has no outstanding debts or financial difficulties. He was actually being considered for a promotion at his workplace. There is no logical reason why a man in his position would risk everything for a laptop worth forty-five thousand rupees."
+    },
+    {
+      "sequence": 34,
+      "speaker": "Magistrate",
+      "action": "QUESTIONS",
+      "dialogue": "What about the employment aspect? He was an employee of the complainant organization. Does that not create a breach of trust situation?"
+    },
+    {
+      "sequence": 35,
+      "speaker": "Defense Attorney",
+      "action": "ADDRESSES_CONCERN",
+      "dialogue": "Your Honour, that is precisely why my client proposes stringent bail conditions. He is willing to agree to a condition of no contact with the complainant or his former workplace. However, the allegation of breach of trust itself is contested. My client was conducting a routine inventory check, which was part of his legitimate duties. There was no special position of trust that was violated."
+    },
+    {
+      "sequence": 36,
+      "speaker": "Defense Attorney",
+      "action": "TENTH_GROUND",
+      "dialogue": "Tenth and finally, Your Honour, I wish to draw the court's attention to an interesting anomaly in the case. The digital inventory log shows an entry made at 9:47 AM stating that the laptop was 'dispatched to Service Center' with a ticket number. However, according to the complainant's own case, there is no corresponding service ticket, no technician signature, and the service center has no record of receiving any laptop. This raises serious questions about what actually happened to the laptop and whether my client is being made a scapegoat."
+    },
+    {
+      "sequence": 37,
+      "speaker": "Magistrate",
+      "action": "INTERESTED",
+      "dialogue": "That is an interesting point. Public Prosecutor, are you aware of this discrepancy in the inventory log?"
+    },
+    {
+      "sequence": 38,
+      "speaker": "Public Prosecutor",
+      "action": "RESPONDS",
+      "dialogue": "Your Honour, we are aware of this entry. The investigating officer has submitted that this may have been a false entry created by someone to cover up the theft. However, this does not exonerate the accused. The CCTV clearly shows him with an object at the relevant time."
+    },
+    {
+      "sequence": 39,
+      "speaker": "Defense Attorney",
+      "action": "COUNTERS",
+      "dialogue": "Your Honour, with respect, this cuts both ways. If someone had the capability and intent to falsify the digital inventory log, it raises the possibility that my client is being falsely implicated. This is precisely the kind of ambiguity that warrants the grant of bail while the investigation continues."
+    },
+    {
+      "sequence": 40,
+      "speaker": "Defense Attorney",
+      "action": "PROPOSES_CONDITIONS",
+      "dialogue": "Your Honour, in light of all these submissions, I respectfully propose the following conditions for bail: One, my client will execute a personal bond of rupees fifty thousand. Two, he will provide two sureties of rupees twenty-five thousand each through his father and brother-in-law. Three, he will surrender his passport to this court within 48 hours of release. Four, he will report to the jurisdictional police station every Monday. Five, he will not make any contact with the complainant, Mr. Desai, or visit his former workplace. And six, he will not leave the city of Bangalore without prior permission of this court."
+    },
+    {
+      "sequence": 41,
+      "speaker": "Magistrate",
+      "action": "ADDRESSES_PROSECUTION",
+      "dialogue": "Public Prosecutor, I have heard the defense counsel's submissions. What is the state's objection to bail?"
+    },
+    {
+      "sequence": 42,
+      "speaker": "Public Prosecutor",
+      "action": "STANDS_TO_OPPOSE",
+      "dialogue": "Your Honour, the state vehemently opposes the grant of bail in this matter. I will outline our objections systematically."
+    },
+    {
+      "sequence": 43,
+      "speaker": "Public Prosecutor",
+      "action": "FIRST_OBJECTION",
+      "dialogue": "First, Your Honour, this is a non-bailable offense. The property stolen is valued at rupees forty-five thousand, which is significantly above the threshold specified in Section 303(1) of the Bharatiya Nyaya Sanhita. The legislature has deliberately categorized such offenses as non-bailable to reflect their seriousness."
+    },
+    {
+      "sequence": 44,
+      "speaker": "Public Prosecutor",
+      "action": "SECOND_OBJECTION",
+      "dialogue": "Second, Your Honour, there is clear CCTV evidence showing the accused placing an object into his bag at the precise time when the laptop went missing. The defense's explanation about a phone charger is self-serving and uncorroborated. The video evidence is damning."
+    },
+    {
+      "sequence": 45,
+      "speaker": "Public Prosecutor",
+      "action": "THIRD_OBJECTION",
+      "dialogue": "Third, the investigation is still at a preliminary stage. The laptop has not been recovered. If the accused is released on bail, there is a serious risk that he may destroy evidence, tamper with witnesses, or dispose of the stolen property permanently. This will irreparably prejudice the investigation."
+    },
+    {
+      "sequence": 46,
+      "speaker": "Public Prosecutor",
+      "action": "FOURTH_OBJECTION",
+      "dialogue": "Fourth, Your Honour, this is a case of criminal breach of trust by an employee. The accused was in a position of trust as a sales executive conducting inventory checks. He exploited this trust to commit theft. Such offenses, if not dealt with strictly, will encourage similar misconduct by other employees."
+    },
+    {
+      "sequence": 47,
+      "speaker": "Public Prosecutor",
+      "action": "FIFTH_OBJECTION",
+      "dialogue": "Fifth, the value of the stolen property is substantial - rupees forty-five thousand. This is not a petty theft case. The economic loss to the complainant is significant, and there must be consequences for such actions."
+    },
+    {
+      "sequence": 48,
+      "speaker": "Public Prosecutor",
+      "action": "SIXTH_OBJECTION",
+      "dialogue": "Sixth, Your Honour, granting bail at this stage would send the wrong message to society. It would appear that individuals in positions of trust can commit theft and secure their liberty simply by offering sureties. This would undermine public confidence in the criminal justice system."
+    },
+    {
+      "sequence": 49,
+      "speaker": "Public Prosecutor",
+      "action": "CONCLUDES_OBJECTION",
+      "dialogue": "For all these reasons, Your Honour, we submit that bail should be denied. The accused should remain in custody until the trial is completed. The state has a strong prima facie case, and there are compelling reasons to keep the accused in judicial custody."
+    },
+    {
+      "sequence": 50,
+      "speaker": "Magistrate",
+      "action": "ADDRESSES_DEFENSE",
+      "dialogue": "Defense counsel, would you like to respond to the prosecution's objections?"
+    },
+    {
+      "sequence": 51,
+      "speaker": "Defense Attorney",
+      "action": "RESPONDS_TO_OBJECTIONS",
+      "dialogue": "Yes, Your Honour. I will briefly address each objection. First, regarding the offense being non-bailable - Your Honour, the Supreme Court has repeatedly held that the nature of the offense, while relevant, is not determinative. In Dataram Singh versus State of Uttar Pradesh, the Supreme Court held that even in serious offenses, bail can be granted if there is no likelihood of the accused fleeing from justice."
+    },
+    {
+      "sequence": 52,
+      "speaker": "Defense Attorney",
+      "action": "CONTINUES_REBUTTAL",
+      "dialogue": "Second, regarding the CCTV evidence - Your Honour, the prosecution says the evidence is 'clear,' but that is simply not true. The footage is grainy, shot from a high angle, and the object is not identifiable. My learned friend admits that even he cannot definitively say what the object is. This ambiguity must be resolved in favor of the accused at the bail stage."
+    },
+    {
+      "sequence": 53,
+      "speaker": "Defense Attorney",
+      "action": "THIRD_REBUTTAL",
+      "dialogue": "Third, regarding the risk of tampering with evidence - Your Honour, what evidence is there left to tamper with? The police have already searched my client's home and vehicle. They have seized his phone. They have recorded statements from all witnesses. The CCTV footage is in police custody. There is no evidence that my client can destroy or tamper with."
+    },
+    {
+      "sequence": 54,
+      "speaker": "Defense Attorney",
+      "action": "FOURTH_REBUTTAL",
+      "dialogue": "Fourth, regarding breach of trust - Your Honour, this allegation is highly debatable. My client was simply doing his assigned duty of conducting inventory. He had no special access, no keys, no exclusive control over the storage room. The manager, Mr. Desai, had far greater access and control than my client. To characterize this as criminal breach of trust is a stretch."
+    },
+    {
+      "sequence": 55,
+      "speaker": "Defense Attorney",
+      "action": "FIFTH_REBUTTAL",
+      "dialogue": "Fifth, regarding the value of property - Your Honour, while forty-five thousand rupees is not an insignificant amount, it must be viewed in context. This is not a case involving lakhs of rupees or organized crime. It is an allegation of theft of a single laptop. The punishment for such an offense, even if proven, would not be draconian. Therefore, continued detention is disproportionate."
+    },
+    {
+      "sequence": 56,
+      "speaker": "Defense Attorney",
+      "action": "SIXTH_REBUTTAL",
+      "dialogue": "Finally, regarding the message to society - Your Honour, with great respect, denying bail to an innocent person sends the wrong message. The message should be that our justice system respects the presumption of innocence. My client has not been proven guilty. He deserves the opportunity to defend himself while living with his family, not languishing in custody."
+    },
+    {
+      "sequence": 57,
+      "speaker": "Defense Attorney",
+      "action": "CITES_PRECEDENT",
+      "dialogue": "Your Honour, I wish to cite the landmark judgment of the Supreme Court in Arnab Manoranjan Goswami versus State of Maharashtra, where the court observed, and I quote: 'Courts must be alive to the need to zealously safeguard the liberty of individuals. Personal liberty is an invaluable treasure for a human being. Deprivation of liberty must be based on valid reasons.' End quote. This principle applies with full force to my client's case."
+    },
+    {
+      "sequence": 58,
+      "speaker": "Magistrate",
+      "action": "PAUSES_TO_THINK",
+      "dialogue": "I have heard both sides. I need a few moments to consider the submissions."
+    },
+    {
+      "sequence": 59,
+      "speaker": "Magistrate",
+      "action": "REVIEWS_CASE_FILE",
+      "dialogue": "Let me summarize the facts as I understand them. The accused is a first-time offender with no criminal history. He has strong community ties - a wife, a young child, elderly parents. He has been employed at the same organization for four years. The alleged offense is theft of a laptop valued at forty-five thousand rupees. The evidence consists primarily of CCTV footage showing the accused placing an object into his bag. The laptop has not been recovered from his possession despite searches. There is a witness who was present at the scene. There is also an unexplained discrepancy in the digital inventory log. Have I captured the essence correctly?"
+    },
+    {
+      "sequence": 60,
+      "speaker": "Defense Attorney",
+      "action": "CONFIRMS",
+      "dialogue": "Yes, Your Honour. That is an accurate summary."
+    },
+    {
+      "sequence": 61,
+      "speaker": "Public Prosecutor",
+      "action": "CONFIRMS",
+      "dialogue": "Yes, Your Honour, subject to our position that the CCTV evidence is clear and incriminating."
+    },
+    {
+      "sequence": 62,
+      "speaker": "Magistrate",
+      "action": "QUESTIONS_PROSECUTION",
+      "dialogue": "Public Prosecutor, let me ask you this. If the laptop is not recovered from the accused's possession, and if there is no forensic evidence, and if the CCTV footage is ambiguous, what is the strongest piece of evidence you have against the accused?"
+    },
+    {
+      "sequence": 63,
+      "speaker": "Public Prosecutor",
+      "action": "RESPONDS_CAREFULLY",
+      "dialogue": "Your Honour, our strongest evidence is the temporal coincidence. The laptop went missing during the inventory check. The accused was present and was seen placing something in his bag at that exact time. No one else had access to that storage room during the relevant period. The circumstantial evidence, taken together, points to the accused."
+    },
+    {
+      "sequence": 64,
+      "speaker": "Magistrate",
+      "action": "FOLLOWS_UP",
+      "dialogue": "But the defense has pointed out that the manager, Mr. Desai, also had access to the storage room. In fact, he had greater access than the accused. Has the investigation explored this angle?"
+    },
+    {
+      "sequence": 65,
+      "speaker": "Public Prosecutor",
+      "action": "HESITATES",
+      "dialogue": "Your Honour, the manager is the complainant in this case. He is the one who reported the theft. The investigation has focused on the accused based on the CCTV evidence. However, I take Your Honour's point that alternative theories may need to be explored."
+    },
+    {
+      "sequence": 66,
+      "speaker": "Magistrate",
+      "action": "ADDRESSES_DEFENSE",
+      "dialogue": "Defense counsel, you mentioned that your client is willing to abide by stringent bail conditions. Can you confirm the specific conditions you are proposing?"
+    },
+    {
+      "sequence": 67,
+      "speaker": "Defense Attorney",
+      "action": "REITERATES_CONDITIONS",
+      "dialogue": "Yes, Your Honour. The conditions are: personal bond of fifty thousand rupees, two sureties of twenty-five thousand rupees each, surrender of passport within 48 hours, weekly reporting to the police station every Monday, no contact with the complainant or former workplace, and no travel outside Bangalore without court permission. Additionally, Your Honour, if the court deems it necessary, my client is willing to report twice a week or even daily."
+    },
+    {
+      "sequence": 68,
+      "speaker": "Magistrate",
+      "action": "QUESTIONS_ACCUSED",
+      "dialogue": "Accused Rajesh Kumar, please stand. Do you understand the conditions proposed for your bail?"
+    },
+    {
+      "sequence": 69,
+      "speaker": "Rajesh Kumar",
+      "action": "STANDS_RESPECTFULLY",
+      "dialogue": "Yes, Your Honour. I understand completely."
+    },
+    {
+      "sequence": 70,
+      "speaker": "Magistrate",
+      "action": "CONTINUES_QUESTIONING",
+      "dialogue": "Are you willing to abide by all these conditions if bail is granted to you?"
+    },
+    {
+      "sequence": 71,
+      "speaker": "Rajesh Kumar",
+      "action": "RESPONDS_EARNESTLY",
+      "dialogue": "Yes, Your Honour. I am willing to follow any and all conditions set by this court. I have a two-year-old daughter at home. I just want to be there for her and prove my innocence. I did not commit this crime."
+    },
+    {
+      "sequence": 72,
+      "speaker": "Magistrate",
+      "action": "ASSESSES_DEMEANOR",
+      "dialogue": "You may be seated. Thank you."
+    },
+    {
+      "sequence": 73,
+      "speaker": "Magistrate",
+      "action": "PREPARES_TO_RULE",
+      "dialogue": "I have given careful consideration to the submissions of both the defense and the prosecution. I have also taken into account the facts on record and the legal principles governing the grant of bail in non-bailable offenses. This court must balance two competing interests: the liberty of the accused under Article 21 of the Constitution and the interests of justice and society."
+    },
+    {
+      "sequence": 74,
+      "speaker": "Magistrate",
+      "action": "ANALYSIS_BEGINS",
+      "dialogue": "The law is well-settled that bail is the rule and jail is the exception, even in non-bailable offenses. The Supreme Court has consistently held that the gravity of the offense alone is not sufficient to deny bail. The court must consider factors such as the nature and seriousness of the offense, the character of the evidence, the circumstances which are peculiar to the accused, the likelihood of the accused fleeing from justice, and the likelihood of the offense being repeated."
+    },
+    {
+      "sequence": 75,
+      "speaker": "Magistrate",
+      "action": "EVALUATES_FACTS",
+      "dialogue": "In the present case, I note the following facts in favor of the accused. First, he is a first-time offender with no criminal antecedents. Second, he has deep roots in the community with a stable family and employment. Third, he has expressed willingness to surrender his passport and abide by stringent conditions. Fourth, the laptop has not been recovered from his possession. Fifth, the primary evidence - the CCTV footage - is admittedly of poor quality and open to interpretation. Sixth, there is a credible alternative explanation for his actions. Seventh, there is an unexplained discrepancy in the inventory log that raises questions about what actually happened."
+    },
+    {
+      "sequence": 76,
+      "speaker": "Magistrate",
+      "action": "ACKNOWLEDGES_PROSECUTION",
+      "dialogue": "I also note the concerns raised by the prosecution. This is a non-bailable offense involving property of substantial value. The accused was an employee of the complainant organization. There is CCTV footage showing the accused at the relevant time. The investigation is ongoing."
+    },
+    {
+      "sequence": 77,
+      "speaker": "Magistrate",
+      "action": "WEIGHS_FACTORS",
+      "dialogue": "However, on balance, I find that the defense has made out a case for bail. The evidence against the accused is primarily circumstantial and ambiguous. The fact that the laptop has not been recovered despite searches weighs in favor of the accused. More importantly, the accused does not appear to pose a flight risk. He has strong community ties, family responsibilities, and has offered to abide by stringent conditions."
+    },
+    {
+      "sequence": 78,
+      "speaker": "Magistrate",
+      "action": "ADDRESSES_LIBERTY",
+      "dialogue": "I am mindful that personal liberty is a precious constitutional right. As the Supreme Court observed in Gudikanti Narasimhulu versus Public Prosecutor, and I quote: 'The basic rule is to release on bail an accused, except where there are circumstances suggesting the possibility of fleeing from justice or thwarting the course of justice.' End quote. In the present case, I do not find sufficient grounds to conclude that releasing the accused on bail would thwart the course of justice."
+    },
+    {
+      "sequence": 79,
+      "speaker": "Magistrate",
+      "action": "DELIVERS_ORDER",
+      "dialogue": "Accordingly, I am inclined to grant bail to the accused, subject to certain conditions. However, given the nature of the allegations, I will impose stricter conditions than those proposed by the defense to address the prosecution's legitimate concerns."
+    },
+    {
+      "sequence": 80,
+      "speaker": "Magistrate",
+      "action": "PRONOUNCES_JUDGMENT",
+      "dialogue": "The accused Rajesh Kumar is hereby granted bail subject to the following conditions: One, the accused shall execute a personal bond in the sum of rupees seventy-five thousand. Two, the accused shall provide two sureties of rupees thirty-five thousand each. The sureties must be local residents of Bangalore and shall be verified by the jurisdictional police station. Three, the accused shall surrender his passport to this court within 24 hours of his release. The passport shall remain in the custody of this court until further orders."
+    },
+    {
+      "sequence": 81,
+      "speaker": "Magistrate",
+      "action": "CONTINUES_CONDITIONS",
+      "dialogue": "Four, the accused shall report to the jurisdictional police station twice a week, specifically every Monday and Thursday between 10 AM and 12 noon, until further orders. Five, the accused shall not, directly or indirectly, make any contact with the complainant Mr. Arvind Desai or any other employees of Vijay Electronics. Six, the accused shall not visit the premises of Vijay Electronics under any circumstances."
+    },
+    {
+      "sequence": 82,
+      "speaker": "Magistrate",
+      "action": "ADDITIONAL_CONDITIONS",
+      "dialogue": "Seven, the accused shall not leave the territorial jurisdiction of Bangalore Urban District without prior written permission from this court. Eight, the accused shall not tamper with any evidence or attempt to influence any witnesses in this case. Nine, the accused shall cooperate fully with the investigating agency and appear before them whenever required. Ten, the accused shall keep his mobile phone switched on at all times and shall be reachable to the investigating officer."
+    },
+    {
+      "sequence": 83,
+      "speaker": "Magistrate",
+      "action": "WARNING",
+      "dialogue": "The accused is hereby warned that any violation of these conditions, or any attempt to abscond, will result in immediate cancellation of bail and re-arrest. Furthermore, such violation may lead to additional charges under Section 229A of the Indian Penal Code for failure to appear in court."
+    },
+    {
+      "sequence": 84,
+      "speaker": "Magistrate",
+      "action": "DIRECTS_DOCUMENTATION",
+      "dialogue": "The court clerk shall prepare the bail bond documents immediately. The accused shall be released from custody upon furnishing the bail bond and sureties to the satisfaction of this court. The sureties shall provide proof of their identity, residence, and financial capacity."
+    },
+    {
+      "sequence": 85,
+      "speaker": "Magistrate",
+      "action": "ADDRESSES_PROSECUTION",
+      "dialogue": "Public Prosecutor, I trust that the investigation will continue diligently. I also direct the investigating officer to explore all angles of this case, including the discrepancy in the inventory log that has been brought to the court's attention. The investigation must be thorough and fair."
+    },
+    {
+      "sequence": 86,
+      "speaker": "Public Prosecutor",
+      "action": "ACKNOWLEDGES",
+      "dialogue": "Yes, Your Honour. The state will comply with the court's directions. However, Your Honour, we wish to place on record our strong objection to the grant of bail. We believe that the accused may tamper with evidence or influence witnesses."
+    },
+    {
+      "sequence": 87,
+      "speaker": "Magistrate",
+      "action": "RESPONDS_FIRMLY",
+      "dialogue": "Your objection is noted, Public Prosecutor. However, this court has imposed stringent conditions to address those very concerns. The accused will be under close supervision. Moreover, bail is not a favor; it is a right that can be exercised when the conditions justify it. If you have credible evidence that the accused is tampering with evidence after release, you may approach this court for cancellation of bail."
+    },
+    {
+      "sequence": 88,
+      "speaker": "Defense Attorney",
+      "action": "EXPRESSES_GRATITUDE",
+      "dialogue": "Much obliged, Your Honour. On behalf of my client and his family, I thank this Honourable Court for upholding the principles of justice and personal liberty. My client will strictly comply with all conditions imposed by this court."
+    },
+    {
+      "sequence": 89,
+      "speaker": "Magistrate",
+      "action": "SETS_NEXT_DATE",
+      "dialogue": "The next date of hearing for this case is scheduled for November 10, 2025, for the filing of chargesheet by the prosecution. The accused must appear in person on that date. Defense counsel, please ensure your client's attendance."
+    },
+    {
+      "sequence": 90,
+      "speaker": "Defense Attorney",
+      "action": "CONFIRMS",
+      "dialogue": "Yes, Your Honour. My client will be present without fail."
+    },
+    {
+      "sequence": 91,
+      "speaker": "Magistrate",
+      "action": "ADDRESSES_SURETIES",
+      "dialogue": "Ramesh Kumar and Arjun Rao, please approach the court clerk after this hearing concludes. You will need to provide your identity documents, proof of residence, and proof of financial capacity. The clerk will guide you through the process of executing the surety bonds."
+    },
+    {
+      "sequence": 92,
+      "speaker": "Ramesh Kumar",
+      "action": "RESPONDS",
+      "dialogue": "Yes, Your Honour. We have all the necessary documents with us. Thank you for granting bail to my son."
+    },
+    {
+      "sequence": 93,
+      "speaker": "Arjun Rao",
+      "action": "RESPONDS",
+      "dialogue": "Yes, Your Honour. We are ready to complete all formalities immediately."
+    },
+    {
+      "sequence": 94,
+      "speaker": "Magistrate",
+      "action": "FINAL_DIRECTIONS",
+      "dialogue": "Court clerk, please prepare a detailed order incorporating all the conditions I have specified. A copy of the order must be provided to both the defense counsel and the Public Prosecutor. A copy must also be sent to the jurisdictional police station where the accused will be reporting."
+    },
+    {
+      "sequence": 95,
+      "speaker": "Court Clerk",
+      "action": "ACKNOWLEDGES",
+      "dialogue": "Yes, Your Honour. I will prepare the order immediately and distribute copies to all concerned parties. The bail bond documents will be ready within one hour."
+    },
+    {
+      "sequence": 96,
+      "speaker": "Magistrate",
+      "action": "ADDRESSES_ACCUSED_FINAL",
+      "dialogue": "Rajesh Kumar, I want to make something very clear to you. This court has granted you bail based on the presumption of innocence and your personal circumstances. However, this is not an acquittal. The trial will proceed, and you must defend yourself in accordance with law. Do not take this bail as an indication of your guilt or innocence. That determination will be made only after a full trial on merits. Do you understand?"
+    },
+    {
+      "sequence": 97,
+      "speaker": "Rajesh Kumar",
+      "action": "RESPONDS_EMOTIONALLY",
+      "dialogue": "Yes, Your Honour. I understand completely. I am deeply grateful for this opportunity to be with my family while I prove my innocence. I promise to follow every single condition set by this court. I will not let you down. Thank you, Your Honour."
+    },
+    {
+      "sequence": 98,
+      "speaker": "Magistrate",
+      "action": "SHOWS_COMPASSION",
+      "dialogue": "I hope you use this opportunity wisely. Your daughter needs her father, and your family needs your support. At the same time, you must cooperate fully with the investigation and allow the truth to come out. Justice will be served if both sides act in good faith."
+    },
+    {
+      "sequence": 99,
+      "speaker": "Magistrate",
+      "action": "ADDRESSES_DEFENSE_FINAL",
+      "dialogue": "Defense counsel, I hold you personally responsible for ensuring your client's compliance with all bail conditions. If he fails to appear on any scheduled date or violates any condition, it will reflect poorly on your professional standing as well. Make sure he understands the seriousness of these obligations."
+    },
+    {
+      "sequence": 100,
+      "speaker": "Defense Attorney",
+      "action": "ACCEPTS_RESPONSIBILITY",
+      "dialogue": "I understand, Your Honour. I take full responsibility for my client's compliance. I will personally ensure that he appears on all scheduled dates and follows every condition meticulously. Your Honour can rest assured."
+    },
+    {
+      "sequence": 101,
+      "speaker": "Magistrate",
+      "action": "ADDRESSES_PROSECUTION_FINAL",
+      "dialogue": "Public Prosecutor, as I mentioned earlier, I expect the investigation to be thorough and fair. Do not focus solely on building a case against this accused. If there are other angles to explore, including the possibility of internal fraud or involvement of other individuals, those must be investigated with equal vigor. Justice requires that we find the truth, not just secure a conviction."
+    },
+    {
+      "sequence": 102,
+      "speaker": "Public Prosecutor",
+      "action": "RESPONDS_RESPECTFULLY",
+      "dialogue": "Your Honour, the state respects the court's observations. I will convey Your Honour's directions to the investigating officer. The investigation will be conducted in a fair and impartial manner. However, I must reiterate that we have a strong prima facie case against the accused based on the available evidence."
+    },
+    {
+      "sequence": 103,
+      "speaker": "Magistrate",
+      "action": "ACKNOWLEDGES",
+      "dialogue": "That is your prerogative as the prosecutor. You must present your case as you deem fit. However, I trust that the investigation will not be tunnel-visioned. Now, let me dictate the formal order for the record."
+    },
+    {
+      "sequence": 104,
+      "speaker": "Magistrate",
+      "action": "DICTATES_ORDER",
+      "dialogue": "ORDER. This is a bail application filed under Section 480 of the Bharatiya Nagarik Suraksha Sanhita on behalf of the accused Rajesh Kumar, who is arrested and in custody in connection with Crime Number 245 of 2025, registered at Jayanagar Police Station, Bangalore, for the offense punishable under Section 303(1) of the Bharatiya Nyaya Sanhita. After hearing the learned counsel for the accused and the learned Public Prosecutor for the state, and after perusing the case records, this court is satisfied that the accused has made out a case for bail. Accordingly, the accused Rajesh Kumar is enlarged on bail on the conditions specified herein above. The bail bond and sureties shall be furnished within 24 hours. The accused shall be released from custody forthwith upon furnishing the required bonds."
+    },
+    {
+      "sequence": 105,
+      "speaker": "Magistrate",
+      "action": "SIGNS_ORDER",
+      "dialogue": "This order is signed and dated October 17, 2025, at 11:47 AM. Court clerk, please mark this as Order Sheet Entry Number 3 in the case file."
+    },
+    {
+      "sequence": 106,
+      "speaker": "Court Clerk",
+      "action": "RECORDS",
+      "dialogue": "Yes, Your Honour. Order recorded as Entry Number 3. The time is noted as 11:47 AM on October 17, 2025."
+    },
+    {
+      "sequence": 107,
+      "speaker": "Magistrate",
+      "action": "ASKS_FOR_CLARIFICATIONS",
+      "dialogue": "Are there any clarifications required from either side regarding the bail conditions or the order?"
+    },
+    {
+      "sequence": 108,
+      "speaker": "Defense Attorney",
+      "action": "SEEKS_CLARIFICATION",
+      "dialogue": "Your Honour, just one small clarification. Regarding the reporting condition, my client has to report every Monday and Thursday between 10 AM and 12 noon. If there is a public holiday on any of these days, should he report on the next working day?"
+    },
+    {
+      "sequence": 109,
+      "speaker": "Magistrate",
+      "action": "CLARIFIES",
+      "dialogue": "That is a valid question. Yes, if Monday or Thursday falls on a public holiday, the accused shall report on the next immediate working day at the same time. However, he must not skip reporting for more than one week under any circumstances. If there are two consecutive holidays, he should report on the first available working day. Is that clear?"
+    },
+    {
+      "sequence": 110,
+      "speaker": "Defense Attorney",
+      "action": "CONFIRMS_UNDERSTANDING",
+      "dialogue": "Perfectly clear, Your Honour. Thank you for the clarification."
+    },
+    {
+      "sequence": 111,
+      "speaker": "Public Prosecutor",
+      "action": "SEEKS_CLARIFICATION",
+      "dialogue": "Your Honour, I have one clarification regarding the condition of no contact with witnesses. The order specifically mentions no contact with the complainant Mr. Desai and employees of Vijay Electronics. However, what about the witness Prakash Mehta? He was the accused's colleague and is a material witness. Should there be a specific condition regarding him as well?"
+    },
+    {
+      "sequence": 112,
+      "speaker": "Magistrate",
+      "action": "CONSIDERS",
+      "dialogue": "That is a fair point. Let me amend the order to make it more comprehensive. The accused shall not contact any prosecution witnesses, including but not limited to the complainant Mr. Arvind Desai, Prakash Mehta, or any other employees of Vijay Electronics who may be examined as witnesses in this case. However, if the accused accidentally encounters any such person in a public place, he shall not initiate any conversation regarding the case. Is that acceptable to both sides?"
+    },
+    {
+      "sequence": 113,
+      "speaker": "Defense Attorney",
+      "action": "AGREES",
+      "dialogue": "Yes, Your Honour. That is acceptable to the defense. My client will strictly avoid any contact with prosecution witnesses."
+    },
+    {
+      "sequence": 114,
+      "speaker": "Public Prosecutor",
+      "action": "AGREES",
+      "dialogue": "Yes, Your Honour. The amended condition is acceptable to the state. Thank you for the clarification."
+    },
+    {
+      "sequence": 115,
+      "speaker": "Magistrate",
+      "action": "AMENDS_ORDER",
+      "dialogue": "Court clerk, please incorporate this amendment in the formal order. The condition number five shall now read: 'The accused shall not, directly or indirectly, make any contact with any prosecution witnesses including but not limited to the complainant Mr. Arvind Desai, Mr. Prakash Mehta, or any other employees of Vijay Electronics who may be examined as witnesses in this case.' Please make a note of this amendment."
+    },
+    {
+      "sequence": 116,
+      "speaker": "Court Clerk",
+      "action": "NOTES",
+      "dialogue": "Yes, Your Honour. The amendment has been noted and will be incorporated in the final order."
+    },
+    {
+      "sequence": 117,
+      "speaker": "Magistrate",
+      "action": "ADDRESSES_INVESTIGATING_OFFICER",
+      "dialogue": "Is the investigating officer present in court today?"
+    },
+    {
+      "sequence": 118,
+      "speaker": "Court Clerk",
+      "action": "CHECKS",
+      "dialogue": "No, Your Honour. The investigating officer is not present. However, the Public Prosecutor is present representing the state."
+    },
+    {
+      "sequence": 119,
+      "speaker": "Magistrate",
+      "action": "DIRECTS",
+      "dialogue": "Public Prosecutor, please ensure that a copy of this order is served on the investigating officer immediately. He should be aware of all the conditions imposed on the accused. Additionally, please inform him of my earlier observation regarding the need to investigate all angles of this case, including the discrepancy in the inventory log."
+    },
+    {
+      "sequence": 120,
+      "speaker": "Public Prosecutor",
+      "action": "ACKNOWLEDGES",
+      "dialogue": "Yes, Your Honour. I will personally hand over a copy of the order to the investigating officer today itself and convey all of Your Honour's directions."
+    },
+    {
+      "sequence": 121,
+      "speaker": "Magistrate",
+      "action": "ADDRESSES_COURT",
+      "dialogue": "If there are no further clarifications or submissions, I will close this hearing. The accused shall complete the bail formalities with the court clerk. Once the bail bond and sureties are verified and found satisfactory, the accused shall be released from custody. The release must happen today itself, preferably by evening."
+    },
+    {
+      "sequence": 122,
+      "speaker": "Defense Attorney",
+      "action": "REQUESTS",
+      "dialogue": "Your Honour, may I request that the court clerk expedite the paperwork so that my client can be released as soon as possible? His family is waiting outside, and his young daughter is unwell."
+    },
+    {
+      "sequence": 123,
+      "speaker": "Magistrate",
+      "action": "DIRECTS_CLERK",
+      "dialogue": "Court clerk, please prioritize this matter. Complete the documentation within two hours so that the accused can be released by early afternoon. The family has already suffered enough stress."
+    },
+    {
+      "sequence": 124,
+      "speaker": "Court Clerk",
+      "action": "COMMITS",
+      "dialogue": "Yes, Your Honour. I will complete all formalities within two hours. The accused should be released by 2 PM today."
+    },
+    {
+      "sequence": 125,
+      "speaker": "Magistrate",
+      "action": "FINAL_WORDS_TO_ACCUSED",
+      "dialogue": "Rajesh Kumar, you are very fortunate to have a supportive family and a competent lawyer. You are also fortunate that this court has found merit in your bail application. I sincerely hope that you will use this opportunity to cooperate with the investigation and establish your innocence if you are indeed innocent. Remember, the legal process can be long and arduous, but truth and justice will ultimately prevail. Stay strong, support your family, and have faith in the system."
+    },
+    {
+      "sequence": 126,
+      "speaker": "Rajesh Kumar",
+      "action": "RESPONDS_GRATEFULLY",
+      "dialogue": "Thank you so much, Your Honour. I will never forget your kindness and fairness. I promise to prove my innocence and restore my reputation. My family and I are forever grateful to this Honourable Court. Thank you."
+    },
+    {
+      "sequence": 127,
+      "speaker": "Magistrate",
+      "action": "FINAL_WORDS_TO_COUNSEL",
+      "dialogue": "Counsel for both sides, I appreciate your professional conduct during this hearing. You have both presented your arguments clearly and with proper legal backing. This is how the adversarial system is supposed to work. I wish you both the best for the trial proceedings."
+    },
+    {
+      "sequence": 128,
+      "speaker": "Defense Attorney",
+      "action": "THANKS_COURT",
+      "dialogue": "Thank you, Your Honour, for your patience and fair consideration of our submissions. It has been a privilege to argue before this Honourable Court."
+    },
+    {
+      "sequence": 129,
+      "speaker": "Public Prosecutor",
+      "action": "THANKS_COURT",
+      "dialogue": "Thank you, Your Honour. Despite our objection to bail, we respect the court's decision and the reasoning provided. We will ensure that the investigation continues with due diligence."
+    },
+    {
+      "sequence": 130,
+      "speaker": "Magistrate",
+      "action": "CONCLUDES_HEARING",
+      "dialogue": "This hearing stands concluded. The next date of appearance for all parties is November 10, 2025, at 10:30 AM in this court. The court is now adjourned."
+    },
+    {
+      "sequence": 131,
+      "speaker": "Court Clerk",
+      "action": "ANNOUNCES",
+      "dialogue": "All rise! Court is adjourned."
+    },
+    {
+      "sequence": 132,
+      "speaker": "Magistrate",
+      "action": "EXITS",
+      "dialogue": "[Magistrate exits the courtroom]"
+    }
+  ],
+  
+  "post_hearing_procedures": [
+    {
+      "sequence": 133,
+      "speaker": "Court Clerk",
+      "action": "INSTRUCTS_SURETIES",
+      "dialogue": "Mr. Ramesh Kumar and Mr. Arjun Rao, please follow me to the clerk's office. I will need to verify your documents and prepare the surety bonds. Please bring your identity proof, address proof, and any documents showing your financial capacity such as bank statements or property documents."
+    },
+    {
+      "sequence": 134,
+      "speaker": "Ramesh Kumar",
+      "action": "RESPONDS",
+      "dialogue": "Yes, we have everything ready. I have my Aadhar card, PAN card, electricity bill for address proof, and my shop's registration documents along with bank statements for the last six months."
+    },
+    {
+      "sequence": 135,
+      "speaker": "Arjun Rao",
+      "action": "RESPONDS",
+      "dialogue": "I have also brought my Aadhar, PAN, voter ID, teaching certificate, salary slips, and bank statements. Will these be sufficient?"
+    },
+    {
+      "sequence": 136,
+      "speaker": "Court Clerk",
+      "action": "CONFIRMS",
+      "dialogue": "Yes, those documents should be sufficient. I will verify each document and prepare the bonds accordingly. This process will take approximately 90 minutes. Please wait in the lobby, and I will call you when the documents are ready for signature."
+    },
+    {
+      "sequence": 137,
+      "speaker": "Defense Attorney",
+      "action": "SPEAKS_TO_CLIENT",
+      "dialogue": "Rajesh, the hardest part is over. The court has granted bail with reasonable conditions. Now we need to complete the formalities quickly. Once the clerk verifies the sureties and prepares the bond, you will need to sign the personal bond. After that, you'll be free to go home."
+    },
+    {
+      "sequence": 138,
+      "speaker": "Rajesh Kumar",
+      "action": "EMOTIONAL",
+      "dialogue": "Thank you so much, sir. I don't know how to express my gratitude. You fought so well for me in there. I was so scared that bail would be denied. When can I see my wife and daughter?"
+    },
+    {
+      "sequence": 139,
+      "speaker": "Defense Attorney",
+      "action": "REASSURES",
+      "dialogue": "They are waiting outside the courthouse. Once we complete the bail formalities, you can go home with them. But Rajesh, listen to me very carefully - you must follow every single condition that the court has imposed. Report to the police station twice a week without fail. Do not contact anyone from your former workplace. Do not leave Bangalore. And most importantly, surrender your passport within 24 hours. Can you do that?"
+    },
+    {
+      "sequence": 140,
+      "speaker": "Rajesh Kumar",
+      "action": "PROMISES",
+      "dialogue": "Yes, sir. I will follow every condition religiously. I will report to the police station every Monday and Thursday morning. I will not contact anyone from Vijay Electronics. I will surrender my passport tomorrow morning itself. I promise you, I will not give the court any reason to regret granting me bail."
+    },
+    {
+      "sequence": 141,
+      "speaker": "Defense Attorney",
+      "action": "EXPLAINS_NEXT_STEPS",
+      "dialogue": "Good. Now, the next court date is November 10th. By then, the police should complete their investigation and file the chargesheet. Once the chargesheet is filed, we will receive a copy and we can start preparing our defense properly. We will need to interview Prakash Mehta, your colleague who was with you during the inventory. We also need to get the CCTV footage analyzed by an expert to prove that the object you put in your bag was indeed a charger and not a laptop."
+    },
+    {
+      "sequence": 142,
+      "speaker": "Rajesh Kumar",
+      "action": "ASKS",
+      "dialogue": "Sir, what about that inventory log discrepancy that you mentioned? The one that showed the laptop was dispatched to a service center before the inventory even began?"
+    },
+    {
+      "sequence": 143,
+      "speaker": "Defense Attorney",
+      "action": "EXPLAINS",
+      "dialogue": "That is a very important piece of evidence in your favor. It suggests that someone may have manipulated the records to cover up what really happened to the laptop. The magistrate has directed the police to investigate that angle. If we can prove that the laptop was never on the shelf when you were doing the inventory, your case becomes much stronger. We need to get the digital log records, find out who made that entry, and determine whether it was genuine or fabricated."
+    },
+    {
+      "sequence": 144,
+      "speaker": "Rajesh Kumar",
+      "action": "HOPEFUL",
+      "dialogue": "Do you think we can prove my innocence, sir?"
+    },
+    {
+      "sequence": 145,
+      "speaker": "Defense Attorney",
+      "action": "CAUTIOUSLY_OPTIMISTIC",
+      "dialogue": "Rajesh, I believe you are innocent based on what you have told me and the facts of the case. But in a court of law, belief is not enough. We need evidence. The good news is that the prosecution's case has significant weaknesses - no recovery of the laptop from you, ambiguous CCTV footage, the inventory log discrepancy, and your clean record. If we can build a strong defense with expert testimony and documentary evidence, I am confident we can secure an acquittal. But it will take time and effort."
+    },
+    {
+      "sequence": 146,
+      "speaker": "Rajesh Kumar",
+      "action": "DETERMINED",
+      "dialogue": "I am ready to do whatever it takes, sir. I want my name cleared. I want to be able to look my daughter in the eye and tell her that her father is not a thief."
+    },
+    {
+      "sequence": 147,
+      "speaker": "Defense Attorney",
+      "action": "SUPPORTIVE",
+      "dialogue": "That's the spirit. Now go complete the formalities with the clerk. I will wait here and make sure everything is in order before you leave. And Rajesh - once you go home, spend time with your family, but also start thinking about any additional evidence that might help your case. Did you keep your charger? Do you have any photos or records from that day? Any messages or emails that might be relevant? We need to gather everything we can."
+    },
+    {
+      "sequence": 148,
+      "speaker": "Rajesh Kumar",
+      "action": "REALIZES",
+      "dialogue": "Yes, sir! I still have that charger at home. The police took it during the search but returned it after verifying it. I can show it to you. It's in a hard black plastic case, exactly as I described. Maybe we can get it photographed and compared with a laptop to show how similar they look on a grainy CCTV?"
+    },
+    {
+      "sequence": 149,
+      "speaker": "Defense Attorney",
+      "action": "EXCITED",
+      "dialogue": "Excellent! That's exactly the kind of thinking we need. Yes, bring that charger to my office next week. We will photograph it, measure it, and if needed, hire a forensic expert to do a comparative analysis with the CCTV footage. This could be crucial evidence. Well done, Rajesh."
+    },
+    {
+      "sequence": 150,
+      "speaker": "Court Clerk",
+      "action": "CALLS_OUT",
+      "dialogue": "Mr. Rajesh Kumar, Mr. Ramesh Kumar, and Mr. Arjun Rao, please come to the clerk's office. The documents have been verified and the bonds are ready for signature."
+    },
+    {
+      "sequence": 151,
+      "speaker": "Rajesh Kumar",
+      "action": "RESPONDS",
+      "dialogue": "Coming, sir. [Turns to defense attorney] Thank you once again, sir. I will never forget what you have done for me today."
+    },
+    {
+      "sequence": 152,
+      "speaker": "Defense Attorney",
+      "action": "FINAL_WORDS",
+      "dialogue": "You're welcome, Rajesh. Now go be with your family. I will call you next week to schedule a detailed meeting at my office. Take care."
+    }
+  ],
+  
+  "case_summary": {
+    "hearing_outcome": "Bail Granted",
+    "bail_amount": "Personal Bond: ₹75,000",
+    "surety_amount": "Two sureties of ₹35,000 each",
+    "key_conditions": [
+      "Surrender passport within 24 hours",
+      "Report to police station every Monday and Thursday, 10 AM - 12 noon",
+      "No contact with complainant or prosecution witnesses",
+      "No travel outside Bangalore without court permission",
+      "Full cooperation with investigation",
+      "Maintain active mobile phone contact"
+    ],
+    "next_hearing_date": "November 10, 2025 at 10:30 AM",
+    "purpose_of_next_hearing": "Filing of chargesheet by prosecution",
+    "estimated_hearing_duration": "55-65 minutes",
+    "total_sequences": 152
+  }
+}

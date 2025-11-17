@@ -15,67 +15,82 @@ async function initializeDatabase() {
     // Connect to database
     await sqliteDatabase.connect();
     
-    // Create a sample user
-    const hashedPassword = await bcrypt.hash('testpassword', 10);
-    const user = await sqliteDatabase.createUser({
-      username: 'testuser',
-      email: 'test@example.com',
-      password: hashedPassword
-    });
+    // Check if user already exists
+    let user = await sqliteDatabase.getUserByEmail('test@example.com');
+    if (!user) {
+      // Create a sample user
+      const hashedPassword = await bcrypt.hash('testpassword', 10);
+      user = await sqliteDatabase.createUser({
+        username: 'testuser',
+        email: 'test@example.com',
+        password: hashedPassword
+      });
+      console.log('Created sample user:', user);
+    } else {
+      console.log('Sample user already exists:', user);
+    }
     
-    console.log('Created sample user:', user);
+    // Check if scenario already exists
+    let scenario = await sqliteDatabase.getScenarioById(1);
+    if (!scenario) {
+      // Create a sample scenario
+      scenario = await sqliteDatabase.createScenario({
+        title: 'The Inventory That Changed Everything',
+        description: 'A legal scenario about contract disputes over inventory management',
+        content: JSON.stringify({
+          introduction: "Welcome to the scenario...",
+          stages: [
+            {
+              id: 1,
+              name: "Case Introduction",
+              content: "Review the case details..."
+            },
+            {
+              id: 2,
+              name: "Evidence Analysis",
+              content: "Analyze the evidence..."
+            },
+            {
+              id: 3,
+              name: "Legal Research",
+              content: "Research relevant laws..."
+            },
+            {
+              id: 4,
+              name: "Courtroom Simulation",
+              content: "Present your arguments..."
+            },
+            {
+              id: 5,
+              name: "Legal Assessment",
+              content: "Complete competency assessment..."
+            }
+          ]
+        })
+      });
+      console.log('Created sample scenario:', scenario);
+    } else {
+      console.log('Sample scenario already exists:', scenario);
+    }
     
-    // Create a sample scenario
-    const scenario = await sqliteDatabase.createScenario({
-      title: 'The Inventory That Changed Everything',
-      description: 'A legal scenario about contract disputes over inventory management',
-      content: JSON.stringify({
-        introduction: "Welcome to the scenario...",
-        stages: [
-          {
-            id: 1,
-            name: "Case Introduction",
-            content: "Review the case details..."
-          },
-          {
-            id: 2,
-            name: "Evidence Analysis",
-            content: "Analyze the evidence..."
-          },
-          {
-            id: 3,
-            name: "Legal Research",
-            content: "Research relevant laws..."
-          },
-          {
-            id: 4,
-            name: "Courtroom Simulation",
-            content: "Present your arguments..."
-          },
-          {
-            id: 5,
-            name: "Legal Assessment",
-            content: "Complete competency assessment..."
-          }
-        ]
-      })
-    });
-    
-    console.log('Created sample scenario:', scenario);
-    
-    // Create sample progress
-    const progress = await sqliteDatabase.saveUserProgress({
-      user_id: user.id,
-      scenario_id: scenario.id,
-      progress_data: JSON.stringify({
-        currentStage: 1,
-        completedStages: [],
-        startTime: new Date().toISOString()
-      }),
-      completed: false
-    });
-    
-    console.log('Created sample progress:', progress);
+    // Check if progress already exists
+    let progress = await sqliteDatabase.getUserProgress(user.id, scenario.id);
+    if (!progress) {
+      // Create sample progress
+      progress = await sqliteDatabase.saveUserProgress({
+        user_id: user.id,
+        scenario_id: scenario.id,
+        progress_data: JSON.stringify({
+          currentStage: 1,
+          completedStages: [],
+          startTime: new Date().toISOString()
+        }),
+        completed: false
+      });
+      console.log('Created sample progress:', progress);
+    } else {
+      console.log('Sample progress already exists:', progress);
+    }
     
     console.log('Database initialization completed successfully!');
     console.log('Database file created at: backend/dharmasikhara.db');

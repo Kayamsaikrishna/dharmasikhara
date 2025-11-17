@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: dharmasikhara
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: node:18
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            npm install -g pm2 &&
+            cd /app &&
+            npm install &&
+            pm2 start server.js --no-daemon
+        envFrom:
+        - configMapRef:
+            name: backend-config
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - name: backend-code
+          mountPath: /app
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+      volumes:
+      - name: backend-code
+        hostPath:
+          path: /home/k8s/dharmasikhara/backend
+          type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: dharmasikhara
+spec:
+  selector:
+    app: backend
+  ports:
+  - protocol: TCP
+    port: 5000
+    targetPort: 5000
+  type: ClusterIP

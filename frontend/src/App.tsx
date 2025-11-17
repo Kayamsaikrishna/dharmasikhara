@@ -16,6 +16,11 @@ import PaymentPage from './pages/PaymentPage';
 import CartPage from './pages/CartPage';
 // import LegalAnalysis from './pages/LegalAnalysis';
 import LegalAssistant from './pages/LegalAssistant';
+import DocumentSummary from './pages/DocumentSummary';
+import DocumentKeyPoints from './pages/DocumentKeyPoints';
+import DocumentSections from './pages/DocumentSections';
+import DocumentFull from './pages/DocumentFull';
+import DocumentChat from './pages/DocumentChat';
 import Profile from './pages/Profile';
 // import DocumentUpload from './pages/DocumentUpload';
 import SubscriptionPage from './pages/SubscriptionPage';
@@ -67,6 +72,11 @@ function App() {
             <Route path="/legal-assessment" element={<LegalAssessment />} />
             <Route path="/legal-research" element={<LegalResearchPage />} />
             <Route path="/legal-assistant" element={<LegalAssistant />} />
+            <Route path="/document-summary" element={<DocumentSummary />} />
+            <Route path="/document-key-points" element={<DocumentKeyPoints />} />
+            <Route path="/document-sections" element={<DocumentSections />} />
+            <Route path="/document-full" element={<DocumentFull />} />
+            <Route path="/document-chat" element={<DocumentChat />} />
             <Route path="/multiplayer" element={<MultiplayerPage />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />

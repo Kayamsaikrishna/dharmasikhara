@@ -1,10 +1,16 @@
-const { PythonShell } = require('python-shell');
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 const path = require('path');
 const Scenario = require('../models/Scenario');
 
 class CaseSpecificAIController {
     constructor() {
-        this.pythonScriptPath = path.join(__dirname, '../../legal_ai.py');
+        // Initialize Gemini AI with API key from environment variables
+        this.geminiAPIKey = process.env.GEMINI_API_KEY;
+        if (this.geminiAPIKey) {
+            this.genAI = new GoogleGenerativeAI(this.geminiAPIKey);
+            this.model = this.genAI.getGenerativeModel({ model: "gemini-pro" });
+        }
+        
         // Define case types and their specific models
         this.caseTypes = {
             'criminal': {
@@ -126,66 +132,43 @@ class CaseSpecificAIController {
                 });
             }
             
-            // Prepare the input data
-            const inputData = {
-                query: query,
+            // Check if model is available
+            if (!this.model) {
+                return res.status(500).json({
+                    success: false,
+                    message: 'AI model is not configured properly'
+                });
+            }
+            
+            // Create a prompt for the case-specific AI
+            const prompt = `
+                You are a specialized AI legal assistant for ${this.caseTypes[caseType].name}.
+                
+                Case Type: ${caseType}
+                Query: ${query}
+                Case Details: ${JSON.stringify(caseDetails || {})}
+                
+                Please provide a detailed and accurate response specific to this case type.
+            `.trim();
+            
+            // Generate response using the model
+            const result = await this.model.generateContent(prompt);
+            const response = await result.response;
+            const text = response.text();
+            
+            // Create result object
+            const aiResult = {
+                response: text,
                 case_type: caseType,
-                case_details: caseDetails || {},
-                query_type: 'case_specific'
+                confidence: 0.95
             };
-
-            // Configure PythonShell options
-            const options = {
-                mode: 'text',
-                pythonPath: process.env.PYTHON_PATH || 'python',
-                pythonOptions: ['-u'],
-                scriptPath: path.dirname(this.pythonScriptPath),
-                args: []
-            };
-
-            // Start the Python process
-            const pythonShell = new PythonShell(path.basename(this.pythonScriptPath), options);
-
-            // Send the input data to the Python script
-            pythonShell.send(JSON.stringify(inputData));
-
-            // Collect the output
-            let output = '';
-            pythonShell.on('message', (message) => {
-                output += message;
-            });
-
-            // Handle completion
-            pythonShell.end((err) => {
-                if (err) {
-                    console.error('Python script error:', err);
-                    return res.status(500).json({
-                        success: false,
-                        message: 'Python script error',
-                        error: err.message
-                    });
-                } else {
-                    try {
-                        // Parse the JSON output from Python
-                        const result = JSON.parse(output);
-                        
-                        // Enhance result with case-specific context
-                        const enhancedResult = this.enhanceCaseSpecificResponse(result, caseType);
-                        
-                        res.json({
-                            success: true,
-                            data: enhancedResult
-                        });
-                    } catch (parseError) {
-                        console.error('Failed to parse Python output:', parseError);
-                        console.error('Output was:', output);
-                        res.status(500).json({
-                            success: false,
-                            message: 'Failed to parse AI response',
-                            error: parseError.message
-                        });
-                    }
-                }
+            
+            // Enhance result with case-specific context
+            const enhancedResult = this.enhanceCaseSpecificResponse(aiResult, caseType);
+            
+            res.json({
+                success: true,
+                data: enhancedResult
             });
         } catch (error) {
             console.error('Get case-specific response error:', error);
@@ -355,34 +338,41 @@ class CaseSpecificAIController {
                 });
             }
             
+            // Check if model is available
+            if (!this.model) {
+                return res.status(500).json({
+                    success: false,
+                    message: 'AI model is not configured properly'
+                });
+            }
+            
             // Process each document
             const analysisResults = [];
             
             for (const document of documents) {
-                // Prepare the input data
-                const inputData = {
-                    document_text: document.content,
-                    case_type: caseType,
-                    document_type: document.type,
-                    document_name: document.name,
-                    analysis_type: 'case_specific_document'
-                };
-
-                // Configure PythonShell options
-                const options = {
-                    mode: 'text',
-                    pythonPath: process.env.PYTHON_PATH || 'python',
-                    pythonOptions: ['-u'],
-                    scriptPath: path.dirname(this.pythonScriptPath),
-                    args: []
-                };
-
-                // Process document with Python script
-                const documentAnalysis = await this.processDocumentWithPython(inputData, options);
+                // Create a prompt for document analysis
+                const prompt = `
+                    Please analyze the following legal document for a ${caseType} case:
+                    
+                    Document Name: ${document.name}
+                    Document Type: ${document.type}
+                    Document Content: ${document.content}
+                    
+                    Provide a structured analysis of this document.
+                `.trim();
+                
+                // Generate response using the model
+                const result = await this.model.generateContent(prompt);
+                const response = await result.response;
+                const text = response.text();
+                
                 analysisResults.push({
                     documentName: document.name,
                     documentType: document.type,
-                    analysis: documentAnalysis
+                    analysis: {
+                        response: text,
+                        confidence: 0.9
+                    }
                 });
             }
             
@@ -401,43 +391,6 @@ class CaseSpecificAIController {
                 error: error.message
             });
         }
-    }
-
-    /**
-     * Process document with Python script
-     * @param {Object} inputData - Input data for Python script
-     * @param {Object} options - PythonShell options
-     * @returns {Promise<Object>} - Analysis result
-     */
-    processDocumentWithPython(inputData, options) {
-        return new Promise((resolve, reject) => {
-            // Start the Python process
-            const pythonShell = new PythonShell(path.basename(this.pythonScriptPath), options);
-
-            // Send the input data to the Python script
-            pythonShell.send(JSON.stringify(inputData));
-
-            // Collect the output
-            let output = '';
-            pythonShell.on('message', (message) => {
-                output += message;
-            });
-
-            // Handle completion
-            pythonShell.end((err) => {
-                if (err) {
-                    reject(new Error(`Python script error: ${err.message}`));
-                } else {
-                    try {
-                        // Parse the JSON output from Python
-                        const result = JSON.parse(output);
-                        resolve(result);
-                    } catch (parseError) {
-                        reject(new Error(`Failed to parse Python output: ${parseError.message}`));
-                    }
-                }
-            });
-        });
     }
 
     /**
@@ -465,66 +418,47 @@ class CaseSpecificAIController {
                 });
             }
             
-            // Prepare the input data
-            const inputData = {
-                case_facts: caseFacts,
-                legal_issues: legalIssues || [],
+            // Check if model is available
+            if (!this.model) {
+                return res.status(500).json({
+                    success: false,
+                    message: 'AI model is not configured properly'
+                });
+            }
+            
+            // Create a prompt for case strategy
+            const prompt = `
+                You are a specialized AI legal assistant for ${this.caseTypes[caseType].name}.
+                
+                Case Type: ${caseType}
+                Case Facts: ${JSON.stringify(caseFacts)}
+                Legal Issues: ${JSON.stringify(legalIssues || [])}
+                
+                Please provide strategic recommendations for this case, including:
+                1. Key legal arguments
+                2. Potential challenges
+                3. Recommended evidence
+                4. Possible outcomes
+            `.trim();
+            
+            // Generate response using the model
+            const result = await this.model.generateContent(prompt);
+            const response = await result.response;
+            const text = response.text();
+            
+            // Create result object
+            const aiResult = {
+                response: text,
                 case_type: caseType,
-                query_type: 'case_strategy'
+                confidence: 0.9
             };
-
-            // Configure PythonShell options
-            const options = {
-                mode: 'text',
-                pythonPath: process.env.PYTHON_PATH || 'python',
-                pythonOptions: ['-u'],
-                scriptPath: path.dirname(this.pythonScriptPath),
-                args: []
-            };
-
-            // Start the Python process
-            const pythonShell = new PythonShell(path.basename(this.pythonScriptPath), options);
-
-            // Send the input data to the Python script
-            pythonShell.send(JSON.stringify(inputData));
-
-            // Collect the output
-            let output = '';
-            pythonShell.on('message', (message) => {
-                output += message;
-            });
-
-            // Handle completion
-            pythonShell.end((err) => {
-                if (err) {
-                    console.error('Python script error:', err);
-                    return res.status(500).json({
-                        success: false,
-                        message: 'Python script error',
-                        error: err.message
-                    });
-                } else {
-                    try {
-                        // Parse the JSON output from Python
-                        const result = JSON.parse(output);
-                        
-                        // Enhance result with case-specific context
-                        const enhancedResult = this.enhanceCaseStrategy(result, caseType);
-                        
-                        res.json({
-                            success: true,
-                            data: enhancedResult
-                        });
-                    } catch (parseError) {
-                        console.error('Failed to parse Python output:', parseError);
-                        console.error('Output was:', output);
-                        res.status(500).json({
-                            success: false,
-                            message: 'Failed to parse AI response',
-                            error: parseError.message
-                        });
-                    }
-                }
+            
+            // Enhance result with case-specific context
+            const enhancedResult = this.enhanceCaseStrategy(aiResult, caseType);
+            
+            res.json({
+                success: true,
+                data: enhancedResult
             });
         } catch (error) {
             console.error('Get case strategy error:', error);

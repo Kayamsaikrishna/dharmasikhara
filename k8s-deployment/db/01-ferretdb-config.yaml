@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ferretdb-config
+  namespace: dharmasikhara
+data:
+  MONGO_INITDB_ROOT_USERNAME: "ferretdb"
+  MONGO_INITDB_ROOT_PASSWORD: "ferretdb_password"
+  FERRETDB_POSTGRESQL_URL: "postgres://ferretdb:ferretdb_password@ferretdb-postgres:5432/ferretdb?sslmode=disable"
+  FERRETDB_LOG_LEVEL: "info"
+  FERRETDB_STATE_DIR: "/state"

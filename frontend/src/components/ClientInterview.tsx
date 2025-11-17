@@ -878,6 +878,11 @@ const ClientInterview: React.FC = () => {
               setTimeout(() => setShowRecommendation(false), 5000);
             }
           }
+        } else if (e.key === 'Escape') {
+          // Stop any ongoing speech
+          if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+          }
         }
       }
     };
@@ -885,12 +890,38 @@ const ClientInterview: React.FC = () => {
 
     const speak = (text: string, voiceParams: any) => {
       if ('speechSynthesis' in window) {
+        // Cancel any ongoing speech
+        window.speechSynthesis.cancel();
+        
         const utterance = new SpeechSynthesisUtterance(text);
         
         // Apply voice parameters
         utterance.rate = voiceParams.rate || 1;
         utterance.pitch = voiceParams.pitch || 1;
         utterance.volume = voiceParams.volume || 1;
+        
+        // Track speech state
+        (window as any).isSpeaking = true;
+        
+        // Add event listeners to handle speech completion
+        utterance.onend = () => {
+          console.log('Speech finished');
+          (window as any).isSpeaking = false;
+        };
+        
+        utterance.onerror = (event) => {
+          console.error('Speech error:', event);
+          (window as any).isSpeaking = false;
+        };
+        
+        // Also handle case where speech is cancelled
+        utterance.onpause = () => {
+          (window as any).isSpeaking = false;
+        };
+        
+        utterance.onresume = () => {
+          (window as any).isSpeaking = true;
+        };
         
         window.speechSynthesis.speak(utterance);
       }
@@ -932,10 +963,23 @@ const ClientInterview: React.FC = () => {
         setTimeout(() => setShowRecommendation(false), 5000);
       }
       
-      // Hide dialogue after 8 seconds
-      setTimeout(() => {
+      // Hide dialogue after 8 seconds or when speech ends
+      const dialogueTimeout = setTimeout(() => {
         setShowDialogue(false);
       }, 8000);
+      
+      // Clear timeout when speech ends
+      if ('speechSynthesis' in window) {
+        const checkSpeech = () => {
+          if (!(window as any).isSpeaking) {
+            clearTimeout(dialogueTimeout);
+            setShowDialogue(false);
+          } else {
+            setTimeout(checkSpeech, 100);
+          }
+        };
+        setTimeout(checkSpeech, 100);
+      }
     };
     
     // Apply emotion-based animations to the client character
@@ -988,6 +1032,7 @@ const ClientInterview: React.FC = () => {
           break;
         default:
           // Default idle animation
+          resetCharacterAnimations(character);
           break;
       }
     };
@@ -1093,16 +1138,16 @@ const ClientInterview: React.FC = () => {
     const animateNodding = (character: any) => {
       const head = character.children[0];
       if (head) {
-        // Animate nodding
-        head.rotation.x = Math.sin(Date.now() * 0.005) * 0.1;
+        // Animate nodding with reduced frequency
+        head.rotation.x = Math.sin(performance.now() * 0.005) * 0.1;
       }
     };
     
     const animateFidgeting = (character: any) => {
       const torso = character.children[4];
       if (torso) {
-        // Fidget hands
-        torso.rotation.z = Math.sin(Date.now() * 0.01) * 0.05;
+        // Fidget hands with reduced frequency
+        torso.rotation.z = Math.sin(performance.now() * 0.01) * 0.05;
       }
     };
     
@@ -1131,16 +1176,16 @@ const ClientInterview: React.FC = () => {
     const animateMixedExpression = (character: any) => {
       const head = character.children[0];
       if (head) {
-        // Mixed expression - slight up and down movement
-        head.rotation.x = Math.sin(Date.now() * 0.003) * 0.05;
+        // Mixed expression - slight up and down movement with reduced frequency
+        head.rotation.x = Math.sin(performance.now() * 0.003) * 0.05;
       }
     };
     
     const animateExplaining = (character: any) => {
       const torso = character.children[4];
       if (torso && torso.children[0]) { // left arm
-        // Gesture with left hand
-        torso.children[0].rotation.z = Math.sin(Date.now() * 0.008) * 0.3 + 0.2;
+        // Gesture with left hand with reduced frequency
+        torso.children[0].rotation.z = Math.sin(performance.now() * 0.008) * 0.3 + 0.2;
       }
     };
     
@@ -1170,28 +1215,31 @@ const ClientInterview: React.FC = () => {
       const head = character.children[0];
       const torso = character.children[4];
       
+      // Use a consistent time base for all animations in this frame
+      const timeBase = performance.now();
+      
       switch (emotion) {
         case 'anxious':
-          // Subtle fidgeting
-          if (head) head.rotation.z = Math.sin(Date.now() * 0.005) * 0.02;
+          // Subtle fidgeting with reduced frequency
+          if (head) head.rotation.z = Math.sin(timeBase * 0.005) * 0.02;
           break;
         case 'vulnerable':
-          // Subtle head movements
+          // Subtle head movements with reduced frequency
           if (head) {
-            head.rotation.x = 0.05 + Math.sin(Date.now() * 0.003) * 0.03;
+            head.rotation.x = 0.05 + Math.sin(timeBase * 0.003) * 0.03;
           }
           break;
         case 'hopeful':
-          // Subtle positive movements
-          if (head) head.position.y = 1.65 + Math.sin(Date.now() * 0.004) * 0.01;
+          // Subtle positive movements with reduced frequency
+          if (head) head.position.y = 1.65 + Math.sin(timeBase * 0.004) * 0.01;
           break;
         case 'defensive':
-          // Slight tension
-          if (torso) torso.scale.y = 1 + Math.sin(Date.now() * 0.006) * 0.01;
+          // Slight tension with reduced frequency
+          if (torso) torso.scale.y = 1 + Math.sin(timeBase * 0.006) * 0.01;
           break;
         default:
-          // Neutral breathing effect
-          if (torso) torso.scale.y = 1 + Math.sin(Date.now() * 0.002) * 0.005;
+          // Neutral breathing effect with reduced frequency
+          if (torso) torso.scale.y = 1 + Math.sin(timeBase * 0.002) * 0.005;
           break;
       }
     };
@@ -1199,16 +1247,16 @@ const ClientInterview: React.FC = () => {
     const animate = () => {
       requestAnimationFrame(animate);
       
-      // Limit frame rate to 30 FPS for better performance
+      // Limit frame rate to 15 FPS for better performance
       const now = performance.now();
-      if (now - lastTime < 1000 / 30) return;
+      if (now - lastTime < 1000 / 15) return;
       lastTime = now;
       
       clock.getDelta();
       const time = clock.getElapsedTime();
 
-      // Update camera position based on distance and angle
-      if (cameraRef.current) {
+      // Update camera position based on distance and angle (less frequently)
+      if (cameraRef.current && Math.floor(time * 3) % 5 === 0) { // Update every 1.67 seconds
         const x = cameraDistanceRef.current * Math.sin(cameraAngleRef.current);
         const z = cameraDistanceRef.current * Math.cos(cameraAngleRef.current);
         cameraRef.current.position.set(x, 2.5, z);
@@ -1217,7 +1265,7 @@ const ClientInterview: React.FC = () => {
 
       if (clientRef.current) {
         // Apply continuous animations based on current emotion (less frequently)
-        if (Math.floor(time * 10) % 5 === 0) { // Update every 0.5 seconds
+        if (Math.floor(time * 3) % 9 === 0) { // Update every 3 seconds
           const summary = conversationEngineRef.current?.getSummary();
           if (summary && summary.currentEmotion) {
             // Apply subtle continuous animations
@@ -1226,18 +1274,21 @@ const ClientInterview: React.FC = () => {
         }
       }
 
-      if (recorder) {
-        const btn = recorder.children.find((c: any) => c.material?.emissive);
-        if (btn) btn.material.emissiveIntensity = 0.5 + Math.sin(time * 4) * 0.4;
-      }
+      // Update recorder and laptop effects less frequently
+      if (Math.floor(time * 3) % 7 === 0) { // Update every 2.33 seconds
+        if (recorder) {
+          const btn = recorder.children.find((c: any) => c.material?.emissive);
+          if (btn) btn.material.emissiveIntensity = 0.5 + Math.sin(time * 3) * 0.4;
+        }
 
-      if (laptop) {
-        const scr = laptop.children.find((c: any) => c.material?.emissive?.b > 0);
-        if (scr) scr.material.emissiveIntensity = 0.6 + Math.random() * 0.1;
+        if (laptop) {
+          const scr = laptop.children.find((c: any) => c.material?.emissive?.b > 0);
+          if (scr) scr.material.emissiveIntensity = 0.6 + Math.random() * 0.1;
+        }
       }
 
       // Update light intensities less frequently
-      if (lightsRef.current && lightsBaselineRef.current && Math.floor(time * 10) % 3 === 0) {
+      if (lightsRef.current && lightsBaselineRef.current && Math.floor(time * 3) % 6 === 0) { // Update every 2 seconds
         const factor = lightsOnRef.current ? 1 : 0;
         try {
           Object.keys(lightsBaselineRef.current).forEach(key => {
@@ -1274,6 +1325,10 @@ const ClientInterview: React.FC = () => {
         recognitionRef.current.stop();
         setIsListening(false);
       } else {
+        // Stop any ongoing speech before starting recognition
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+        }
         recognitionRef.current.start();
         setIsListening(true);
       }
@@ -1283,6 +1338,10 @@ const ClientInterview: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (userInput.trim()) {
+      // Stop any ongoing speech before processing new input
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
       (window as any).handleUserInput(userInput);
       setUserInput('');
     }
@@ -1329,6 +1388,10 @@ const ClientInterview: React.FC = () => {
   // Debug function to reset conversation
   const resetConversation = () => {
     if (conversationEngineRef.current) {
+      // Stop any ongoing speech
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
       conversationEngineRef.current.reset();
       setStatus('Ready');
       (window as any).currentTrustLevel = 0;
@@ -1398,6 +1461,10 @@ const ClientInterview: React.FC = () => {
   
   // Add a function to end the meeting and complete the checkpoint
   const endMeeting = () => {
+    // Stop any ongoing speech
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
     // Complete the interview
     completeInterview();
   };

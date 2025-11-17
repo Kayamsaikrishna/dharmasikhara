@@ -3,40 +3,44 @@ const databaseService = require('../services/database');
 const getPlanFeatures = (plan) => {
     const features = {
         free: {
-            documentAnalysis: true,
-            scenariosAccess: 2,
+            documentAnalysis: false,
+            scenariosAccess: 0,
             multiplayerAccess: false,
             customScenarios: 0,
             prioritySupport: false,
             storage: '0 GB',
-            documentAnalysisLimit: '5 per week'
+            documentAnalysisLimit: '0 per week',
+            legalAssistantTokens: 'Limited'
         },
-        pro: {
+        basic: {
             documentAnalysis: true,
-            scenariosAccess: 10,
+            scenariosAccess: 1,
+            multiplayerAccess: false,
+            customScenarios: 0,
+            prioritySupport: false,
+            storage: '100 MB',
+            documentAnalysisLimit: '2 per month',
+            legalAssistantTokens: '100K'
+        },
+        standard: {
+            documentAnalysis: true,
+            scenariosAccess: 2,
             multiplayerAccess: true,
             customScenarios: 0,
             prioritySupport: false,
-            storage: '1 GB',
-            documentAnalysisLimit: '10 per week'
-        },
-        advanced: {
-            documentAnalysis: true,
-            scenariosAccess: 30,
-            multiplayerAccess: true,
-            customScenarios: 5,
-            prioritySupport: false,
-            storage: '2 GB',
-            documentAnalysisLimit: '15 per week'
+            storage: '500 MB',
+            documentAnalysisLimit: '5 per month',
+            legalAssistantTokens: '500K'
         },
         premium: {
             documentAnalysis: true,
-            scenariosAccess: 100,
+            scenariosAccess: 4,
             multiplayerAccess: true,
-            customScenarios: 20,
-            prioritySupport: true,
-            storage: '10 GB',
-            documentAnalysisLimit: '25 per week'
+            customScenarios: 2,
+            prioritySupport: false,
+            storage: '2 GB',
+            documentAnalysisLimit: 'Unlimited',
+            legalAssistantTokens: 'Unlimited'
         }
     };
     
@@ -48,47 +52,47 @@ const getSubscriptionPlans = async (req, res) => {
         const plans = [
             {
                 id: 'free',
-                name: 'Basic Free Plan',
+                name: 'Free Plan',
                 price: 0,
                 currency: 'INR',
                 period: 'month',
                 storage: '0 GB',
-                documentAnalysisLimit: '5 per week',
+                documentAnalysisLimit: '0 per week',
                 features: getPlanFeatures('free'),
-                description: 'Perfect for getting started with basic legal document analysis'
+                description: 'Access to view case files in simulations. No scenarios, document analysis, or advanced features.'
             },
             {
-                id: 'pro',
-                name: 'Pro Plan',
-                price: 499,
+                id: 'basic',
+                name: 'Basic Plan',
+                price: 299,
                 currency: 'INR',
                 period: 'month',
-                storage: '1 GB',
-                documentAnalysisLimit: '10 per week',
-                features: getPlanFeatures('pro'),
-                description: 'Ideal for regular users who need more scenarios and multiplayer access'
+                storage: '100 MB',
+                documentAnalysisLimit: '2 per month',
+                features: getPlanFeatures('basic'),
+                description: 'Ideal for individual users who need basic scenarios and document analysis'
             },
             {
-                id: 'advanced',
-                name: 'Advanced Plan',
-                price: 899,
+                id: 'standard',
+                name: 'Standard Plan',
+                price: 699,
                 currency: 'INR',
                 period: 'month',
-                storage: '2 GB',
-                documentAnalysisLimit: '15 per week',
-                features: getPlanFeatures('advanced'),
-                description: 'Great for serious learners who want to create custom scenarios'
+                storage: '500 MB',
+                documentAnalysisLimit: '5 per month',
+                features: getPlanFeatures('standard'),
+                description: 'Great for regular users who want more scenarios and document analysis'
             },
             {
                 id: 'premium',
                 name: 'Premium Plan',
-                price: 1499,
+                price: 999,
                 currency: 'INR',
                 period: 'month',
-                storage: '10 GB',
-                documentAnalysisLimit: '25 per week',
+                storage: '2 GB',
+                documentAnalysisLimit: 'Unlimited',
                 features: getPlanFeatures('premium'),
-                description: 'The ultimate plan with unlimited access and priority support'
+                description: 'The ultimate plan with unlimited access to all features'
             }
         ];
         
@@ -118,7 +122,7 @@ const processPayment = async (req, res) => {
         }
         
         // Validate plan
-        const validPlans = ['free', 'pro', 'advanced', 'premium'];
+        const validPlans = ['free', 'basic', 'standard', 'premium'];
         if (!validPlans.includes(plan)) {
             return res.status(400).json({
                 success: false,

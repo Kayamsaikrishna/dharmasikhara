@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ferretdb
+  namespace: dharmasikhara
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ferretdb
+  template:
+    metadata:
+      labels:
+        app: ferretdb
+    spec:
+      containers:
+      - name: ferretdb
+        image: ghcr.io/ferretdb/ferretdb:latest
+        envFrom:
+        - configMapRef:
+            name: ferretdb-config
+        ports:
+        - containerPort: 27017
+        volumeMounts:
+        - name: ferretdb-state
+          mountPath: /state
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+      volumes:
+      - name: ferretdb-state
+        persistentVolumeClaim:
+          claimName: ferretdb-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ferretdb
+  namespace: dharmasikhara
+spec:
+  selector:
+    app: ferretdb
+  ports:
+  - protocol: TCP
+    port: 27017
+    targetPort: 27017
+  type: ClusterIP

@@ -17,6 +17,7 @@ interface Subscription {
     prioritySupport: boolean;
     storage: string;
     documentAnalysisLimit: string;
+    legalAssistantTokens: string;
   };
 }
 
@@ -33,8 +34,9 @@ const Profile: React.FC = () => {
       try {
         setLoading(true);
         
-        // Use direct backend URL instead of relative path
-        const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+        // Use the correct API URL based on environment
+        const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const API_BASE_URL = isDevelopment ? 'http://localhost:5000' : window.location.origin;
         
         // Fetch user subscription
         const subscriptionResponse = await fetch(`${API_BASE_URL}/api/account/subscription`, {
@@ -243,7 +245,7 @@ const Profile: React.FC = () => {
                           <span>{subscription.features.scenariosAccess} Scenarios/Month</span>
                         </li>
                         <li className="flex items-center">
-                          <svg className={`w-5 h-5 mr-2 ${subscription.features.documentAnalysisLimit && subscription.features.documentAnalysisLimit !== '0 per week' ? 'text-green-500' : 'text-gray-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <svg className={`w-5 h-5 mr-2 ${subscription.features.documentAnalysisLimit && subscription.features.documentAnalysisLimit !== '0 per week' && subscription.features.documentAnalysisLimit !== '0 per month' ? 'text-green-500' : 'text-gray-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
                           </svg>
                           <span>{subscription.features.documentAnalysisLimit} Document Analysis</span>
@@ -267,10 +269,10 @@ const Profile: React.FC = () => {
                           <span>{subscription.features.customScenarios} Custom Scenarios/Month</span>
                         </li>
                         <li className="flex items-center">
-                          <svg className={`w-5 h-5 mr-2 ${subscription.features.prioritySupport ? 'text-green-500' : 'text-gray-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <svg className={`w-5 h-5 mr-2 ${subscription.features.legalAssistantTokens && subscription.features.legalAssistantTokens !== 'Limited' ? 'text-green-500' : 'text-gray-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
                           </svg>
-                          <span>Priority Support</span>
+                          <span>{subscription.features.legalAssistantTokens} Legal Assistant Tokens</span>
                         </li>
                       </ul>
                     </div>

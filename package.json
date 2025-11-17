@@ -1,16 +1,24 @@
 {
+  "name": "dharma-sikhara",
+  "version": "1.0.0",
+  "description": "DharmaSikhara Legal Practice Simulator",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "cpanel-deploy": "node backend/startup.js"
+  },
+  "keywords": [
+    "legal",
+    "ai",
+    "simulator",
+    "dharma-sikhara"
+  ],
+  "author": "DharmaSikhara Team",
+  "license": "MIT",
   "dependencies": {
-    "axios": "^1.12.2",
-    "express": "^5.1.0",
+    "@google/generative-ai": "^0.24.1",
+    "axios": "^1.13.2",
     "form-data": "^4.0.4",
-    "jsonwebtoken": "^9.0.2",
-    "node-fetch": "^3.3.2",
-    "node-fetch-commonjs": "^3.3.2",
-    "pdf-parse": "^2.4.5",
-    "python-shell": "^5.0.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "react-scripts": "^5.0.1",
-    "uuid": "^13.0.0"
+    "pdf-parse": "^2.4.5"
   }
 }

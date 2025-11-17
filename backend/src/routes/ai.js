@@ -3,7 +3,7 @@ const router = express.Router();
 const { authenticateToken } = require('../middleware/authMiddleware');
 
 // Import controllers
-const aiController = require('../controllers/aiController');
+const aiController = require('../controllers/geminiAIController');
 
 // AI Model Status Endpoint
 router.get('/status', aiController.getAIStatus);
@@ -17,18 +17,12 @@ router.post('/analyze-document-test', aiController.analyzeDocument);
 // Get legal assistant response
 router.post('/legal-assistant', aiController.getLegalAssistantResponse);
 
-// Get comprehensive legal research
-router.post('/legal-research', authenticateToken, aiController.getLegalResearch);
-
-// Generate legal document draft
-router.post('/generate-document', authenticateToken, aiController.generateLegalDocument);
-
-// AI Document Analysis Streaming Endpoint (support both GET and POST)
-router.get('/stream-analysis', authenticateToken, aiController.streamDocumentAnalysis);
-router.post('/stream-analysis', authenticateToken, aiController.streamDocumentAnalysis);
-
-// AI NPC System Endpoints
-router.post('/npc-response', aiController.getNPCResponse);
-router.post('/classify-document', aiController.classifyDocument);
+// Comment out routes that don't exist in the new controller
+// router.post('/legal-research', authenticateToken, aiController.getLegalResearch);
+// router.post('/generate-document', authenticateToken, aiController.generateLegalDocument);
+// router.get('/stream-analysis', authenticateToken, aiController.streamDocumentAnalysis);
+// router.post('/stream-analysis', authenticateToken, aiController.streamDocumentAnalysis);
+// router.post('/npc-response', aiController.getNPCResponse);
+// router.post('/classify-document', aiController.classifyDocument);
 
 module.exports = router;
