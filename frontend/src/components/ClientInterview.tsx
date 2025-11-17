@@ -1256,7 +1256,7 @@ const ClientInterview: React.FC = () => {
       const time = clock.getElapsedTime();
 
       // Update camera position based on distance and angle (less frequently)
-      if (cameraRef.current && Math.floor(time * 2) % 7 === 0) { // Update every 3.5 seconds
+      if (cameraRef.current && Math.floor(time * 1.5) % 10 === 0) { // Update every ~6.7 seconds
         const x = cameraDistanceRef.current * Math.sin(cameraAngleRef.current);
         const z = cameraDistanceRef.current * Math.cos(cameraAngleRef.current);
         cameraRef.current.position.set(x, 2.5, z);
@@ -1265,7 +1265,7 @@ const ClientInterview: React.FC = () => {
 
       if (clientRef.current) {
         // Apply continuous animations based on current emotion (less frequently)
-        if (Math.floor(time * 2) % 11 === 0) { // Update every 5.5 seconds
+        if (Math.floor(time * 1.5) % 15 === 0) { // Update every ~10 seconds
           const summary = conversationEngineRef.current?.getSummary();
           if (summary && summary.currentEmotion) {
             // Apply subtle continuous animations
@@ -1275,7 +1275,7 @@ const ClientInterview: React.FC = () => {
       }
 
       // Update recorder and laptop effects less frequently
-      if (Math.floor(time * 2) % 9 === 0) { // Update every 4.5 seconds
+      if (Math.floor(time * 1.5) % 12 === 0) { // Update every ~8 seconds
         if (recorder) {
           const btn = recorder.children.find((c: any) => c.material?.emissive);
           if (btn) btn.material.emissiveIntensity = 0.5 + Math.sin(time * 2) * 0.4;
@@ -1288,7 +1288,7 @@ const ClientInterview: React.FC = () => {
       }
 
       // Update light intensities less frequently
-      if (lightsRef.current && lightsBaselineRef.current && Math.floor(time * 2) % 8 === 0) { // Update every 4 seconds
+      if (lightsRef.current && lightsBaselineRef.current && Math.floor(time * 1.5) % 11 === 0) { // Update every ~7.3 seconds
         const factor = lightsOnRef.current ? 1 : 0;
         try {
           Object.keys(lightsBaselineRef.current).forEach(key => {

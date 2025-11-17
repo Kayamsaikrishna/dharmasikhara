@@ -196,17 +196,11 @@ const LegalAssistantProfessional: React.FC = () => {
         const formData = new FormData();
         formData.append('file', selectedFile);
         
-        const headers: HeadersInit = {};
-        if (token && !isTokenExpired()) {
-          headers['Authorization'] = `Bearer ${token}`;
-        }
-        
         // Use absolute URL for cPanel deployment
         const apiUrl = '/api/account/extract-text';
           
         const response = await fetch(apiUrl, {
           method: 'POST',
-          headers,
           body: formData
         });
         
@@ -231,18 +225,11 @@ const LegalAssistantProfessional: React.FC = () => {
         const formData = new FormData();
         formData.append('file', selectedFile);
         
-        const headers: HeadersInit = {};
-        // If token exists and is not expired, add it
-        if (token && !isTokenExpired()) {
-          headers['Authorization'] = `Bearer ${token}`;
-        }
-        
         // Use absolute URL for cPanel deployment
         const apiUrl = '/api/account/extract-text';
           
         const response = await fetch(apiUrl, {
           method: 'POST',
-          headers,
           body: formData
         });
         
