@@ -8,15 +8,7 @@ const getProfile = async (req, res) => {
         const db = databaseService.getSQLite();
         
         // Query user from SQLite database
-        const user = await new Promise((resolve, reject) => {
-            db.get('SELECT * FROM users WHERE id = ?', [req.user.userId], (err, row) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(row);
-                }
-            });
-        });
+        const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.user.userId);
         
         if (!user) {
             return res.status(404).json({
@@ -81,27 +73,11 @@ const updateProfile = async (req, res) => {
         updateValues.push(req.user.userId);
         
         // Execute update query
-        await new Promise((resolve, reject) => {
-            const query = `UPDATE users SET ${updateFields.join(', ')} WHERE id = ?`;
-            db.run(query, updateValues, function(err) {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(this);
-                }
-            });
-        });
+        const query = `UPDATE users SET ${updateFields.join(', ')} WHERE id = ?`;
+        db.prepare(query).run(...updateValues);
         
         // Fetch updated user data
-        const updatedUser = await new Promise((resolve, reject) => {
-            db.get('SELECT * FROM users WHERE id = ?', [req.user.userId], (err, row) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(row);
-                }
-            });
-        });
+        const updatedUser = db.prepare('SELECT * FROM users WHERE id = ?').get(req.user.userId);
         
         if (!updatedUser) {
             return res.status(404).json({
@@ -133,16 +109,7 @@ const getUserDocuments = async (req, res) => {
         const db = databaseService.getSQLite();
         
         // Query documents from SQLite database
-        const documents = await new Promise((resolve, reject) => {
-            db.all('SELECT * FROM documents WHERE user_id = ? ORDER BY created_at DESC', 
-                   [req.user.userId], (err, rows) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(rows);
-                }
-            });
-        });
+        const documents = db.prepare('SELECT * FROM documents WHERE user_id = ? ORDER BY created_at DESC').all(req.user.userId);
         
         res.json({
             success: true,
@@ -186,28 +153,19 @@ const uploadDocument = async (req, res) => {
         const db = databaseService.getSQLite();
         
         // Insert document into database
-        const document = await new Promise((resolve, reject) => {
-            const createdAt = new Date().toISOString();
-            db.run(
-                'INSERT INTO documents (user_id, title, content, file_type, file_size, created_at) VALUES (?, ?, ?, ?, ?, ?)',
-                [req.user.userId, title, extractedContent, fileType, fileSize, createdAt],
-                function(err) {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve({
-                            id: this.lastID,
-                            user_id: req.user.userId,
-                            title,
-                            content: extractedContent,
-                            file_type: fileType,
-                            file_size: fileSize,
-                            created_at: createdAt
-                        });
-                    }
-                }
-            );
-        });
+        const createdAt = new Date().toISOString();
+        const stmt = db.prepare('INSERT INTO documents (user_id, title, content, file_type, file_size, created_at) VALUES (?, ?, ?, ?, ?, ?)');
+        const info = stmt.run(req.user.userId, title, extractedContent, fileType, fileSize, createdAt);
+        
+        const document = {
+            id: info.lastInsertRowid,
+            user_id: req.user.userId,
+            title,
+            content: extractedContent,
+            file_type: fileType,
+            file_size: fileSize,
+            created_at: createdAt
+        };
         
         res.status(201).json({
             success: true,
@@ -231,16 +189,7 @@ const deleteDocument = async (req, res) => {
         const db = databaseService.getSQLite();
         
         // Check if document belongs to user
-        const document = await new Promise((resolve, reject) => {
-            db.get('SELECT * FROM documents WHERE id = ? AND user_id = ?', 
-                   [id, req.user.userId], (err, row) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(row);
-                }
-            });
-        });
+        const document = db.prepare('SELECT * FROM documents WHERE id = ? AND user_id = ?').get(id, req.user.userId);
         
         if (!document) {
             return res.status(404).json({
@@ -250,15 +199,7 @@ const deleteDocument = async (req, res) => {
         }
         
         // Delete document
-        await new Promise((resolve, reject) => {
-            db.run('DELETE FROM documents WHERE id = ?', [id], function(err) {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(this);
-                }
-            });
-        });
+        db.prepare('DELETE FROM documents WHERE id = ?').run(id);
         
         res.json({
             success: true,
@@ -320,14 +261,34 @@ const extractText = async (req, res) => {
     });
     
     // Check file type and process accordingly
+    // Limit file size to prevent memory issues (5MB max)
+    if (req.file.size > 5 * 1024 * 1024) {
+      return res.status(400).json({
+        success: false,
+        message: 'File too large. Maximum file size is 5MB.'
+      });
+    }
+    
     if (req.file.mimetype === 'application/pdf' || req.file.originalname.toLowerCase().endsWith('.pdf')) {
       // Extract text from PDF
       try {
-        const pdfData = await pdfParse(req.file.buffer);
+        // Limit buffer size to prevent memory issues
+        const buffer = req.file.buffer.slice(0, 5 * 1024 * 1024); // 5MB max
+        const pdfData = await pdfParse(buffer);
+        
+        // Limit extracted text length
+        const text = pdfData.text.substring(0, 100000); // 100KB max
+        
+        // Suggest garbage collection
+        if (global.gc) {
+          setImmediate(() => {
+            global.gc();
+          });
+        }
         
         res.json({
           success: true,
-          text: pdfData.text
+          text: text
         });
       } catch (pdfError) {
         console.error('PDF parsing error:', pdfError);
@@ -341,13 +302,26 @@ const extractText = async (req, res) => {
                req.file.originalname.toLowerCase().endsWith('.doc') ||
                req.file.originalname.toLowerCase().endsWith('.docx')) {
       // Extract text from Word document
-      const mammoth = require('mammoth');
-      
       try {
-        const result = await mammoth.extractRawText({ buffer: req.file.buffer });
+        const mammoth = require('mammoth');
+        
+        // Limit buffer size to prevent memory issues
+        const buffer = req.file.buffer.slice(0, 5 * 1024 * 1024); // 5MB max
+        const result = await mammoth.extractRawText({ buffer: buffer });
+        
+        // Limit extracted text length
+        const text = result.value.substring(0, 100000); // 100KB max
+        
+        // Suggest garbage collection
+        if (global.gc) {
+          setImmediate(() => {
+            global.gc();
+          });
+        }
+        
         res.json({
           success: true,
-          text: result.value
+          text: text
         });
       } catch (wordError) {
         console.error('Word document extraction error:', wordError);

@@ -9,6 +9,11 @@ class DatabaseService {
     try {
       this.sqlite = await sqliteDatabase.connect();
       console.log('SQLite database connected successfully');
+      
+      // Create community tables
+      await sqliteDatabase.createCommunityTables();
+      console.log('Community tables created successfully');
+      
       return this.sqlite;
     } catch (error) {
       console.error('SQLite database connection error:', error.message);

@@ -1,4 +1,4 @@
-const sqlite3 = require('sqlite3').verbose();
+const Database = require('better-sqlite3');
 const path = require('path');
 
 class SQLiteDatabaseService {
@@ -10,19 +10,15 @@ class SQLiteDatabaseService {
     try {
       // Create or connect to SQLite database file
       const dbPath = path.join(__dirname, '../../dharmasikhara.db');
-      this.db = new sqlite3.Database(dbPath, (err) => {
-        if (err) {
-          console.error('SQLite connection error:', err.message);
-        } else {
-          console.log('Connected to SQLite database at:', dbPath);
-        }
-      });
+      this.db = new Database(dbPath);
+      
+      console.log('Connected to SQLite database at:', dbPath);
 
       // Enable foreign keys
-      this.db.run('PRAGMA foreign_keys = ON');
+      this.db.exec('PRAGMA foreign_keys = ON');
 
       // Create tables if they don't exist
-      await this.createTables();
+      this.createTables();
       
       return this.db;
     } catch (error) {
@@ -31,309 +27,256 @@ class SQLiteDatabaseService {
     }
   }
 
-  async createTables() {
-    return new Promise((resolve, reject) => {
-      // Create users table
-      this.db.run(`
-        CREATE TABLE IF NOT EXISTS users (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          username TEXT UNIQUE NOT NULL,
-          email TEXT UNIQUE NOT NULL,
-          password TEXT NOT NULL,
-          first_name TEXT,
-          last_name TEXT,
-          institution TEXT,
-          year TEXT,
-          specialization TEXT,
-          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        )
-      `, (err) => {
-        if (err) {
-          reject(err);
-          return;
-        }
+  createTables() {
+    // Create users table
+    this.db.exec(`
+      CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE NOT NULL,
+        email TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL,
+        first_name TEXT,
+        last_name TEXT,
+        institution TEXT,
+        year TEXT,
+        specialization TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
 
-        // Create scenarios table
-        this.db.run(`
-          CREATE TABLE IF NOT EXISTS scenarios (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            title TEXT NOT NULL,
-            description TEXT,
-            content TEXT,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-          )
-        `, (err) => {
-          if (err) {
-            reject(err);
-            return;
-          }
+    // Create a default anonymous user if it doesn't exist
+    this.db.exec(`
+      INSERT OR IGNORE INTO users (id, username, email, password) 
+      VALUES (0, 'anonymous', 'anonymous@example.com', 'anonymous')
+    `);
+    console.log('Anonymous user ensured in database');
 
-          // Create user_progress table
-          this.db.run(`
-            CREATE TABLE IF NOT EXISTS user_progress (
-              id INTEGER PRIMARY KEY AUTOINCREMENT,
-              user_id INTEGER,
-              scenario_id INTEGER,
-              status TEXT DEFAULT 'not_started',
-              progress INTEGER DEFAULT 0,
-              completed_stages TEXT,
-              score INTEGER,
-              time_spent INTEGER DEFAULT 0,
-              feedback TEXT,
-              created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-              updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-              completion_date DATETIME,
-              FOREIGN KEY (user_id) REFERENCES users (id),
-              FOREIGN KEY (scenario_id) REFERENCES scenarios (id)
-            )
-          `, (err) => {
-            if (err) {
-              reject(err);
-              return;
-            }
+    // Create scenarios table
+    this.db.exec(`
+      CREATE TABLE IF NOT EXISTS scenarios (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        description TEXT,
+        content TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
 
-            // Create documents table
-            this.db.run(`
-              CREATE TABLE IF NOT EXISTS documents (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INTEGER,
-                title TEXT NOT NULL,
-                content TEXT,
-                file_type TEXT,
-                file_size INTEGER,
-                analysis_results TEXT,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                last_analyzed DATETIME,
-                FOREIGN KEY (user_id) REFERENCES users (id)
-              )
-            `, (err) => {
-              if (err) {
-                reject(err);
-                return;
-              }
+    // Create user_progress table
+    this.db.exec(`
+      CREATE TABLE IF NOT EXISTS user_progress (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        scenario_id INTEGER,
+        status TEXT DEFAULT 'not_started',
+        progress INTEGER DEFAULT 0,
+        completed_stages TEXT,
+        score INTEGER,
+        time_spent INTEGER DEFAULT 0,
+        feedback TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        completion_date DATETIME
+      )
+    `);
 
-              // Create payments table
-              this.db.run(`
-                CREATE TABLE IF NOT EXISTS payments (
-                  id INTEGER PRIMARY KEY AUTOINCREMENT,
-                  user_id INTEGER,
-                  amount REAL NOT NULL,
-                  currency TEXT DEFAULT 'INR',
-                  payment_method TEXT,
-                  payment_id TEXT UNIQUE,
-                  status TEXT DEFAULT 'pending',
-                  plan TEXT,
-                  features TEXT,
-                  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                  FOREIGN KEY (user_id) REFERENCES users (id)
-                )
-              `, (err) => {
-                if (err) {
-                  reject(err);
-                  return;
-                }
+    // Create documents table
+    this.db.exec(`
+      CREATE TABLE IF NOT EXISTS documents (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        title TEXT NOT NULL,
+        content TEXT,
+        file_type TEXT,
+        file_size INTEGER,
+        analysis_results TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        last_analyzed DATETIME,
+        FOREIGN KEY (user_id) REFERENCES users (id)
+      )
+    `);
 
-                // Create subscriptions table
-                this.db.run(`
-                  CREATE TABLE IF NOT EXISTS subscriptions (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    user_id INTEGER,
-                    plan TEXT,
-                    status TEXT DEFAULT 'active',
-                    start_date DATETIME,
-                    end_date DATETIME,
-                    features TEXT,
-                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                    FOREIGN KEY (user_id) REFERENCES users (id)
-                  )
-                `, (err) => {
-                  if (err) {
-                    reject(err);
-                  } else {
-                    resolve();
-                  }
-                });
-              });
-            });
-          });
-        });
-      });
-    });
+    // Create payments table
+    this.db.exec(`
+      CREATE TABLE IF NOT EXISTS payments (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        amount REAL NOT NULL,
+        currency TEXT DEFAULT 'INR',
+        payment_method TEXT,
+        payment_id TEXT UNIQUE,
+        status TEXT DEFAULT 'pending',
+        plan TEXT,
+        features TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users (id)
+      )
+    `);
+
+    // Create subscriptions table
+    this.db.exec(`
+      CREATE TABLE IF NOT EXISTS subscriptions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        plan TEXT,
+        status TEXT DEFAULT 'active',
+        start_date DATETIME,
+        end_date DATETIME,
+        features TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users (id)
+      )
+    `);
+
+    // Create community tables
+    this.createCommunityTables();
+  }
+
+  createCommunityTables() {
+    // Create reviews table
+    this.db.exec(`
+      CREATE TABLE IF NOT EXISTS reviews (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        scenario_id INTEGER,
+        rating INTEGER,
+        comment TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+      )
+    `);
+
+    // Create FAQ table
+    this.db.exec(`
+      CREATE TABLE IF NOT EXISTS faq (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        question TEXT NOT NULL,
+        category TEXT DEFAULT 'general',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+      )
+    `);
+
+    // Create FAQ answers table
+    this.db.exec(`
+      CREATE TABLE IF NOT EXISTS faq_answers (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        faq_id INTEGER,
+        user_id INTEGER,
+        answer TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (faq_id) REFERENCES faq (id) ON DELETE CASCADE,
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+      )
+    `);
   }
 
   // User operations
-  async createUser(userData) {
-    return new Promise((resolve, reject) => {
-      const { username, email, password } = userData;
-      this.db.run(
-        'INSERT INTO users (username, email, password) VALUES (?, ?, ?)',
-        [username, email, password],
-        function(err) {
-          if (err) {
-            reject(err);
-          } else {
-            resolve({ id: this.lastID, ...userData });
-          }
-        }
-      );
-    });
+  createUser(userData) {
+    const { username, email, password } = userData;
+    const stmt = this.db.prepare('INSERT INTO users (username, email, password) VALUES (?, ?, ?)');
+    const info = stmt.run(username, email, password);
+    return { id: info.lastInsertRowid, ...userData };
   }
 
-  async getUserById(id) {
-    return new Promise((resolve, reject) => {
-      this.db.get('SELECT * FROM users WHERE id = ?', [id], (err, row) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(row);
-        }
-      });
-    });
+  getUserById(id) {
+    const stmt = this.db.prepare('SELECT * FROM users WHERE id = ?');
+    return stmt.get(id);
   }
 
-  async getUserByEmail(email) {
-    return new Promise((resolve, reject) => {
-      this.db.get('SELECT * FROM users WHERE email = ?', [email], (err, row) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(row);
-        }
-      });
-    });
+  getUserByEmail(email) {
+    const stmt = this.db.prepare('SELECT * FROM users WHERE email = ?');
+    return stmt.get(email);
   }
 
   // Scenario operations
-  async createScenario(scenarioData) {
-    return new Promise((resolve, reject) => {
-      const { title, description, content } = scenarioData;
-      this.db.run(
-        'INSERT INTO scenarios (title, description, content) VALUES (?, ?, ?)',
-        [title, description, content],
-        function(err) {
-          if (err) {
-            reject(err);
-          } else {
-            resolve({ id: this.lastID, ...scenarioData });
-          }
-        }
-      );
-    });
+  createScenario(scenarioData) {
+    const { title, description, content } = scenarioData;
+    const stmt = this.db.prepare('INSERT INTO scenarios (title, description, content) VALUES (?, ?, ?)');
+    const info = stmt.run(title, description, content);
+    return { id: info.lastInsertRowid, ...scenarioData };
   }
 
-  async getAllScenarios() {
-    return new Promise((resolve, reject) => {
-      this.db.all('SELECT * FROM scenarios', [], (err, rows) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
-      });
-    });
+  getAllScenarios() {
+    const stmt = this.db.prepare('SELECT * FROM scenarios');
+    return stmt.all();
   }
 
-  async getScenarioById(id) {
-    return new Promise((resolve, reject) => {
-      this.db.get('SELECT * FROM scenarios WHERE id = ?', [id], (err, row) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(row);
-        }
-      });
-    });
+  getScenarioById(id) {
+    const stmt = this.db.prepare('SELECT * FROM scenarios WHERE id = ?');
+    return stmt.get(id);
   }
 
   // Progress operations
-  async saveUserProgress(progressData) {
-    return new Promise((resolve, reject) => {
-      const { userId, scenarioId, status, progress, completedStages, score, timeSpent, feedback, completionDate } = progressData;
-      this.db.run(
-        `INSERT OR REPLACE INTO user_progress 
-         (user_id, scenario_id, status, progress, completed_stages, score, time_spent, feedback, completion_date, updated_at) 
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
-        [userId, scenarioId, status, progress, JSON.stringify(completedStages || []), score, timeSpent, feedback, completionDate],
-        function(err) {
-          if (err) {
-            reject(err);
-          } else {
-            resolve({ id: this.lastID, ...progressData });
-          }
-        }
-      );
-    });
+  saveUserProgress(progressData) {
+    const { userId, scenarioId, status, progress, completedStages, score, timeSpent, feedback, completionDate } = progressData;
+    
+    const stmt = this.db.prepare(`
+      INSERT OR REPLACE INTO user_progress 
+      (user_id, scenario_id, status, progress, completed_stages, score, time_spent, feedback, completion_date, updated_at) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+    `);
+    
+    const info = stmt.run(
+      userId, 
+      scenarioId, 
+      status, 
+      progress, 
+      JSON.stringify(completedStages || []), 
+      score, 
+      timeSpent, 
+      feedback, 
+      completionDate
+    );
+    
+    return { id: info.lastInsertRowid, ...progressData };
   }
 
-  async getUserProgress(userId, scenarioId) {
-    return new Promise((resolve, reject) => {
-      this.db.get(
-        'SELECT * FROM user_progress WHERE user_id = ? AND scenario_id = ?',
-        [userId, scenarioId],
-        (err, row) => {
-          if (err) {
-            reject(err);
-          } else {
-            // Parse completed_stages if it exists
-            if (row && row.completed_stages) {
-              try {
-                row.completed_stages = JSON.parse(row.completed_stages);
-              } catch (e) {
-                row.completed_stages = [];
-              }
-            }
-            resolve(row);
-          }
-        }
-      );
-    });
-  }
-
-  async getAllUserProgress(userId) {
-    return new Promise((resolve, reject) => {
-      this.db.all(
-        'SELECT * FROM user_progress WHERE user_id = ?',
-        [userId],
-        (err, rows) => {
-          if (err) {
-            reject(err);
-          } else {
-            // Parse completed_stages for each row if it exists
-            const parsedRows = rows.map(row => {
-              if (row && row.completed_stages) {
-                try {
-                  row.completed_stages = JSON.parse(row.completed_stages);
-                } catch (e) {
-                  row.completed_stages = [];
-                }
-              }
-              return row;
-            });
-            resolve(parsedRows);
-          }
-        }
-      );
-    });
-  }
-
-  async close() {
-    return new Promise((resolve, reject) => {
-      if (this.db) {
-        this.db.close((err) => {
-          if (err) {
-            reject(err);
-          } else {
-            console.log('SQLite database connection closed');
-            resolve();
-          }
-        });
-      } else {
-        resolve();
+  getUserProgress(userId, scenarioId) {
+    const stmt = this.db.prepare('SELECT * FROM user_progress WHERE user_id = ? AND scenario_id = ?');
+    const row = stmt.get(userId, scenarioId);
+    
+    // Parse completed_stages if it exists
+    if (row && row.completed_stages) {
+      try {
+        row.completed_stages = JSON.parse(row.completed_stages);
+      } catch (e) {
+        row.completed_stages = [];
       }
+    }
+    
+    return row;
+  }
+
+  getAllUserProgress(userId) {
+    const stmt = this.db.prepare('SELECT * FROM user_progress WHERE user_id = ?');
+    const rows = stmt.all(userId);
+    
+    // Parse completed_stages for each row if it exists
+    return rows.map(row => {
+      if (row && row.completed_stages) {
+        try {
+          row.completed_stages = JSON.parse(row.completed_stages);
+        } catch (e) {
+          row.completed_stages = [];
+        }
+      }
+      return row;
     });
+  }
+
+  close() {
+    if (this.db) {
+      this.db.close();
+      console.log('SQLite database connection closed');
+    }
   }
 }
 

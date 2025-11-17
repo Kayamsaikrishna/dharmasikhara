@@ -16,15 +16,17 @@ export const saveUserProgress = async (scenarioId: string, progress: any) => {
   try {
     const token = localStorage.getItem('token');
     
+    // Always save to localStorage first
+    const localProgress = {
+      scenarioId,
+      ...progress,
+      timestamp: new Date().toISOString()
+    };
+    localStorage.setItem(`scenario-progress-${scenarioId}`, JSON.stringify(localProgress));
+    
     // If no token, save to localStorage only
     if (!token) {
       console.warn('No authentication token found, saving to localStorage only');
-      const localProgress = {
-        scenarioId,
-        ...progress,
-        timestamp: new Date().toISOString()
-      };
-      localStorage.setItem(`scenario-progress-${scenarioId}`, JSON.stringify(localProgress));
       return localProgress;
     }
     
@@ -38,7 +40,7 @@ export const saveUserProgress = async (scenarioId: string, progress: any) => {
       feedback: progress.feedback || ''
     };
     
-    // Try to save to backend API first
+    // Try to save to backend API
     const response = await fetch(`${API_BASE_URL}/api/progress`, {
       method: 'POST',
       headers: {
@@ -48,41 +50,24 @@ export const saveUserProgress = async (scenarioId: string, progress: any) => {
       body: JSON.stringify(backendProgressData)
     });
 
-    // If backend fails with auth error, fallback to localStorage
+    // If backend fails with auth error, it's already saved to localStorage
     if (response.status === 401) {
-      console.warn('Authentication failed, saving to localStorage only');
-      const localProgress = {
-        scenarioId,
-        ...progress,
-        timestamp: new Date().toISOString()
-      };
-      localStorage.setItem(`scenario-progress-${scenarioId}`, JSON.stringify(localProgress));
+      console.warn('Authentication failed, saved to localStorage only');
       return localProgress;
     }
 
     if (!response.ok) {
-      // If backend fails for other reasons, fallback to localStorage
-      console.warn('Backend API failed, falling back to localStorage');
-      const localProgress = {
-        scenarioId,
-        ...progress,
-        timestamp: new Date().toISOString()
-      };
-      localStorage.setItem(`scenario-progress-${scenarioId}`, JSON.stringify(localProgress));
+      // If backend fails for other reasons, it's already saved to localStorage
+      console.warn('Backend API failed, saved to localStorage only');
       return localProgress;
     }
 
     return await response.json();
   } catch (error) {
-    // If any error occurs, fallback to localStorage
-    console.warn('Error saving user progress, falling back to localStorage:', error);
-    const localProgress = {
-      scenarioId,
-      ...progress,
-      timestamp: new Date().toISOString()
-    };
-    localStorage.setItem(`scenario-progress-${scenarioId}`, JSON.stringify(localProgress));
-    return localProgress;
+    // If any error occurs, it's already saved to localStorage
+    console.warn('Error saving user progress, saved to localStorage:', error);
+    const localProgress = localStorage.getItem(`scenario-progress-${scenarioId}`);
+    return localProgress ? JSON.parse(localProgress) : null;
   }
 };
 
@@ -123,15 +108,21 @@ export const getUserProgress = async (scenarioId: string) => {
 
     const data = await response.json();
     
+    // If no progress data, return null
+    if (data.data === null) {
+      const localProgress = localStorage.getItem(`scenario-progress-${scenarioId}`);
+      return localProgress ? JSON.parse(localProgress) : null;
+    }
+    
     // Map backend field names to frontend field names
     const frontendProgressData = {
-      currentStage: data.status || '',
-      progress: data.progress || 0,
-      completedStages: data.completed_stages || [],
-      lastUpdated: data.last_updated || new Date().toISOString(),
-      totalTimeSpent: data.time_spent || 0,
-      assessmentScore: data.score || null,
-      feedback: data.feedback || ''
+      currentStage: data.data?.status || data.status || '',
+      progress: data.data?.progress || data.progress || 0,
+      completedStages: data.data?.completed_stages || data.completed_stages || [],
+      lastUpdated: data.data?.last_updated || data.last_updated || new Date().toISOString(),
+      totalTimeSpent: data.data?.time_spent || data.time_spent || 0,
+      assessmentScore: data.data?.score || data.score || null,
+      feedback: data.data?.feedback || data.feedback || ''
     };
     
     return frontendProgressData;

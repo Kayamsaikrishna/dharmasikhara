@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import './InvestigationRoom.css';
 
 const CourtRoom = () => {
   const [showEntrance, setShowEntrance] = useState(true);

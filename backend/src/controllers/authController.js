@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const databaseService = require('../services/database');
 
@@ -10,15 +10,7 @@ const register = async (req, res) => {
         const db = databaseService.getSQLite();
         
         // Check if user already exists
-        const existingUser = await new Promise((resolve, reject) => {
-            db.get('SELECT * FROM users WHERE email = ? OR username = ?', [email, username], (err, row) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(row);
-                }
-            });
-        });
+        const existingUser = db.prepare('SELECT * FROM users WHERE email = ? OR username = ?').get(email, username);
         
         if (existingUser) {
             // Provide more specific error message
@@ -45,31 +37,22 @@ const register = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, saltRounds);
         
         // Create new user
-        const newUser = await new Promise((resolve, reject) => {
-            const createdAt = new Date().toISOString();
-            db.run(
-                'INSERT INTO users (username, email, password, first_name, last_name, institution, year, specialization, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                [username, email, hashedPassword, firstName, lastName, institution, year, specialization, createdAt],
-                function(err) {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve({
-                            id: this.lastID,
-                            username,
-                            email,
-                            password: hashedPassword,
-                            first_name: firstName,
-                            last_name: lastName,
-                            institution,
-                            year,
-                            specialization,
-                            created_at: createdAt
-                        });
-                    }
-                }
-            );
-        });
+        const createdAt = new Date().toISOString();
+        const stmt = db.prepare('INSERT INTO users (username, email, password, first_name, last_name, institution, year, specialization, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
+        const info = stmt.run(username, email, hashedPassword, firstName, lastName, institution, year, specialization, createdAt);
+        
+        const newUser = {
+            id: info.lastInsertRowid,
+            username,
+            email,
+            password: hashedPassword,
+            first_name: firstName,
+            last_name: lastName,
+            institution,
+            year,
+            specialization,
+            created_at: createdAt
+        };
         
         // Generate JWT token
         const token = jwt.sign(
@@ -113,15 +96,7 @@ const login = async (req, res) => {
         const db = databaseService.getSQLite();
         
         // Find user in database
-        const user = await new Promise((resolve, reject) => {
-            db.get('SELECT * FROM users WHERE email = ?', [email], (err, row) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(row);
-                }
-            });
-        });
+        const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
         
         if (!user) {
             return res.status(401).json({
@@ -140,15 +115,8 @@ const login = async (req, res) => {
         }
         
         // Update last login
-        await new Promise((resolve, reject) => {
-            db.run('UPDATE users SET updated_at = ? WHERE id = ?', [new Date().toISOString(), user.id], (err) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve();
-                }
-            });
-        });
+        const updatedAt = new Date().toISOString();
+        db.prepare('UPDATE users SET updated_at = ? WHERE id = ?').run(updatedAt, user.id);
         
         // Generate JWT token
         const token = jwt.sign(

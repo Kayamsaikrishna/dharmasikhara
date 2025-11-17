@@ -5,17 +5,9 @@ exports.saveUserProgress = async (req, res) => {
   try {
     const { scenarioId, status, progress, completedStages, score, timeSpent, feedback } = req.body;
     
-    // Check if user is authenticated
-    if (!req.user) {
-      // For unauthenticated requests, save to localStorage equivalent (return 404 to trigger frontend fallback)
-      return res.status(404).json({ 
-        success: false, 
-        message: 'User must be authenticated to save progress on server' 
-      });
-    }
+    // For unauthenticated requests, use the anonymous user ID
+    const userId = req.user ? req.user.id : 0;
     
-    const userId = req.user.id;
-
     // Validate required fields
     if (!scenarioId) {
       return res.status(400).json({ 
@@ -82,16 +74,8 @@ exports.getUserProgress = async (req, res) => {
   try {
     const { scenarioId } = req.params;
     
-    // Check if user is authenticated
-    if (!req.user) {
-      // For unauthenticated requests, check localStorage equivalent (return 404 to trigger frontend fallback)
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Progress record not found' 
-      });
-    }
-    
-    const userId = req.user.id;
+    // For unauthenticated requests, use the anonymous user ID
+    const userId = req.user ? req.user.id : 0;
 
     if (!scenarioId) {
       return res.status(400).json({ 
@@ -104,9 +88,10 @@ exports.getUserProgress = async (req, res) => {
     const progressRecord = await databaseService.getUserProgress(userId, scenarioId);
 
     if (!progressRecord) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Progress record not found' 
+      // Return success with empty data instead of 404
+      return res.status(200).json({ 
+        success: true, 
+        data: null 
       });
     }
 
@@ -126,16 +111,8 @@ exports.getUserProgress = async (req, res) => {
 // Get all progress records for a user
 exports.getAllUserProgress = async (req, res) => {
   try {
-    // Check if user is authenticated
-    if (!req.user) {
-      // For unauthenticated requests, check localStorage equivalent (return 404 to trigger frontend fallback)
-      return res.status(404).json({ 
-        success: false, 
-        message: 'User must be authenticated to access server progress' 
-      });
-    }
-    
-    const userId = req.user.id;
+    // For unauthenticated requests, use the anonymous user ID
+    const userId = req.user ? req.user.id : 0;
 
     const progressRecords = await databaseService.getAllUserProgress(userId);
 

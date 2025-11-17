@@ -1,4 +1,3 @@
-const { PythonShell } = require('python-shell');
 const path = require('path');
 
 // Test the enhanced legal assistant functionality

@@ -25,9 +25,9 @@ import Profile from './pages/Profile';
 // import DocumentUpload from './pages/DocumentUpload';
 import SubscriptionPage from './pages/SubscriptionPage';
 import EditProfile from './pages/EditProfile';
-import ScenarioDetail from './components/ScenarioDetail'; // Use the original component
+import EnhancedScenarioDetail from './components/EnhancedScenarioDetail'; // Use the original component
 import ScenarioSimulationPage from './pages/ScenarioSimulationPage';
-import ClientInterview from './components/ClientInterview';
+import OptimizedClientInterview from './components/optimized-client-interview';
 // import EvidenceAnalysis from './components/EvidenceAnalysis'; // Remove this import
 import DigitalEvidence from './components/DigitalEvidence';
 import BailDraft from './pages/BailDraft';
@@ -35,6 +35,7 @@ import SimulationEntrance from './components/SimulationEntrance';
 import LegalAssessment from './components/LegalAssessment';
 import LegalResearchPage from './pages/LegalResearchPage';
 import ProgressTest from './components/ProgressTest';
+import ReviewsFAQ from './components/ReviewsFAQ';
 
 function App() {
   return (
@@ -60,13 +61,14 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/test" element={<Test />} />
-            <Route path="/client-interview" element={<ClientInterview />} />
+            <Route path="/client-interview" element={<OptimizedClientInterview />} />
+            <Route path="/optimized-client-interview" element={<OptimizedClientInterview />} />
             {/* <Route path="/evidence-analysis" element={<EvidenceAnalysis />} /> */}
             <Route path="/digital-evidence" element={<DigitalEvidence />} />
             <Route path="/bail-draft" element={<BailDraft />} />
             <Route path="/progress-test" element={<ProgressTest />} />
             <Route path="/scenarios" element={<Scenarios />} />
-            <Route path="/scenarios/:id" element={<ScenarioDetail />} />
+            <Route path="/scenarios/:id" element={<EnhancedScenarioDetail />} />    
             <Route path="/simulation-entrance" element={<SimulationEntrance />} />
             <Route path="/scenario-simulation" element={<ScenarioSimulationPage />} />
             <Route path="/legal-assessment" element={<LegalAssessment />} />
@@ -80,6 +82,7 @@ function App() {
             <Route path="/multiplayer" element={<MultiplayerPage />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/reviews-faq" element={<ReviewsFAQ />} />
           </Routes>
         </div>
       </LanguageProvider>

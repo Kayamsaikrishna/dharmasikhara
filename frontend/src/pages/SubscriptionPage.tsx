@@ -276,12 +276,14 @@ const SubscriptionPage: React.FC = () => {
                   </svg>
                   <span>Document Analysis</span>
                 </li>
-                <li className="flex items-center">
-                  <svg className={`w-5 h-5 mr-2 ${plan.features.scenariosAccess > 0 ? 'text-green-500' : 'text-gray-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                  </svg>
-                  <span>{plan.features.scenariosAccess} Scenarios/Month</span>
-                </li>
+                {plan.id !== 'free' && (
+                  <li className="flex items-center">
+                    <svg className={`w-5 h-5 mr-2 ${plan.features.scenariosAccess > 0 ? 'text-green-500' : 'text-gray-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    <span>Access to Legal Scenarios</span>
+                  </li>
+                )}
                 <li className="flex items-center">
                   <svg className={`w-5 h-5 mr-2 ${plan.features.documentAnalysisLimit && plan.features.documentAnalysisLimit !== '0 per week' && plan.features.documentAnalysisLimit !== '0 per month' ? 'text-green-500' : 'text-gray-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
@@ -289,22 +291,10 @@ const SubscriptionPage: React.FC = () => {
                   <span>{plan.features.documentAnalysisLimit} Document Analysis</span>
                 </li>
                 <li className="flex items-center">
-                  <svg className={`w-5 h-5 mr-2 ${plan.features.storage && plan.features.storage !== '0 GB' ? 'text-green-500' : 'text-gray-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                  </svg>
-                  <span>{plan.features.storage} Storage</span>
-                </li>
-                <li className="flex items-center">
                   <svg className={`w-5 h-5 mr-2 ${plan.features.multiplayerAccess ? 'text-green-500' : 'text-gray-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
                   </svg>
                   <span>Multiplayer Access</span>
-                </li>
-                <li className="flex items-center">
-                  <svg className={`w-5 h-5 mr-2 ${plan.features.customScenarios > 0 ? 'text-green-500' : 'text-gray-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                  </svg>
-                  <span>{plan.features.customScenarios} Custom Scenarios/Month</span>
                 </li>
                 <li className="flex items-center">
                   <svg className={`w-5 h-5 mr-2 ${plan.features.legalAssistantTokens && plan.features.legalAssistantTokens !== 'Limited' ? 'text-green-500' : 'text-gray-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

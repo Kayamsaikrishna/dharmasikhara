@@ -6,7 +6,7 @@
  */
 
 const sqliteDatabase = require('./src/services/sqliteDatabase');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 async function initializeDatabase() {
   try {

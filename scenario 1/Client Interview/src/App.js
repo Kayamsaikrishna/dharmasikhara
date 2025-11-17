@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import InvestigationRoom from './InvestigationRoom';
+import ClientCounseling from './ClientCounseling';
 import CourtRoom from './CourtRoom';
 import './App.css';
 
 function App() {
-  const [currentView, setCurrentView] = useState('investigation'); // 'investigation' or 'court'
+  const [currentView, setCurrentView] = useState('counseling'); // 'counseling' or 'court'
 
   return (
     <div className="App">
@@ -12,10 +12,10 @@ function App() {
         <h1>DharmaSikhara Legal Simulation</h1>
         <nav className="app-navigation">
           <button 
-            className={currentView === 'investigation' ? 'nav-button active' : 'nav-button'}
-            onClick={() => setCurrentView('investigation')}
+            className={currentView === 'counseling' ? 'nav-button active' : 'nav-button'}
+            onClick={() => setCurrentView('counseling')}
           >
-            Investigation Room
+            Client Counseling
           </button>
           <button 
             className={currentView === 'court' ? 'nav-button active' : 'nav-button'}
@@ -27,7 +27,7 @@ function App() {
       </header>
       
       <main className="app-main">
-        {currentView === 'investigation' ? <InvestigationRoom /> : <CourtRoom />}
+        {currentView === 'counseling' ? <ClientCounseling /> : <CourtRoom />}
       </main>
       
       <style jsx>{`

@@ -1,22 +1,14 @@
-const sqlite3 = require('sqlite3').verbose();
+const Database = require('better-sqlite3');
 const path = require('path');
 
 // Connect to SQLite database
 const dbPath = path.join(__dirname, 'dharmasikhara.db');
-const db = new sqlite3.Database(dbPath);
+const db = new Database(dbPath);
 
-async function checkUsers() {
+function checkUsers() {
   try {
     // Query all users from SQLite database
-    const users = await new Promise((resolve, reject) => {
-      db.all('SELECT * FROM users', [], (err, rows) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
-      });
-    });
+    const users = db.prepare('SELECT * FROM users').all();
     
     console.log(`Found ${users.length} users`);
     

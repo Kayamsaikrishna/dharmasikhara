@@ -8,15 +8,7 @@ const getUserById = async (req, res) => {
         const db = databaseService.getSQLite();
         
         // Query user from SQLite database
-        const user = await new Promise((resolve, reject) => {
-            db.get('SELECT * FROM users WHERE id = ?', [id], (err, row) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(row);
-                }
-            });
-        });
+        const user = db.prepare('SELECT * FROM users WHERE id = ?').get(id);
         
         if (!user) {
             return res.status(404).json({
@@ -47,15 +39,7 @@ const getAllUsers = async (req, res) => {
         const db = databaseService.getSQLite();
         
         // Query all users from SQLite database
-        const users = await new Promise((resolve, reject) => {
-            db.all('SELECT id, username, email, first_name, last_name, institution, year, specialization, created_at FROM users', [], (err, rows) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(rows);
-                }
-            });
-        });
+        const users = db.prepare('SELECT id, username, email, first_name, last_name, institution, year, specialization, created_at FROM users').all();
         
         res.json({
             success: true,
@@ -113,15 +97,7 @@ const updateUser = async (req, res) => {
         
         // If no fields to update, return early
         if (updateFields.length === 1) { // Only updated_at field
-            const user = await new Promise((resolve, reject) => {
-                db.get('SELECT * FROM users WHERE id = ?', [id], (err, row) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(row);
-                    }
-                });
-            });
+            const user = db.prepare('SELECT * FROM users WHERE id = ?').get(id);
             
             if (!user) {
                 return res.status(404).json({
@@ -141,27 +117,11 @@ const updateUser = async (req, res) => {
         }
         
         // Execute update query
-        await new Promise((resolve, reject) => {
-            const query = `UPDATE users SET ${updateFields.join(', ')} WHERE id = ?`;
-            db.run(query, updateValues, function(err) {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(this);
-                }
-            });
-        });
+        const query = `UPDATE users SET ${updateFields.join(', ')} WHERE id = ?`;
+        db.prepare(query).run(...updateValues);
         
         // Fetch updated user data
-        const updatedUser = await new Promise((resolve, reject) => {
-            db.get('SELECT * FROM users WHERE id = ?', [id], (err, row) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(row);
-                }
-            });
-        });
+        const updatedUser = db.prepare('SELECT * FROM users WHERE id = ?').get(id);
         
         if (!updatedUser) {
             return res.status(404).json({
@@ -195,15 +155,7 @@ const deleteUser = async (req, res) => {
         const db = databaseService.getSQLite();
         
         // Check if user exists
-        const user = await new Promise((resolve, reject) => {
-            db.get('SELECT * FROM users WHERE id = ?', [id], (err, row) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(row);
-                }
-            });
-        });
+        const user = db.prepare('SELECT * FROM users WHERE id = ?').get(id);
         
         if (!user) {
             return res.status(404).json({
@@ -213,15 +165,7 @@ const deleteUser = async (req, res) => {
         }
         
         // Delete user
-        await new Promise((resolve, reject) => {
-            db.run('DELETE FROM users WHERE id = ?', [id], function(err) {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(this);
-                }
-            });
-        });
+        db.prepare('DELETE FROM users WHERE id = ?').run(id);
         
         res.json({
             success: true,
@@ -244,15 +188,7 @@ const getUserProgress = async (req, res) => {
         const db = databaseService.getSQLite();
         
         // Check if user exists
-        const user = await new Promise((resolve, reject) => {
-            db.get('SELECT * FROM users WHERE id = ?', [id], (err, row) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(row);
-                }
-            });
-        });
+        const user = db.prepare('SELECT * FROM users WHERE id = ?').get(id);
         
         if (!user) {
             return res.status(404).json({
@@ -261,33 +197,8 @@ const getUserProgress = async (req, res) => {
             });
         }
         
-        // Get user progress data
-        const progressRecords = await new Promise((resolve, reject) => {
-            db.all('SELECT * FROM user_progress WHERE user_id = ?', [id], (err, rows) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(rows);
-                }
-            });
-        });
-        
-        // Calculate summary statistics
-        const completedScenarios = progressRecords.filter(p => p.status === 'completed').length;
-        const totalScenarios = progressRecords.length;
-        const totalTimeSpent = progressRecords.reduce((sum, p) => sum + (p.time_spent || 0), 0);
-        const averageScore = progressRecords.length > 0 
-            ? progressRecords.reduce((sum, p) => sum + (p.score || 0), 0) / progressRecords.length
-            : 0;
-        
-        const progress = {
-            completedScenarios,
-            totalScenarios,
-            totalTimeSpent,
-            averageScore: parseFloat(averageScore.toFixed(1)),
-            lastActive: user.updated_at || user.created_at,
-            progressRecords
-        };
+        // Get user progress
+        const progress = db.prepare('SELECT * FROM user_progress WHERE user_id = ?').all(id);
         
         res.json({
             success: true,
@@ -302,23 +213,15 @@ const getUserProgress = async (req, res) => {
     }
 };
 
-const getUserAnalytics = async (req, res) => {
+const getUserProgressByScenario = async (req, res) => {
     try {
-        const { id } = req.params;
+        const { id, scenarioId } = req.params;
         
         // Get SQLite database connection
         const db = databaseService.getSQLite();
         
         // Check if user exists
-        const user = await new Promise((resolve, reject) => {
-            db.get('SELECT * FROM users WHERE id = ?', [id], (err, row) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(row);
-                }
-            });
-        });
+        const user = db.prepare('SELECT * FROM users WHERE id = ?').get(id);
         
         if (!user) {
             return res.status(404).json({
@@ -327,45 +230,18 @@ const getUserAnalytics = async (req, res) => {
             });
         }
         
-        // Get user progress data
-        const progressRecords = await new Promise((resolve, reject) => {
-            db.all('SELECT * FROM user_progress WHERE user_id = ?', [id], (err, rows) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(rows);
-                }
-            });
-        });
-        
-        // Calculate analytics
-        const totalTimeSpent = progressRecords.reduce((sum, p) => sum + (p.time_spent || 0), 0);
-        const scenariosCompleted = progressRecords.filter(p => p.status === 'completed').length;
-        const averageScore = progressRecords.length > 0 
-            ? progressRecords.reduce((sum, p) => sum + (p.score || 0), 0) / progressRecords.length
-            : 0;
-        
-        // For practice areas, we'll use a simple approach since we don't have scenario data in this context
-        const practiceAreas = ['Criminal Law', 'Civil Law', 'Constitutional Law', 'Corporate Law', 'Family Law'];
-        const preferredPracticeAreas = practiceAreas.slice(0, 3);
-        
-        const analytics = {
-            totalTimeSpent,
-            scenariosCompleted,
-            averageScore: parseFloat(averageScore.toFixed(1)),
-            preferredPracticeAreas,
-            lastActive: user.updated_at || user.created_at
-        };
+        // Get user progress for specific scenario
+        const progress = db.prepare('SELECT * FROM user_progress WHERE user_id = ? AND scenario_id = ?').get(id, scenarioId);
         
         res.json({
             success: true,
-            data: analytics
+            data: progress
         });
     } catch (error) {
-        console.error('Get user analytics error:', error);
+        console.error('Get user progress by scenario error:', error);
         res.status(500).json({
             success: false,
-            message: 'An error occurred while fetching user analytics'
+            message: 'An error occurred while fetching user progress'
         });
     }
 };
@@ -377,5 +253,5 @@ module.exports = {
     updateUser,
     deleteUser,
     getUserProgress,
-    getUserAnalytics
+    getUserProgressByScenario
 };

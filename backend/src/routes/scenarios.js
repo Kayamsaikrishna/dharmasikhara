@@ -13,19 +13,9 @@ const {
     deleteScenario
 } = require('../controllers/scenarioController');
 
-// Public routes - disabled as per requirements
-router.get('/', (req, res) => {
-    res.json({
-        success: true,
-        data: []
-    });
-});
-router.get('/:id', (req, res) => {
-    res.status(404).json({
-        success: false,
-        message: 'Scenario not found'
-    });
-});
+// Public routes - now enabled to use actual controller functions
+router.get('/', getAllScenarios);
+router.get('/:id', getScenarioById);
 
 // Protected routes (only for authenticated users)
 router.use(authenticateToken);

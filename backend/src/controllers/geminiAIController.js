@@ -7,13 +7,20 @@ class LegalAIController {
 
     console.log('🔑 GEMINI_API_KEY:', this.geminiAPIKey ? 'CONFIGURED' : 'MISSING');
 
-    if (this.geminiAPIKey) {
+    // Lazy initialization - don't initialize the model immediately
+    this.genAI = null;
+    this.model = null;
+  }
+
+  // Initialize Gemini AI only when needed to reduce memory usage
+  initializeModel() {
+    if (!this.model && this.geminiAPIKey) {
       try {
         this.genAI = new GoogleGenerativeAI(this.geminiAPIKey);
         this.model = this.genAI.getGenerativeModel({ 
           model: "models/gemini-2.0-flash",
           generationConfig: {
-            maxOutputTokens: 2000,
+            maxOutputTokens: 1000, // Reduced from 2000
             temperature: 0.7
           }
         });
@@ -22,34 +29,40 @@ class LegalAIController {
         console.error('❌ Gemini initialization error:', error);
         this.model = null;
       }
-    } else {
-      console.error('❌ GEMINI_API_KEY not found in environment variables');
-      this.model = null;
     }
+    return this.model;
   }
 
   /** Check AI Status */
   async getAIStatus(req, res) {
     try {
-      if (this.model) {
+      // Only initialize model if checking status
+      const model = this.initializeModel();
+      if (model) {
         res.json({
           success: true,
           data: { 
             modelAvailable: true, 
             message: 'Gemini AI ready',
-            model: 'models/gemini-2.0-flash'
+            model: 'gemini-2.0-flash'
           }
         });
       } else {
         res.status(503).json({
           success: false,
-          message: 'Gemini AI not configured. Check GEMINI_API_KEY environment variable.'
+          data: { 
+            modelAvailable: false, 
+            message: 'Gemini AI not available',
+            model: null
+          }
         });
       }
     } catch (error) {
+      console.error('AI Status Error:', error);
       res.status(500).json({
         success: false,
-        message: 'Error checking AI status: ' + error.message
+        message: 'Failed to check AI status',
+        error: error.message
       });
     }
   }

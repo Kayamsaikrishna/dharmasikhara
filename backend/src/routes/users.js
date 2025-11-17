@@ -12,6 +12,6 @@ router.delete('/:id', userController.deleteUser);
 
 // User progress and analytics
 router.get('/:id/progress', userController.getUserProgress);
-router.get('/:id/analytics', userController.getUserAnalytics);
+router.get('/:id/progress/:scenarioId', userController.getUserProgressByScenario);
 
 module.exports = router;
