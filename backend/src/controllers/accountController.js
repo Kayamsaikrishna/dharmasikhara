@@ -308,21 +308,38 @@ const extractText = async (req, res) => {
     if (!req.file) {
       return res.status(400).json({
         success: false,
-        message: 'No file uploaded'
+        message: 'No file uploaded. Please select a file to upload.'
       });
     }
     
+    // Log file information for debugging
+    console.log('File uploaded:', {
+      originalname: req.file.originalname,
+      mimetype: req.file.mimetype,
+      size: req.file.size
+    });
+    
     // Check file type and process accordingly
-    if (req.file.mimetype === 'application/pdf') {
+    if (req.file.mimetype === 'application/pdf' || req.file.originalname.toLowerCase().endsWith('.pdf')) {
       // Extract text from PDF
-      const pdfData = await pdfParse(req.file.buffer);
-      
-      res.json({
-        success: true,
-        text: pdfData.text
-      });
+      try {
+        const pdfData = await pdfParse(req.file.buffer);
+        
+        res.json({
+          success: true,
+          text: pdfData.text
+        });
+      } catch (pdfError) {
+        console.error('PDF parsing error:', pdfError);
+        res.status(500).json({
+          success: false,
+          message: 'Failed to parse PDF file: ' + pdfError.message
+        });
+      }
     } else if (req.file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
-               req.file.mimetype === 'application/msword') {
+               req.file.mimetype === 'application/msword' ||
+               req.file.originalname.toLowerCase().endsWith('.doc') ||
+               req.file.originalname.toLowerCase().endsWith('.docx')) {
       // Extract text from Word document
       const mammoth = require('mammoth');
       
@@ -340,9 +357,10 @@ const extractText = async (req, res) => {
         });
       }
     } else {
+      console.log('Unsupported file type:', req.file.mimetype, req.file.originalname);
       return res.status(400).json({
         success: false,
-        message: 'Unsupported file type. Supported types: PDF, DOC, DOCX'
+        message: 'Unsupported file type. Supported types: PDF, DOC, DOCX. Received: ' + req.file.mimetype + ' for file: ' + req.file.originalname
       });
     }
   } catch (error) {

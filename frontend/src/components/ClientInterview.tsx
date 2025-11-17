@@ -1247,16 +1247,16 @@ const ClientInterview: React.FC = () => {
     const animate = () => {
       requestAnimationFrame(animate);
       
-      // Limit frame rate to 15 FPS for better performance
+      // Limit frame rate to 10 FPS for better performance
       const now = performance.now();
-      if (now - lastTime < 1000 / 15) return;
+      if (now - lastTime < 1000 / 10) return;
       lastTime = now;
       
       clock.getDelta();
       const time = clock.getElapsedTime();
 
       // Update camera position based on distance and angle (less frequently)
-      if (cameraRef.current && Math.floor(time * 3) % 5 === 0) { // Update every 1.67 seconds
+      if (cameraRef.current && Math.floor(time * 2) % 7 === 0) { // Update every 3.5 seconds
         const x = cameraDistanceRef.current * Math.sin(cameraAngleRef.current);
         const z = cameraDistanceRef.current * Math.cos(cameraAngleRef.current);
         cameraRef.current.position.set(x, 2.5, z);
@@ -1265,7 +1265,7 @@ const ClientInterview: React.FC = () => {
 
       if (clientRef.current) {
         // Apply continuous animations based on current emotion (less frequently)
-        if (Math.floor(time * 3) % 9 === 0) { // Update every 3 seconds
+        if (Math.floor(time * 2) % 11 === 0) { // Update every 5.5 seconds
           const summary = conversationEngineRef.current?.getSummary();
           if (summary && summary.currentEmotion) {
             // Apply subtle continuous animations
@@ -1275,10 +1275,10 @@ const ClientInterview: React.FC = () => {
       }
 
       // Update recorder and laptop effects less frequently
-      if (Math.floor(time * 3) % 7 === 0) { // Update every 2.33 seconds
+      if (Math.floor(time * 2) % 9 === 0) { // Update every 4.5 seconds
         if (recorder) {
           const btn = recorder.children.find((c: any) => c.material?.emissive);
-          if (btn) btn.material.emissiveIntensity = 0.5 + Math.sin(time * 3) * 0.4;
+          if (btn) btn.material.emissiveIntensity = 0.5 + Math.sin(time * 2) * 0.4;
         }
 
         if (laptop) {
@@ -1288,7 +1288,7 @@ const ClientInterview: React.FC = () => {
       }
 
       // Update light intensities less frequently
-      if (lightsRef.current && lightsBaselineRef.current && Math.floor(time * 3) % 6 === 0) { // Update every 2 seconds
+      if (lightsRef.current && lightsBaselineRef.current && Math.floor(time * 2) % 8 === 0) { // Update every 4 seconds
         const factor = lightsOnRef.current ? 1 : 0;
         try {
           Object.keys(lightsBaselineRef.current).forEach(key => {
@@ -1871,6 +1871,22 @@ const ClientInterview: React.FC = () => {
             className="w-full py-2 bg-yellow-600 hover:bg-yellow-700 rounded"
           >
             {lightsOn ? '🔦 Lights On' : '💡 Lights Off'}
+          </button>
+        </div>
+        
+        {/* Pause Speech Button */}
+        <div className="control-section mt-4">
+          <button 
+            onClick={() => {
+              if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                (window as any).isSpeaking = false;
+                setStatus('Speech paused');
+              }
+            }}
+            className="w-full py-2 bg-red-600 hover:bg-red-700 rounded flex items-center justify-center"
+          >
+            ⏸️ Pause Speech
           </button>
         </div>
         
